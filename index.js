@@ -5,7 +5,7 @@ const app = express();
 const port = 9000;
 
 app.use("/", (req, res) => {
-  res.json({ message: "Hello Vercel" });
+  res.json({ message: "new vercel check:- deploye server successfull" });
 });
 
 app.listen(9000, () => {
