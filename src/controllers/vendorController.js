@@ -460,17 +460,145 @@ export function admin_change_vendor_status(req, res) {
     );
 }
 
-// var notification = {
-//     "title": "tttt",
-//     "text": "tccttt"
-// }
 
-// var fcm_tokens = ["e42h1iTmRwGlyuwn9nGqu4:APA91bH6_qHLmPMYCjrkI1-l2eswwsWMxZJeMz9WRozFYA-DzNOCS58L9HPGaRWTaxKj7Zg4pJx2TRgZPU4O8IY7UgqJ5S6A8DY4BODWfQDdlFNZLaZmz5heuAlJdxI2Y-XVFcjNimDh"]
+export async function search_vendor_product(req, res) {
+    var { price_from, price_to } = req.body;
+    console.log(req.body)
+    // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
 
-// var notification_body = {
-//     "notification": notification,
-//     "registrations_ids": fcm_tokens
-// }
-// fetch("https://fcm.googleapis.com/fcm/send", { "method": POST, "headers": { "authorization": "keys=" + "AAAABsq8jZc:APA91bG99gTYMmsMI_vlIJhjAxU6ta8j24v4dg-tInV4dKDUXqBzx3ORj_n0aI5k7opUvuyKI0nGhulfolpJgSFf2d5rnMfrN5CGA2fkpbCqTIlaidCChdDa5Gs7ymScojbL5pC93B54", "Content-Type": "application/json" }, "body": JSON.stringify(notification_body) }).then(() => {
-//     console.log("notification send successfully")
-// }).catch((err) => { console.log(err) })
+    var search_string_asc_desc = ""
+    // var query_string = "select * from product  where ";
+    let search_obj = Object.keys(req.body)
+    if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
+        var search_string = 'SELECT * ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product LEFT JOIN product_verient ON product.id = product_verient.product_id where product.vendor_id = "' + req.vendor_id + '"  AND  ';
+    } else {
+        var search_string = '';
+    }
+    console.log(search_obj)
+    if (price_from != "" && price_to != "") {
+        search_string += '(`price` BETWEEN "' + price_from + '" AND "' + price_to + '") AND   '
+    }
+
+    for (var i = 0; i <= search_obj.length - 1; i++) {
+
+        if (i >= 6) {
+            if (i == 6) {
+                if (req.body[search_obj[i]] != "") {
+                    search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
+                }
+            } else {
+                if (req.body[search_obj[i]] != "") {
+                    var arr = JSON.stringify(req.body[search_obj[i]]);
+                    var abc = "'" + arr + "'"
+                    const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
+                    search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+
+                    // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+                }
+            }
+        } else {
+            if (i > 1) {
+                if (search_obj[i] != undefined && req.body[search_obj[i]] != "") {
+                    search_string_asc_desc = ` ORDER BY ${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
+                }
+            }
+        }
+        if (i === search_obj.length - 1) {
+            search_string = search_string.substring(0, search_string.length - 6);
+            // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
+            search_string += search_string_asc_desc
+            // }
+
+        }
+    }
+    console.log(search_string)
+    var pg = req.query;
+    var numRows;
+
+    var numPerPage = pg.per_page;
+    var page = parseInt(pg.page, pg.per_page) || 0;
+    var numPages;
+    var skip = page * numPerPage;
+    // Here we compute the LIMIT parameter for MySQL query
+    var limit = skip + "," + numPerPage;
+
+    connection.query(
+        "SELECT count(*) as numRows FROM product",
+        (err, results) => {
+            if (err) {
+            } else {
+                numRows = results[0].numRows;
+                numPages = Math.ceil(numRows / numPerPage);
+                var count_rows;
+                connection.query(search_string.replace("*", "count(*) AS `count_rows` "),
+                    (err, results) => {
+                        console.log("results---------------------------------------")
+                        console.log(results)
+                        try {
+                            count_rows = results[0]["count_rows"]
+                        } catch (e) {
+                            count_rows = "no"
+                        }
+
+                    })
+
+                console.log("" + search_string + " LIMIT " + limit + "")
+                connection.query("" + search_string + " LIMIT " + limit + "",
+                    (err, results) => {
+                        if (err) {
+                            console.log("err___________________194")
+                            console.log(err)
+                            res.status(200).send({ "response": "find error" });
+                        } else {
+                            // //console.log("_____")
+                            var responsePayload = {
+                                results: results,
+                            };
+                            if (page < numPages) {
+                                responsePayload.pagination = {
+                                    count_rows: count_rows,
+                                    current: page,
+                                    perPage: numPerPage,
+                                    previous: page > 0 ? page - 1 : undefined,
+                                    next: page < numPages - 1 ? page + 1 : undefined,
+                                };
+                            } else
+                                responsePayload.pagination = {
+                                    err:
+                                        "queried page " +
+                                        page +
+                                        " is >= to maximum page number " +
+                                        numPages,
+                                };
+                            res.status(200).send(responsePayload);
+                        }
+                    }
+                );
+            }
+        }
+    );
+}
+
+export function order_verify_by_vendor(req, res) {
+    let { order_verify, order_id } = req.body
+    console.log("check order_verify_by_admin" + req.vendor_id)
+    connection.query("UPDATE `order` SET `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'", (err, rows, fields) => {
+        if (err) {
+            console.log(err)
+            res.status(200).send({ "status": false, "response": "find some error" })
+        } else {
+            if (rows.affectedRows >= 1) { res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" }) } else { res.status(200).send({ "status": false, "response": "find some error" }) }
+        }
+    })
+}
+
+export function vendor_orders_status(req, res) {
+    connection.query("SELECT count(*) AS total_orders_from_order_table,(SELECT COUNT(*) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'accepted') AS accepted_order,(SELECT COUNT(*) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'rejected') AS rejected_order,(SELECT COUNT(*) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'pending') AS pending_order,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "') AS total_orders_from_order_delivery_table ,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'ready_to_pickup' ) AS ready_to_pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Pickup' ) AS pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Delivered' ) AS delivered_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Rejected_by_customer' ) AS rejected_by_customer_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Failed_Delivery_Attempts' ) AS failed_Delivery_Attempts_orders FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "'", (err, rows, fields) => {
+        if (err) {
+            console.log(err)
+            res.status(200).send({ "status": false, "response": "find some error" })
+        } else {
+            res.status(200).send({ "status": true, "response": rows })
+        }
+    })
+}

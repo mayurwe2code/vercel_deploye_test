@@ -1,9 +1,7 @@
 import mysql from "mysql";
 import "dotenv/config";
 
-
-
-
+// node
 console.log();
 const connection = mysql.createConnection({
   host: "b8ge1gim6edaq5jr1rht-mysql.services.clever-cloud.com",

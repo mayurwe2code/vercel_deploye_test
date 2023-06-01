@@ -14,13 +14,16 @@ import filter_list_router from "./src/routers/filter_list_router.js";
 import delivery_router from "./src/routers/delivery_router.js";
 import vendor_router from "./src/routers/vendorRouter.js";
 import adminRouter from "./src/routers/admin_router.js";
+import blog from "./src/routers/blogRouter.js";
+import transactionRouter from "./src/routers/transactionRouter.js";
+import complainSupportRouter from "./src/routers/complainSupprotRouter.js";
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
 const MongoStore = connectMongo(session);
-import { ensureAuth, ensureGuest } from './middleware/auth.js'
+import { ensureAuth, ensureGuest } from '../nursery_live/middleware/auth.js'
 
 const app = express();
 connection;
@@ -52,17 +55,19 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
   }
 });
 
-app.get("/", function (req, res) {
-  res.send({ "name": "mayur" })
-})
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter);
-// 
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter);
 
 
-mongoose.connect("mongodb+srv://Raahul_verma:vw48MlF9mMcMJL7y@cluster0.hxtq31y.mongodb.net/CrudNew?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+try {
+  mongoose.connect("mongodb+srv://Raahul_verma:vw48MlF9mMcMJL7y@cluster0.hxtq31y.mongodb.net/CrudNew?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    connectTimeoutMS: 600000,
+  })
+} catch (e) {
+  console.log(e)
+}
+
 
 
 
@@ -74,15 +79,19 @@ passportConfig(passport);
 // require('./passport')(passport)
 
 app.set('view engine', 'ejs');
+try {
+  app.use(
+    session({
+      secret: 'keyboard cat',
+      resave: false,
+      saveUninitialized: false,
+      store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    })
+  )
+} catch (e) {
+  console.log(e)
+}
 
-app.use(
-  session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
-  })
-)
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -163,11 +172,6 @@ app.get('/auth/logout', (req, res) => {
     res.redirect('/auth_with_google');
   });
 })
-
-
-
-
-
 
 app.listen(9999, () => {
   console.log(`server is running at ${process.env.SERVERPORT}`);

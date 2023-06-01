@@ -19,7 +19,7 @@ export function add_product_image(req, res) {
       console.log(err)
     }
     //console.log(item.vendor_id)
-    connection.query('INSERT INTO `product_images`(`product_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", ' + item["product_verient_id"] + ',"' + item.product_description + '", "' + name_str + '.png", "http://192.168.29.109:8888/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
+    connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "http://192.168.29.109:9999/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
       if (err) {
         console.log(err)
         //res.status(200).send(err)

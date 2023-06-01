@@ -20,7 +20,8 @@ export async function add_order(req, res) {
       } else {
         console.log(result)
         var { first_name, last_name, email, phone_no, pincode, city, address, alternate_address, user_log, user_lat, image } = result[0]
-        if (first_name != '' && last_name != '' && email != '' && phone_no != '' && pincode != '' && city != '' && address != '' && alternate_address != '' && user_log != '' && user_lat != '') {
+        console.log({ first_name, last_name, email, phone_no, pincode, city, address, alternate_address, user_log, user_lat, image })
+        if (first_name && last_name && email && phone_no && pincode && city && address && alternate_address && user_log && user_lat) {
           console.log("true_______line___23")
           console.log("user_id=============================================24")
           if (result[0].token_for_notification != "" && result[0].token_for_notification != undefined && result[0].token_for_notification != null) { fcm_tokens.push(result[0].token_for_notification) }

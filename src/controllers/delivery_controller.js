@@ -519,12 +519,23 @@ export function order_asign(req, res) {
     let { order_id, payment, payment_method, order_delivery_confirm_code } = req.body
     console.log({ order_id, payment, payment_method, order_delivery_confirm_code })
 
-    connection.query("INSERT INTO `order_delivery_details`(`order_id`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`) VALUES ('" + order_id + "','" + payment + "', '" + payment_method + "', '" + order_delivery_confirm_code + "' ,'" + req.created_by_id + "')", (err, rows) => {
+    connection.query("SELECT * FROM `order` WHERE `order_id` = '" + order_id + "' AND `verify_by_vendor` = 'accepted'", (err, rows) => {
         if (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
         } else {
-            res.status(StatusCodes.OK).json(rows);
+            if (rows != "") {
+                connection.query("INSERT INTO `order_delivery_details`(`order_id`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`) VALUES ('" + order_id + "','" + payment + "', '" + payment_method + "', '" + order_delivery_confirm_code + "' ,'" + req.created_by_id + "')", (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+                    } else {
+                        res.status(StatusCodes.OK).json(rows);
+                    }
+                });
+            } else {
+                res.status(StatusCodes.OK).json({ "status": false, "response": "order not verify by vendor" });
+            }
         }
     });
 }

@@ -583,3 +583,30 @@ export function set_notification_token(req, res) {
   );
 }
 
+export async function update_user_address(req, res) {
+  let { alternate_address } = req.body
+  if (alternate_address) {
+    let srt_user = "update user  set  `alternate_address`='" + alternate_address + "' WHERE user_id = '" + req.user_id + "'"
+    connection.query(srt_user, (err, rows) => {
+      if (err) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+      } else {
+        res.status(StatusCodes.OK).json({ message: "updated user successfully", "status": true });
+      }
+    }
+    );
+  } else {
+    res.status(StatusCodes.OK).json({ message: "please feel input", "status": false });
+  }
+
+
+}
+
+// export function select_address (req,res){
+//   console.log("select_address-------------------------")
+//   connection.query('SELECT * FROM user WHERE email ="' + user_email + '" AND password ="' + password + '"', (err, rows) => {
+//     if (err) {
+//       console.log(err)
+//       res.status(200).send({ "response": "login error", "status": false })
+//     } else {
+// }

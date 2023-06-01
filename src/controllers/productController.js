@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 export async function addproduct(req, res) {
   var { name, seo_tag, brand, review, rating, description, category } = req.body;
   console.log("body--" + JSON.stringify(req.body));
-
+  console.log("vvvvvvvvvvvvvv" + req.vendor_id)
   if (req.vendor_id != "" && req.vendor_id != undefined) {
     connection.query(
       ' INSERT INTO `product` (`vendor_id`,`name`,`seo_tag`,`brand`,`category`,`review`,`rating`,`description`, `created_by`, `created_by_id`) values ("' + req.vendor_id + '","' + name + '","' + seo_tag + '","' + brand + '","' + category + '","' + review + '", "' + rating + '","' + description + '","' + req.created_by + '","' + req.created_by_id + '") ',
@@ -121,8 +121,7 @@ export async function update_Product_verient(req, res) {
   var k = ""
   if (req_obj.product_verient_id !== undefined && req_obj.product_verient_id !== "") {
     for (k in req_obj) {
-
-      if (!["all_images_url", "cover_image", "verient_updated_on", "product_verient_id", "product_id", "verient_is_active", "verient_status", "verient_is_deleted", "id", "vendor_id", "name", "seo_tag", "brand", "category", "is_deleted", "status", "review", "rating", "description", "is_active", "created_by", "created_by_id", "created_on", "updated_on"].includes(k)) {
+      if (!["all_images_url", "cover_image", "verient_created_on", "verient_updated_on", "product_verient_id", "product_id", "verient_is_active", "verient_status", "verient_is_deleted", "id", "vendor_id", "name", "seo_tag", "brand", "category", "is_deleted", "status", "review", "rating", "description", "is_active", "created_by", "created_by_id", "created_on", "updated_on"].includes(k)) {
         if (req_obj[k] != null && req_obj[k] != "null") {
           updat_str += ` ${k} = "${req_obj[k]}", `
           console.log(k)
@@ -240,14 +239,14 @@ export async function search_product(req, res) {
   console.log(req.user_id)
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view1.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view1 where ';
+    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view1.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ';
   } else {
 
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-      var search_string = 'SELECT * FROM product_view1 where vendor_id = "' + req.vendor_id + '" AND  ';
+      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND  ';
     } else {
-      var search_string = 'SELECT * FROM product_view1 where ';
+      var search_string = 'SELECT * FROM product_view where ';
     }
   }
 
@@ -312,7 +311,12 @@ export async function search_product(req, res) {
           (err, results) => {
             console.log("results---------------------------------------")
             console.log(results)
-            count_rows = results[0]["count_rows"]
+            try {
+              count_rows = results[0]["count_rows"]
+            } catch (e) {
+              count_rows = "no"
+            }
+
           })
 
         console.log("" + search_string + " LIMIT " + limit + "")
@@ -406,3 +410,7 @@ export function add_product_verient(req, res) {
   })
 
 }
+
+
+
+
