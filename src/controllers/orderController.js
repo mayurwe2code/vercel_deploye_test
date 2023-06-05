@@ -6,6 +6,7 @@ import fetch from 'node-fetch';
 export async function add_order(req, res) {
   let vendore_id_array = [];
   let order_no_obj = {};
+  let vendor_order_detail_obj = {};
   let product_array = req.body;
   var fcm_tokens = [];
   console.log("user_id=============================================11");
@@ -118,7 +119,32 @@ export async function add_order(req, res) {
                             }
                           );
 
+                          // vendor_order_detail_obj[item["vendor_id"]]["order_no"]=orderno
+                          // console.log("--------------------------1111---------------------------------")
+                          // console.log(vendor_order_detail_obj)
+                          // console.log("-----------------------------1111------------------------------")
+                          // vendor_order_detail_obj[item["vendor_id"]]["total_product_count"] = vendor_order_detail_obj[item["vendor_id"]]["total_product_count"] + item["singal_product_cart_qty"]
+
+                          // vendor_order_detail_obj[item["vendor_id"]]["vendor_order_total"] = vendor_order_detail_obj[item["vendor_id"]]["vendor_order_total"] + item["order_prodoct_qty_total"]
+
+                          // console.log("--------------------------222---------------------------------")
+                          // console.log(vendor_order_detail_obj)
+                          // console.log("-----------------------------222------------------------------")
+
                           connection.query("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+                            if (err) {
+                              console.log("rows----------------err-------delete---")
+                              console.log(err)
+                              console.log({ "response": "delete opration failed", "success": false });
+                            } else {
+                              // console.log("rows-----------------------delete---row")
+                              // console.log(rows)
+
+                            }
+                          });
+
+
+                          connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + "  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                             if (err) {
                               console.log("rows----------------err-------delete---")
                               console.log(err)
@@ -147,6 +173,11 @@ export async function add_order(req, res) {
               let orderno = Math.floor(100000 + Math.random() * 900000);
               vendore_id_array.push(item["vendor_id"])
               order_no_obj[item["vendor_id"]] = orderno
+              vendor_order_detail_obj[item["vendor_id"]] = {}
+              vendor_order_detail_obj[item["vendor_id"]]["vendor_id"] = item["vendor_id"]
+              vendor_order_detail_obj[item["vendor_id"]]["order_no"] = orderno
+              vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] = item["total_of_this_prodoct"]
+              vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] = item["cart_qty_of_this_product"]
               let verify_code = JSON.stringify(orderno * 13)
               if (verify_code.length > 7) {
                 verify_code = verify_code.substring(0, verify_code.length - 1)
@@ -282,8 +313,14 @@ export async function add_order(req, res) {
               })
                 .sendMail(mail_configs, (err) => {
                   if (err) {
+                    console.log(vendor_order_detail_obj)
+
+                    res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
                     return //console.log({ "email_error": err });
                   } else {
+                    console.log(vendor_order_detail_obj)
+                    res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
+
                     return { "send_mail_status": "send successfully" };
                   }
                 })
@@ -309,7 +346,7 @@ export async function add_order(req, res) {
                 // }).catch((err) => { console.log(err) })
               }
 
-              res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "success": true });
+
 
             }
           })

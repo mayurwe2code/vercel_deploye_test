@@ -17,6 +17,7 @@ import adminRouter from "./src/routers/admin_router.js";
 import blog from "./src/routers/blogRouter.js";
 import transactionRouter from "./src/routers/transactionRouter.js";
 import complainSupportRouter from "./src/routers/complainSupprotRouter.js";
+import reviewRouter from "./src/routers/reviewRouter.js";
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
@@ -55,7 +56,7 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
   }
 });
 
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter);
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter);
 
 
 try {
@@ -176,6 +177,7 @@ app.get('/auth/logout', (req, res) => {
 app.listen(9999, () => {
   console.log(`server is running at ${process.env.SERVERPORT}`);
 });
+
 
 
 

@@ -199,3 +199,78 @@
 //     });
 
 
+// const axios = require('axios');
+// import axios from "axios";
+
+// const apiKey = "AIzaSyDId5rp8dnsfzT2TfeFIFTSR3DLyBQ_JjY";
+// const apiEndpoint = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+
+// const location = "latitude,longitude";
+// const radius = 5000;
+// const keyword = "seed retailer";
+
+// const url = `${apiEndpoint}?key=${apiKey}&location=${location}&radius=${radius}&keyword=${keyword}`
+
+// axios.get(url)
+//     .then(response => {
+
+//         const data = response.data;
+//         if (data.status === "OK") {
+//             console.log(data["results"])
+
+//         } else {
+//             console.log("Error occurred while fetching data.");
+//         }
+//     })
+//     .catch(error => {
+//         console.log("Error occurred while fetching data:", error);
+//     });
+
+// import axios from "axios";
+
+// const apiKey = "AIzaSyAe7-hhLe_zyhlvKi9z4qaqdb2uYK9GhkA";
+// const apiEndpoint = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+// const location = "22.7533,75.8937"; // Replace with your desired location's latitude and longitude
+// const radius = 5000;
+// const keyword = "seed retailer";
+
+// const url = `${apiEndpoint}?key=${apiKey}&location=${location}&radius=${radius}&keyword=${keyword}`;
+// console.log(url)
+// axios.get(url)
+//     .then(response => {
+//         const data = response.data;
+//         if (data.status === "OK") {
+//             console.log(data.results);
+//         } else {
+//             console.log("Error occurred while fetching data. Status:", data.status);
+//         }
+//     })
+//     .catch(error => {
+//         console.log("Error occurred while fetching data:", error.message);
+//     });
+
+
+import axios from "axios";
+
+const apiKey = "0f6ca50b636bc6a881bcba87b85e4b82";
+const apiEndpoint = "https://api.mymapindia.com/v2/business/search";
+
+const searchTerm = "seed retailer";
+const location = "22.7533,75.8937";
+const radius = 5000;
+
+const url = `${apiEndpoint}?key=${apiKey}&searchTerm=${searchTerm}&location=${location}&radius=${radius}`;
+console.log(url)
+axios.get(url)
+    .then(response => {
+        const data = response.data;
+        if (data.status === "success") {
+            const retailers = data.data;
+            console.log(retailers);
+        } else {
+            console.log("Error occurred while fetching data. Status:", data.status);
+        }
+    })
+    .catch(error => {
+        console.log("Error occurred while fetching data:", error.message);
+    });
