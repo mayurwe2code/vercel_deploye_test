@@ -27,7 +27,7 @@ const MongoStore = connectMongo(session);
 import { ensureAuth, ensureGuest } from './middleware/auth.js'
 
 const app = express();
-connection;
+connection
 app.use(cors());
 
 // app.use(express.json({ limit: '90mb' }));
