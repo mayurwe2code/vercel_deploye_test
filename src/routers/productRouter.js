@@ -26,9 +26,15 @@ const storage = multer.diskStorage({
   },
 });
 
+
+
+
+
 const upload = multer({ storage: storage });
 
 const productRouter = express.Router();
+
+
 
 productRouter.post("/addProduct", admin_auth, addproduct);
 productRouter.post("/add_product_verient", admin_auth, add_product_verient);

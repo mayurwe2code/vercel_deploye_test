@@ -513,8 +513,8 @@ export async function search_vendor_product(req, res) {
         }
         if (i === search_obj.length - 1) {
             search_string = search_string.substring(0, search_string.length - 6);
-            // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
             search_string += search_string_asc_desc
+            // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
             // }
 
         }

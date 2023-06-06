@@ -18,6 +18,7 @@ import blog from "./src/routers/blogRouter.js";
 import transactionRouter from "./src/routers/transactionRouter.js";
 import complainSupportRouter from "./src/routers/complainSupprotRouter.js";
 import reviewRouter from "./src/routers/reviewRouter.js";
+import categoryRouter from "./src/routers/categoryRouter.js";
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
@@ -56,7 +57,7 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
   }
 });
 
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter);
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter);
 
 
 try {
