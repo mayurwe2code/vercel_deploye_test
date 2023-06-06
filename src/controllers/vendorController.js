@@ -466,11 +466,17 @@ export async function search_vendor_product(req, res) {
     console.log(req.body)
     // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
 
+    var string = "";
+    if (req.body.is_verient) {
+        string = "join";
+    } else {
+        string = "left join";
+    }
     var search_string_asc_desc = ""
     // var query_string = "select * from product  where ";
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-        var search_string = 'SELECT * ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product LEFT JOIN product_verient ON product.id = product_verient.product_id where product.vendor_id = "' + req.vendor_id + '"  AND  ';
+        var search_string = 'SELECT * ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where product.vendor_id = "' + req.vendor_id + '"  AND  ';
     } else {
         var search_string = '';
     }
@@ -486,6 +492,8 @@ export async function search_vendor_product(req, res) {
                 if (req.body[search_obj[i]] != "") {
                     search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
                 }
+            } if (req.body[search_obj[i]] == "yes") {
+                console.log("nonono" + req.body[search_obj[i]])
             } else {
                 if (req.body[search_obj[i]] != "") {
                     var arr = JSON.stringify(req.body[search_obj[i]]);
@@ -542,6 +550,7 @@ export async function search_vendor_product(req, res) {
 
                     })
 
+                console.log("check_------------------------qyueryyyyy---545")
                 console.log("" + search_string + " LIMIT " + limit + "")
                 connection.query("" + search_string + " LIMIT " + limit + "",
                     (err, results) => {
