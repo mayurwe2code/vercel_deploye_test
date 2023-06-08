@@ -662,4 +662,93 @@ export function order_status_update(req, res) {
 }
 
 
+export async function vendor_order_search(req, res) {
+  let search_obj = Object.keys(req.body)
+  // var search_string = "where ";
+  var search_string1 = ""
+  console.log(req.vendor_id)
+  if (req.query.delivery_side) {
+    search_string1 = 'SELECT * FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = "' + req.vendor_id + '" AND '
+  } else {
+    search_string1 = 'SELECT *  FROM `order_view_5` where vendor_id="' + req.vendor_id + '" AND '
+  }
 
+
+  console.log(search_obj)
+  for (var i = 0; i <= search_obj.length - 1; i++) {
+    if (i == 0) {
+      if (req.body[search_obj[i]] != "") {
+        search_string1 += ` name LIKE "%${req.body[search_obj[i]]}%" AND `
+      }
+    } else {
+
+      if (req.body[search_obj[i]] != "") {
+        search_string1 += ` ${search_obj[i]} = "${req.body[search_obj[i]]}" AND `
+      }
+    }
+    if (i === search_obj.length - 1) {
+      search_string1 = search_string1.substring(0, search_string1.length - 5);
+    }
+  }
+
+  console.log(search_string1)
+  var pg = req.query;
+  var numRows;
+
+  var numPerPage = pg.per_page;
+  var page = parseInt(pg.page, pg.per_page) || 0;
+  var numPages;
+  var skip = page * numPerPage;
+  // Here we compute the LIMIT parameter for MySQL query
+  var limit = skip + "," + numPerPage;
+
+  connection.query(
+    "SELECT count(*) as numRows FROM order_view_5",
+    (err, results) => {
+      if (err) {
+      } else {
+        numRows = results[0].numRows;
+        numPages = Math.ceil(numRows / numPerPage);
+        console.log(search_string1 +
+          " LIMIT " +
+          limit +
+          "")
+        connection.query(search_string1 +
+          " LIMIT " +
+          limit +
+          "",
+          (err, results) => {
+            if (err) {
+              //console.log(err)
+              res.status(502).send(err);
+            } else {
+              // //console.log("_____")
+              var responsePayload = {
+                results: results,
+              };
+              if (page < numPages) {
+                responsePayload.pagination = {
+                  current: page,
+                  perPage: numPerPage,
+                  previous: page > 0 ? page - 1 : undefined,
+                  next: page < numPages - 1 ? page + 1 : undefined,
+                };
+              } else
+                responsePayload.pagination = {
+                  err:
+                    "queried page " +
+                    page +
+                    " is >= to maximum page number " +
+                    numPages,
+                };
+              // //console.log("responsePayload++++++++++++++++++++++++++++++++++++++++");
+              ////console.log(responsePayload);
+              res.status(200).send(responsePayload);
+            }
+          }
+        );
+      }
+    }
+  );
+  // }
+}

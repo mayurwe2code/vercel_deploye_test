@@ -6,7 +6,8 @@ import {
   order_list,
   order_search,
   order_update,
-  order_status_update
+  order_status_update,
+  vendor_order_search
 } from "../controllers/orderController.js";
 import { auth_user, fetch_user, admin_auth } from '../../middleware/auth.js'
 
@@ -18,5 +19,5 @@ orderRouter.get("/order_details", auth_user, order_details);
 orderRouter.put("/order_update", auth_user, order_update);
 orderRouter.delete("/order_delete/:id", admin_auth, order_delete);
 orderRouter.put("/order_status_update", admin_auth, order_status_update);
-
+orderRouter.post("/vendor_order_search", admin_auth, vendor_order_search);
 export default orderRouter;
