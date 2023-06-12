@@ -1,6 +1,9 @@
 import connection from "../../Db.js";
 import fs from 'fs'
-
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 export function add_product_image(req, res) {
 
   console.log("add_product_image________________________________________check")
@@ -13,40 +16,42 @@ export function add_product_image(req, res) {
     var imgBase64 = item.img_64
     var img_num = Math.floor(100000 + Math.random() * 900000);
     try {
-      var base64Data = imgBase64.replace("data:image/png;base64,", "");
-      var name_str = "" + item.product_image_name.split(" ").join("") + "_" + img_num + ""
+      // var base64Data = imgBase64.replace("data:image/png;base64,", "");
+      var name_str = "" + item["product_image_name"] + "_" + img_num + ""
+      console.log("chkkkkkkkkkkkkk--------------------20")
+      console.log(name_str)
+      fs.writeFileSync(path.join(__dirname, '../../') + 'public/product_images/' + name_str + ".png", imgBase64, 'base64');
+      connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
+        if (err) {
+          console.log("add-image--error--data--------")
+          console.log(err)
+          //res.status(200).send(err)
+        } else {
+          console.log("add-image--result--data--------")
+          console.log(rows)
+          var obj_i = {}
+          obj_i["product_id"] = item["product_id"]
+          obj_i["product_verient_id"] = item["product_verient_id"]
+          obj_i["product_image_id"] = rows["insertId"]
+          obj_i["product_image_path"] = 'https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png'
+          obj_i["image_position"] = item["image_position"]
+          console.log(obj_i)
+          product_image_data[index] = obj_i
+        }
+        console.log(index + " =first= " + iterations);
+        if (index === iterations) {
 
-      fs.writeFileSync("/home/we2code/Desktop/nursery_proj/nursery_live/public/product_images/" + name_str + ".png", base64Data, 'base64');
+          console.log(index + " == " + iterations)
+          console.log("product_image_data------------check-----------46-------test====")
+          console.log(product_image_data)
+          res.status(200).json({ status: true, "response": "successfully add images", product_image_data })
+        }
+      })
     } catch (err) {
       console.log(err)
     }
     //console.log(item.vendor_id)
-    connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
-      if (err) {
-        console.log("add-image--error--data--------")
-        console.log(err)
-        //res.status(200).send(err)
-      } else {
-        console.log("add-image--result--data--------")
-        console.log(rows)
-        var obj_i = {}
-        obj_i["product_id"] = item["product_id"]
-        obj_i["product_verient_id"] = item["product_verient_id"]
-        obj_i["product_image_id"] = rows["insertId"]
-        obj_i["product_image_path"] = 'https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png'
-        obj_i["image_position"] = item["image_position"]
-        console.log(obj_i)
-        product_image_data[index] = obj_i
-      }
-      console.log(index + " =first= " + iterations);
-      if (index === iterations) {
 
-        console.log(index + " == " + iterations)
-        console.log("product_image_data------------check-----------46-------test====")
-        console.log(product_image_data)
-        res.status(200).json({ status: true, "response": "successfully add images", product_image_data })
-      }
-    })
   })
 }
 
