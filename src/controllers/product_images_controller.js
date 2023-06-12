@@ -21,9 +21,11 @@ export function add_product_image(req, res) {
     //console.log(item.vendor_id)
     connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "http://192.168.29.109:9999/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
       if (err) {
+        console.log("add-image--error--data--------")
         console.log(err)
         //res.status(200).send(err)
       } else {
+        console.log("add-image--result--data--------")
         console.log(rows)
       }
     })
@@ -142,9 +144,4 @@ export function product_image_delete(req, res) {
 
 
 }
-// try {
-// fs.unlinkSync('/home/we2code/Desktop/nursery_proj/nursery_live/public/product_images/test_52_img_217667.png');
-// console.log("Delete File successfully.");
-// } catch (error) {
-// console.log(error);
-// }
+

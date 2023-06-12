@@ -188,23 +188,29 @@ export async function delete_product(req, res) {
   } else {
     dlt_verient_query = ""
   }
-  connection.query(dlt_query, (err, result) => {
-    if (err) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ "response": "not delete ", "status": false });
-    } else {
-      if (result.affectedRows == "1") {
-        connection.query(dlt_verient_query, (err, result) => {
-          if (err) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ "response": "not delete ", "status": false });
-          } else {
-            res.status(StatusCodes.OK).json({ "response": "update successfully", "status": true })
+
+  if (is_deleted && id) {
+    connection.query(dlt_query, (err, result) => {
+      if (err) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ "response": "not delete ", "status": false });
+      } else {
+        if (result.affectedRows >= 1) {
+          connection.query(dlt_verient_query, (err, result) => {
+            if (err) {
+              res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ "response": "not delete ", "status": false });
+            } else {
+              res.status(StatusCodes.OK).json({ "response": "update successfully", "status": true })
+            }
           }
-        }
-        );
-      } else { res.status(StatusCodes.OK).json({ "response": "not delete ", "status": false }); }
+          );
+        } else { res.status(StatusCodes.OK).json({ "response": "not delete ", "status": false }); }
+      }
     }
+    );
+  } else {
+    res.status(StatusCodes.OK).json({ "response": "please fill all inputs", "status": false });
   }
-  );
+
 }
 
 export async function delete_restore_product_verient(req, res) {
