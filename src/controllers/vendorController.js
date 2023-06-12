@@ -341,7 +341,7 @@ export async function update_vendor_profile(req, res) {
         var image = "no image"
         srt_user = 'UPDATE `vendor` SET `owner_name`="' + owner_name + '",`shop_name`="' + shop_name + '",`mobile`="' + mobile + '",`shop_address`="' + shop_address + '",`gstn`="' + gstn + '",`geolocation`="' + geolocation + '",`availability`="' + availability + '" '
     } else {
-        var image = "http://192.168.29.109:8888/vendor_shop_img/" + req.file.filename;
+        var image = "https://nursery-verient-live.onrender.com/vendor_shop_img/" + req.file.filename;
         //console.log(image)
         srt_user = 'UPDATE `vendor` SET `owner_name`="' + owner_name + '",`shop_name`="' + shop_name + '",`mobile`="' + mobile + '",`shop_address`="' + shop_address + '",`gstn`="' + gstn + '",`geolocation`="' + geolocation + '",`shop_logo`="' + image + '",`availability`="' + availability + '"'
     }
@@ -384,7 +384,7 @@ export async function admin_add_vendor(req, res) {
         var image = "no image"
         srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`availability`, `created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + availability + '","admin","' + req.created_by_id + '")'
     } else {
-        var image = "http://192.168.29.109:8888/vendor_shop_img/" + req.file.filename;
+        var image = "https://nursery-verient-live.onrender.com/vendor_shop_img/" + req.file.filename;
         //console.log(image)
         srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`shop_logo`,`availability`,`created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + image + '","' + availability + '","admin","' + req.created_by_id + '")'
     }

@@ -8,7 +8,7 @@ export function add_category(req, res) {
         if (req.file == undefined || req.file == '') {
             image = "no image"
         } else {
-            var image = "http://192.168.29.108:9999/catgory_images/" + req.file.filename;
+            var image = "https://nursery-verient-live.onrender.com/catgory_images/" + req.file.filename;
             //console.log(image)
         }
 

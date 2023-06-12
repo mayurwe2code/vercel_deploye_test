@@ -8,7 +8,7 @@ function add_blog(req, res) {
     if (req.file == undefined || req.file == '') {
         image = "no image"
     } else {
-        var image = "http://192.168.29.109:9999/blog/" + req.file.filename;
+        var image = "https://nursery-verient-live.onrender.com/blog/" + req.file.filename;
         //console.log(image)
     }
 

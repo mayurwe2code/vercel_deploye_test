@@ -2,11 +2,13 @@ import connection from "../../Db.js";
 import fs from 'fs'
 
 export function add_product_image(req, res) {
+
   console.log("add_product_image________________________________________check")
   var res_data_arr = []
   var base64_images = req.body
   // console.log(base64_images)
   let iterations = base64_images.length - 1;
+  var product_image_data = Array()
   base64_images.forEach(function (item, index) {
     var imgBase64 = item.img_64
     var img_num = Math.floor(100000 + Math.random() * 900000);
@@ -19,7 +21,7 @@ export function add_product_image(req, res) {
       console.log(err)
     }
     //console.log(item.vendor_id)
-    connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "http://192.168.29.109:9999/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
+    connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
       if (err) {
         console.log("add-image--error--data--------")
         console.log(err)
@@ -27,13 +29,24 @@ export function add_product_image(req, res) {
       } else {
         console.log("add-image--result--data--------")
         console.log(rows)
+        var obj_i = {}
+        obj_i["product_id"] = item["product_id"]
+        obj_i["product_verient_id"] = item["product_verient_id"]
+        obj_i["product_image_id"] = rows["insertId"]
+        obj_i["product_image_path"] = 'https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png'
+        obj_i["image_position"] = item["image_position"]
+        console.log(obj_i)
+        product_image_data[index] = obj_i
+      }
+      console.log(index + " =first= " + iterations);
+      if (index === iterations) {
+
+        console.log(index + " == " + iterations)
+        console.log("product_image_data------------check-----------46-------test====")
+        console.log(product_image_data)
+        res.status(200).json({ status: true, "response": "successfully add images", product_image_data })
       }
     })
-
-    if (index == iterations) {
-      console.log(index + " == " + iterations)
-      res.status(200).send({ "response": "successfully add images" })
-    }
   })
 }
 
@@ -55,7 +68,7 @@ export function product_image_update(req, res) {
     }
 
     //console.log(item.vendor_id)
-    connection.query(' UPDATE `product_images` SET `product_description`="' + item.product_description + '",`product_image_name`="' + name_str + '.png",`product_image_path`= "http://192.168.29.109:8888/product_images/' + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"', (err, rows, fields) => {
+    connection.query(' UPDATE `product_images` SET `product_description`="' + item.product_description + '",`product_image_name`="' + name_str + '.png",`product_image_path`= "https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"', (err, rows, fields) => {
       if (err) {
         console.log(err)
         //res.status(200).send(err)

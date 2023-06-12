@@ -106,7 +106,7 @@ export async function update_user(req, res) {
       alternate_address +
       "'  where id ='" + req.user_id + "'"
   } else {
-    var image = "http://192.168.29.109:8888/user_profile/" + req.file.filename;
+    var image = "https://nursery-verient-live.onrender.com/user_profile/" + req.file.filename;
     //console.log(image)
     srt_user = "update user  set `first_name`= '" +
       first_name +
