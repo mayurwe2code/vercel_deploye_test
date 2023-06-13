@@ -611,14 +611,13 @@ export function vendor_orders_status(req, res) {
         }
     })
 }
-
 export async function vendor_product_list(req, res) {
     console.log(req.body)
-
     var search_string_asc_desc = ""
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-        var search_string = 'SELECT *,(SELECT product_image_path FROM `product_images` where product_id =product.id AND image_position = "cover" LIMIT 0,1 ) AS cover_image_url FROM `product` where product.vendor_id = "' + req.vendor_id + '"  AND  ';
+        // var search_string = 'SELECT *,(SELECT product_image_path FROM `product_images` where product_id =product.id AND image_position = "cover" LIMIT 0,1 ) AS cover_image_url FROM `product` where product.vendor_id = "' + req.vendor_id + '"  AND  ';
+        var search_string = 'SELECT * FROM `product_view` where vendor_id = "' + req.vendor_id + '"  AND  ';
     } else {
         var search_string = '';
     }
@@ -690,8 +689,8 @@ export async function vendor_product_list(req, res) {
                     })
 
                 console.log("check_------------------------qyueryyyyy---545")
-                console.log("" + search_string + " LIMIT " + limit + "")
-                connection.query("" + search_string + " LIMIT " + limit + "",
+                console.log("" + search_string + "GROUP BY id LIMIT " + limit + "")
+                connection.query("" + search_string + "GROUP BY id LIMIT " + limit + "",
                     (err, results) => {
                         if (err) {
                             console.log("err___________________194")
