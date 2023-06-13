@@ -67,7 +67,7 @@ export function product_image_update(req, res) {
       var base64Data = imgBase64.replace("data:image/png;base64,", "");
       var name_str = "" + item.product_image_name.split(" ").join("") + "_" + img_num + ""
 
-      fs.writeFileSync("/home/we2code/Desktop/nursery_proj/nursery_live/public/product_images/" + name_str + ".png", base64Data, 'base64');
+      fs.writeFileSync(path.join(__dirname, '../../') + 'public/product_images/' + name_str + ".png", base64Data, 'base64');
     } catch (err) {
       console.log(err)
     }

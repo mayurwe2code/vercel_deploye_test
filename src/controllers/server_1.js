@@ -291,3 +291,5 @@ try {
 } catch (err) {
     console.log(err)
 }
+
+fs.writeFileSync(path.join(__dirname, '../../') + 'public/product_images/' + name_str + ".png", base64Data, 'base64');

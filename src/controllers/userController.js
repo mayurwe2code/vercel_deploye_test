@@ -226,7 +226,7 @@ export function user_signup(req, res) {
                       to: u_email,
                       subject: 'Nursery_live one time password',
                       text: "use otp within 60 sec.",
-                      html: "<h1>your one time password " + OTP + " <h1/><a href='https://script.google.com/macros/s/AKfycbzs_E_qqicp6FQLUoy-5T7eaSv7VTK01IW8t-GDaeM/dev' target='_blank'>https://script.google.com/macros/s/AKfycbzs_E_qqicp6FQLUoy-5T7eaSv7VTK01IW8t-GDaeM/dev</a>"
+                      html: "<h1>your one time password " + OTP + " <h1/>"
                     }
                     nodemailer.createTransport({
                       service: 'gmail',

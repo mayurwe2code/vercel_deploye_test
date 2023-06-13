@@ -18,7 +18,7 @@ import {
     search_vendor_product,
     order_verify_by_vendor,
     vendor_orders_status,
-
+    vendor_product_list
     // user_details,
     // change_user_password,
     // user_forgate_password,
@@ -76,6 +76,8 @@ vendor_router.post("/admin_change_vendor_status", admin_change_vendor_status);
 vendor_router.post("/search_vendor_product", fetch_user, search_vendor_product);
 vendor_router.put("/order_verify_by_vendor", admin_auth, order_verify_by_vendor);
 vendor_router.get("/vendor_orders_status", admin_auth, vendor_orders_status);
+vendor_router.post("/vendor_product_list", fetch_user, vendor_product_list);
+
 
 
 // vendor_router.post("/change_user_password", change_user_password);
