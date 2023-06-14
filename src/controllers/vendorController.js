@@ -617,7 +617,7 @@ export async function vendor_product_list(req, res) {
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
         // var search_string = 'SELECT *,(SELECT product_image_path FROM `product_images` where product_id =product.id AND image_position = "cover" LIMIT 0,1 ) AS cover_image_url FROM `product` where product.vendor_id = "' + req.vendor_id + '"  AND  ';
-        var search_string = 'SELECT * FROM `product_view` where vendor_id = "' + req.vendor_id + '"  AND  ';
+        var search_string = 'SELECT * FROM `product_view_5` where vendor_id = "' + req.vendor_id + '"  AND  ';
     } else {
         var search_string = '';
     }
@@ -724,4 +724,29 @@ export async function vendor_product_list(req, res) {
             }
         }
     );
+}
+
+export function vendor_update_delivery_boy_pickuped_order(req, res) {
+    console.log("vendor_update_delivery_boy_pickuped_order-------------------")
+    let { order_id, pickuped } = req.body
+
+    if (pickuped === "yes") {
+        connection.query("UPDATE `order_delivery_details` SET `order_status`='pickuped' WHERE order_id='" + order_id + "'",
+            (err, results) => {
+                if (err) {
+                    console.log("err___________________")
+                    console.log(err)
+                    res.status(200).send({ "response": "find error" });
+                } else {
+                    if (results["affectedRows"] >= 1) {
+                        res.status(200).send({ "status": true, "response": "order status updated successfull" });
+                    } else {
+                        res.status(200).send({ "status": false, "response": "find error" });
+                    }
+                }
+            })
+    } else {
+        res.status(200).send({ "status": false, "response": "accepted only yes in pickuped feild" });
+    }
+
 }
