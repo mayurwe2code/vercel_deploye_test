@@ -377,7 +377,7 @@ export function add_product_verient(req, res) {
 
         console.log(n_mrp + " > " + n_price)
         console.log(n_mrp > n_price)
-        if (n_mrp > n_price) {
+        if (n_mrp >= n_price) {
           if (req.vendor_id != "" && req.vendor_id != undefined) {
             connection.query(
               ' INSERT INTO `product_verient` (`product_id`,`vendor_id`, `verient_name`,`quantity`,`unit`,`product_stock_quantity`,`price`,`mrp`,`gst`,`sgst`,`cgst`,`discount`,`verient_description`,`product_height`,`product_width`,`product_Weight`) values ("' +
