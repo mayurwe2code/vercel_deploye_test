@@ -343,7 +343,10 @@ export function set_driver_notification_token(req, res) {
 
 
 export async function driver_details(req, res) {
-    connection.query("select * from user_and_vehicle_view where driver_id= '" + req.driver_id + "'", (err, rows) => {
+    console.log("========================friver id test")
+    console.log(req.driver_id)
+    // return false
+    connection.query("select * from user_and_vehicle_view_1 where driver_id= '" + req.driver_id + "'", (err, rows) => {
         if (err) {
             res
                 .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -774,7 +777,7 @@ export function vehicle_asign_by_admin(req, res) {
 }
 
 export function driver_list(req, res) {
-    let query_ = "SELECT * FROM `user_and_vehicle_view` WHERE"
+    let query_ = "SELECT * FROM `user_and_vehicle_view_1` WHERE"
     for (let k in req.body) {
         query_ += ` ${k} = '${req.body[k]}' AND  `
     }
