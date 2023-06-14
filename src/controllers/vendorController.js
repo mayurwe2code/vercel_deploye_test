@@ -492,16 +492,18 @@ export async function search_vendor_product(req, res) {
                 if (req.body[search_obj[i]] != "") {
                     search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
                 }
-            } if (req.body[search_obj[i]] == "yes") {
-                console.log("nonono" + req.body[search_obj[i]])
             } else {
-                if (req.body[search_obj[i]] != "") {
-                    var arr = JSON.stringify(req.body[search_obj[i]]);
-                    var abc = "'" + arr + "'"
-                    const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
-                    search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+                if (req.body[search_obj[i]] == "yes") {
+                    console.log("nonono" + req.body[search_obj[i]])
+                } else {
+                    if (req.body[search_obj[i]] != "") {
+                        var arr = JSON.stringify(req.body[search_obj[i]]);
+                        var abc = "'" + arr + "'"
+                        const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
+                        search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
 
-                    // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+                        // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+                    }
                 }
             }
         } else {
