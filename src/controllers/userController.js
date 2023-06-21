@@ -390,11 +390,11 @@ export function user_login(req, res) {
               if (err) {
                 //console.log(err)
               }
-              let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type } = rows[0]
+              let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type, image } = rows[0]
               if (rows[0].first_name != "" && rows[0].last_name != "" && rows[0].email != "" && rows[0].password != "" && rows[0].phone_no != "" && rows[0].pincode != "" && rows[0].city != "" && rows[0].address != "" && rows[0].alternate_address != "") {
-                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type } })
+                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
               } else {
-                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type } })
+                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
               }
 
 
