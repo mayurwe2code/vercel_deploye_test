@@ -64,42 +64,7 @@ export async function add_order(req, res) {
                   console.log(update_stock_qty)
                   if (update_stock_qty >= 0 && item["total_order_product_quantity"] > 0) {
                     console.log("_____________update_stock_qty >= 0 && item[total_order_product_quantity] > 0________________line chek 52")
-                    // connection.query(
-                    //   "insert into `order` ( `order_id`, `product_id`,`product_verient_id`,`user_id`, `vendor_id`, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`) VALUES ('" + order_no_old + "','" + item["product_id"] + "','" + item["product_verient_id"] + "', '" + req.user_id + "','" + item["vendor_id"] + "','" + item["total_order_product_quantity"] +
-                    //   "','" +
-                    //   item["total_amount"] +
-                    //   "','" +
-                    //   item["total_gst"] +
-                    //   "','" +
-                    //   item["total_cgst"] +
-                    //   "','" +
-                    //   item["total_sgst"] +
-                    //   "','" +
-                    //   item["total_discount"] +
-                    //   "','" +
-                    //   item["shipping_charges"] +
-                    //   "','" +
-                    //   order_no_old +
-                    //   "','" +
-                    //   item["payment_mode"] +
-                    //   "','" +
-                    //   item["payment_ref_id"] +
-                    //   "','" +
-                    //   item["discount_coupon"] +
-                    //   "','" +
-                    //   item["discount_coupon_value"] +
-                    //   "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + address + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "','" + verify_code + "')",
-                    //   (err, rows) => {
-                    //     if (err) {
-                    //       console.log(err)
-                    //       // res.status(StatusCodes.INSUFFICIENT_STORAGE).json({ "response": "find error", "status": false, "success": false });
-                    //       response_send.push({ "order_insert_error": err, "index_no": index })
-                    //     } else {
-                    //       console.log("_____________________________line----83")
-                    //       console.log(rows)
-                    //       response_send.push({ "order_insert_succesfull": rows, "index_no": index })                
 
-                    // res.send("okay")
                     connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + order_no_old + '", "12", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view_5 WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
                       if (err) {
                         console.log(err)
@@ -121,19 +86,6 @@ export async function add_order(req, res) {
                             }
                           }
                         );
-
-                        // vendor_order_detail_obj[item["vendor_id"]]["order_no"]=orderno
-                        // console.log("--------------------------1111---------------------------------")
-                        // console.log(vendor_order_detail_obj)
-                        // console.log("-----------------------------1111------------------------------")
-                        // vendor_order_detail_obj[item["vendor_id"]]["total_product_count"] = vendor_order_detail_obj[item["vendor_id"]]["total_product_count"] + item["singal_product_cart_qty"]
-
-                        // vendor_order_detail_obj[item["vendor_id"]]["vendor_order_total"] = vendor_order_detail_obj[item["vendor_id"]]["vendor_order_total"] + item["order_prodoct_qty_total"]
-
-                        // console.log("--------------------------222---------------------------------")
-                        // console.log(vendor_order_detail_obj)
-                        // console.log("-----------------------------222------------------------------")
-
                         connection.query("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                           if (err) {
                             console.log("rows----------------err-------delete---")
@@ -145,8 +97,6 @@ export async function add_order(req, res) {
 
                           }
                         });
-
-
                         connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + "  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                           if (err) {
                             console.log("rows----------------err-------delete---")

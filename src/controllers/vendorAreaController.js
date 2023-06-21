@@ -20,12 +20,14 @@ export function vendor_select_area(req, res) {
                     // let { area_id, pin, city, status, area_name, vendors_id } = rows[0]
                     let st = vendors_id.substring(0, vendors_id.length - 1)
                     let vendors_id_array = st.split(",");
+                    console.log("vendors_id_array" + "0000000000000000")
+                    console.log(vendors_id_array)
                     if (vendors_id_array.includes(`${req.vendor_id}`)) {
                         if (index === pin_area_length - 1) {
                             res.status(200).json({ status: true, response: "already selected", your_service_area_list: respo_array })
                         }
                     } else {
-                        let new_str = vendors_id + req.vendor_id + ", "
+                        let new_str = vendors_id + req.vendor_id + ","
                         //=====================================================================
                         connection.query("UPDATE `vendor_service_area` SET `vendors_id` ='" + new_str + "' where area_id = " + area_id + "", (err, rows, fields) => {
                             if (err) {
