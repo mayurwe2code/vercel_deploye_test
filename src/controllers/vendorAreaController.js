@@ -78,6 +78,8 @@ export function vendor_service_area_list(req, res) {
 export function check_vendor_service_avaibility(req, res) {
     console.log("check_vendor_service_avaibility------------")
     let { pin, vendor_id } = req.body
+
+
     connection.query("SELECT * FROM `vendor_service_area` where pin = " + pin + "", (err, rows, fields) => {
         if (err) {
             console.log(err)
@@ -95,15 +97,31 @@ export function check_vendor_service_avaibility(req, res) {
                     let vendors_id_array = st.split(",");
                     console.log("vendors_id_array------------")
                     console.log(vendors_id_array)
-                    if (vendors_id_array.includes(vendor_id)) {
-                        if (index === pin_area_length - 1) {
-                            res.status(200).json({ status: true, response: "Service available in this pin" })
-                        }
-                    } else {
-                        if (index === pin_area_length - 1) {
-                            res.status(200).json({ status: false, response: "Service Not available in this pin" })
-                        }
+
+
+                    // var array = [1, 2, 3, 4, 5];
+                    // var valuesToCheck = [2, 4, 6];
+
+                    var presentValues = vendor_id.filter(value => vendors_id_array.includes(value));
+                    var absentValues = vendor_id.filter(value => !vendors_id_array.includes(value));
+
+                    console.log(presentValues); // Output: [2, 4]
+                    console.log(absentValues); // Output: [6]
+
+                    if (index === pin_area_length - 1) {
+                        res.status(200).json({ "status": true, "service_availabe": presentValues, "service_not_availabe": absentValues })
                     }
+
+
+                    // if (vendors_id_array.includes(vendor_id)) {
+                    //     if (index === pin_area_length - 1) {
+                    //         res.status(200).json({ status: true, response: "Service available in this pin" })
+                    //     }
+                    // } else {
+                    //     if (index === pin_area_length - 1) {
+                    //         res.status(200).json({ status: false, response: "Service Not available in this pin" })
+                    //     }
+                    // }
                 });
             } else {
                 res.status(200).send({ "status": false, "response": "area_id not matched" })
