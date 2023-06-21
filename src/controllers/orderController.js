@@ -8,7 +8,7 @@ export async function add_order(req, res) {
   let order_no_obj = {};
   let vendor_order_detail_obj = {};
   let product_array = req.body["order"];
-  let { pincode, city, address, user_log, user_lat } = req.body["delivery_address"];
+  let { first_name, last_name, email, phone_no, image, pincode, city, address, user_log, user_lat } = req.body["delivery_address"];
   var fcm_tokens = [];
   console.log("user_id=============================================11");
   console.log(req.user_id);
@@ -21,8 +21,8 @@ export async function add_order(req, res) {
         console.log(err)
       } else {
         console.log(result)
-        var { first_name, last_name, email, phone_no, image } = result[0]
-        console.log({ first_name, last_name, email, phone_no })
+        // var { first_name, last_name, email, phone_no, image } = result[0]
+        // console.log({ first_name, last_name, email, phone_no })
 
 
         // if (first_name && last_name && email && phone_no && pincode && city && address && alternate_address && user_log && user_lat) {
@@ -511,6 +511,10 @@ export async function order_search(req, res) {
   // var search_string = "where ";
   var search_string = ""
   console.log(req.user_id)
+  let group_by = " "
+  if (req.query.group == "yes") {
+    group_by = " group by order_id "
+  }
   if (req.for_ == 'admin') {
     if (req.body.user_id != '' && req.body.user_id != undefined) {
       // search_string += 'SELECT *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image  FROM order_view where'
@@ -563,7 +567,7 @@ export async function order_search(req, res) {
         numRows = results[0].numRows;
         numPages = Math.ceil(numRows / numPerPage);
 
-        connection.query(search_string +
+        connection.query(search_string + group_by +
           " LIMIT " +
           limit +
           "",
