@@ -19,7 +19,7 @@ async function admin_login(req, res) {
     // const validPassword = await bcrypt.compare(admin_password,'$2b$10$81UsHRVghsW.47o7dMqiQ.DsJgTfz333wDFKTYZYQOGkJhoSEr1m6');
     // //console.log(validPassword)
 
-    connection.query('SELECT `id`, `admin_email` , `admin_password`,`admin_type` FROM `admin_login_details`  WHERE `admin_email` ="' + admin_email + '"', async (err, results) => {
+    connection.query('SELECT `id`, `admin_email` , `admin_password`,`admin_type` FROM `admin_login_details`  WHERE BINARY `admin_email` ="' + admin_email + '"', async (err, results) => {
         if (err) {
             //console.log(err)
             res.send(err)
@@ -97,7 +97,7 @@ async function update_password(req, res) {
                     //_______________________ non bcrypt________________
                     var old_pswd = results[0].admin_password
                     if (old_pswd == admin_password) {
-                        connection.query('UPDATE `admin_login_details` SET `admin_password`= "' + new_admin_password + '" WHERE `admin_email` = "' + admin_email + '" AND `admin_password` = "' + old_pswd + '"', async (err, results) => {
+                        connection.query('UPDATE `admin_login_details` SET `admin_password`= "' + new_admin_password + '" WHERE BINARY `admin_email` = "' + admin_email + '" AND `admin_password` = "' + old_pswd + '"', async (err, results) => {
                             if (err) {
                                 //console.log(err)
                                 res.send(err)
@@ -122,7 +122,7 @@ async function update_password(req, res) {
 
 function admin_forgot_password(req, res) {
     //console.log(req.body.admin_email)
-    connection.query('SELECT `admin_email`, `admin_password` FROM `admin_login_details`  WHERE `admin_email` = "' + req.body.admin_email + '"', async (err, results) => {
+    connection.query('SELECT `admin_email`, `admin_password` FROM `admin_login_details` WHERE BINARY `admin_email` = "' + req.body.admin_email + '"', async (err, results) => {
         if (err) {
             //console.log(err)
             res.send(err)
@@ -191,7 +191,7 @@ function update_admin(req, res) {
 async function add_admin(req, res) {
     console.log(req.admin_id)
     var { admin_email, admin_name, admin_phone, admin_type, admin_password } = req.body
-    connection.query("SELECT * FROM admin_login_details WHERE admin_email = '" + admin_email + "'", (err, rows, fields) => {
+    connection.query("SELECT * FROM admin_login_details WHERE BINARY admin_email = '" + admin_email + "'", (err, rows, fields) => {
         if (err) {
             res.status(200).send(err)
         } else {

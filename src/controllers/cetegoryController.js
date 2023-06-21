@@ -81,15 +81,24 @@ export function category_list(req, res) {
     console.log(req.query.category)
     if (req.query.category == "with_sub_category") {
         query_ = 'SELECT t1.id, t1.level, t1.category_name, t2.id AS sub_category_id, t2.level AS sub_category_level, t2.parent_id, t2.category_name AS sub_category_name,(CONCAT(t1.category_name,",",t2.category_name)) AS all_category_name FROM category AS t1, category AS t2 WHERE t1.id = t2.parent_id '
+
+        for (let k in req.body) {
+            if (req.body[k]) {
+                query_ += ` AND t1.${k} = "${req.body[k]}"`
+            }
+        }
+
     } else {
         query_ = 'SELECT * FROM category  WHERE is_active = "1" '
+
+        for (let k in req.body) {
+            if (req.body[k] || req.body[k] == 0) {
+                query_ += ` AND ${k} = "${req.body[k]}"`
+            }
+        }
+
     }
 
-    for (let k in req.body) {
-        if (req.body[k]) {
-            query_ += ` AND t1.${k} = "${req.body[k]}"`
-        }
-    }
 
     console.log(query_)
     connection.query(query_, (err, rows, fields) => {

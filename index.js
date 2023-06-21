@@ -19,6 +19,7 @@ import transactionRouter from "./src/routers/transactionRouter.js";
 import complainSupportRouter from "./src/routers/complainSupprotRouter.js";
 import reviewRouter from "./src/routers/reviewRouter.js";
 import categoryRouter from "./src/routers/categoryRouter.js";
+import vendorAreaRouter from "./src/routers/vendorAreaRouter.js";
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
@@ -26,6 +27,8 @@ import session from 'express-session';
 import connectMongo from 'connect-mongo';
 const MongoStore = connectMongo(session);
 import { ensureAuth, ensureGuest } from './middleware/auth.js'
+// import { pin_data } from './test_.js'
+
 
 const app = express();
 connection
@@ -40,6 +43,9 @@ app.use(cors());
 //     extended: true,
 //   })
 // );
+
+
+
 app.use(bodyParser.json({ limit: '500mb' }));
 app.use(bodyParser.urlencoded({ limit: '500mb', extended: true, parameterLimit: 70000 }));
 
@@ -57,7 +63,19 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
   }
 });
 
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter);
+// console.log(pin_data)
+// pin_data.forEach(element => {
+//   connection.query('INSERT INTO `vendor_service_area`(`pin`, `city`, `area_name`) VALUES ("' + element["pin"] + '","indore","' + element["name"] + '")', (err, rows) => {
+//     if (err) {
+//       console.log("error--------=======" + err)
+//     } else {
+//       console.log("--ok---------------====ok=====")
+//     }
+//   });
+// });
+
+
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter);
 
 
 try {

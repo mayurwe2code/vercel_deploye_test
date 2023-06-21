@@ -237,6 +237,11 @@ export async function delete_restore_product_verient(req, res) {
 export async function search_product(req, res) {
   var { price_from, price_to } = req.body;
   console.log(req.body)
+  let group_by = " "
+  if (req.query.group == "yes") {
+    group_by = " group by product_id "
+  }
+
   // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
 
   var search_string_asc_desc = ""
@@ -247,7 +252,6 @@ export async function search_product(req, res) {
   if (req.user_id != "" && req.user_id != undefined) {
     var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view_5.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view_5 where ';
   } else {
-
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
       var search_string = 'SELECT * FROM product_view_5 where vendor_id = "' + req.vendor_id + '" AND  ';
@@ -325,8 +329,8 @@ export async function search_product(req, res) {
 
           })
 
-        console.log("" + search_string + " LIMIT " + limit + "")
-        connection.query("" + search_string + " LIMIT " + limit + "",
+        console.log("" + search_string + group_by + " LIMIT " + limit + "")
+        connection.query("" + search_string + group_by + " LIMIT " + limit + "",
           (err, results) => {
             if (err) {
               console.log("err___________________194")
