@@ -4,6 +4,7 @@ import nodemailer from "nodemailer"
 
 import fetch from 'node-fetch';
 export async function add_order(req, res) {
+
   let vendore_id_array = [];
   let order_no_obj = {};
   let vendor_order_detail_obj = {};
@@ -23,8 +24,6 @@ export async function add_order(req, res) {
         console.log(result)
         // var { first_name, last_name, email, phone_no, image } = result[0]
         // console.log({ first_name, last_name, email, phone_no })
-
-
         // if (first_name && last_name && email && phone_no && pincode && city && address && alternate_address && user_log && user_lat) {
         console.log("true_______line___23")
         console.log("user_id=============================================24")
@@ -33,12 +32,10 @@ export async function add_order(req, res) {
         console.log(product_array)
 
         product_array.forEach((item, index) => {
-
           console.log("_______item-------------line--30__" + index)
           console.log(item)
           console.log(order_no_obj)
           console.log(vendore_id_array)
-
           if (vendore_id_array.includes(item["vendor_id"])) {
 
             let order_no_old = order_no_obj[item["vendor_id"]]
