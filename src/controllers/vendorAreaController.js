@@ -100,11 +100,17 @@ export function check_vendor_service_avaibility(req, res) {
                     var absentValues = vendor_id.filter(value => !vendors_id_array.includes(value));
 
                     if (index === pin_area_length - 1) {
-                        res.status(200).json({ "status": true, "service_available": presentValues, "service_not_available": absentValues })
+                        var status_
+                        if (presentValues == "") {
+                            status_ = false
+                        } else {
+                            status_ = true
+                        }
+                        res.status(200).json({ "status": status_, "service_available": presentValues, "service_not_available": absentValues })
                     }
                 });
             } else {
-                res.status(200).send({ "status": false, "response": "area_id not matched" })
+                res.status(200).send({ "status": false, "service_available": [], "response": "area_id not matched" })
             }
         }
     })
