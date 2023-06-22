@@ -19,8 +19,10 @@ export async function add_to_cart(req, res) {
             .json({ "success": false, "response": "something went wrong" });
         } else {
           if (rows != "") {
+            console.log("======================hchc")
+            console.log(rows)
             connection.query(
-              "update cart set cart_product_quantity='" + cart_product_quantity + "' where user_id='" + req.user_id + "' AND product_id='" + product_id + "' AND product_verient_id='" + product_verient_id + "'", (err, rows) => {
+              "update cart set cart_product_quantity='" + parseInt(rows[0]["cart_product_quantity"] + check) + "' where user_id='" + req.user_id + "' AND product_id='" + product_id + "' AND product_verient_id='" + product_verient_id + "'", (err, rows) => {
                 if (err) {
                   console.log("err---------------------21-----")
                   console.log(err)

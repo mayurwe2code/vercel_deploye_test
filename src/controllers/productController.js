@@ -250,13 +250,13 @@ export async function search_product(req, res) {
   console.log(req.user_id)
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view_5.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view_5 where ';
+    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-      var search_string = 'SELECT * FROM product_view_5 where vendor_id = "' + req.vendor_id + '" AND  ';
+      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND  ';
     } else {
-      var search_string = 'SELECT * FROM product_view_5 where ';
+      var search_string = 'SELECT * FROM product_view where ';
     }
   }
 
