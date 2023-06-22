@@ -208,7 +208,8 @@ function fetch_user(req, res, next) {
       res.status(401).send(err)
     }
   } else {
-    res.send({ "error": "send only vendor, user, admin token" })
+    search_product(req, res)
+    // res.send({ "error": "send only vendor, user, admin token" })
   }
 
 
