@@ -948,3 +948,97 @@ export var pin_data = [
         "pin": 452003
     }
 ]
+[{
+        "delivery_address": {
+            "first_name": "ww",
+            "email": "sww",
+            "phone_no": "77777777",
+            "image": "jhgfds",
+            "address": "jfjr",
+            "city": "jyj5",
+            "pincode": 355444,
+            "user_lat": null,
+            "user_log": null
+        },
+        "order": [
+            {
+                "product_id": 113,
+                "vendor_id": 17,
+                "product_verient_id": 1,
+                "total_gst": 10,
+                "total_cgst": 5,
+                "total_sgst": 5,
+                "total_discount": 10,
+                "shipping_charges": 0,
+                "invoice_id": 0,
+                "payment_mode": "cod",
+                "payment_ref_id": 0,
+                "discount_coupon": 0,
+                "discount_coupon_value": 0,
+                "total_amount": 10000,
+                "total_of_this_prodoct": 2500,
+                "product_cart_qty_total": 5,
+                "total_order_product_quantity": 4,
+                "cart_qty_of_this_product": 5
+            },
+            {
+                "product_id": 111,
+                "vendor_id": 17,
+                "product_verient_id": 2,
+                "total_gst": 22.0,
+                "total_cgst": 11.0,
+                "total_sgst": 11.0,
+                "total_discount": 22.0,
+                "shipping_charges": 0,
+                "invoice_id": 0,
+                "payment_mode": "cod",
+                "payment_ref_id": 0,
+                "discount_coupon": 0,
+                "discount_coupon_value": 0,
+                "total_amount": 10000,
+                "total_of_this_prodoct": 2500,
+                "product_cart_qty_total": 20,
+                "total_order_product_quantity": 4,
+                "cart_qty_of_this_product": 5
+            }, {
+                "product_id": 112,
+                "vendor_id": 18,
+                "product_verient_id": 7,
+                "total_gst": 22.0,
+                "total_cgst": 11.0,
+                "total_sgst": 11.0,
+                "total_discount": 22.0,
+                "shipping_charges": 0,
+                "invoice_id": 0,
+                "payment_mode": "cod",
+                "payment_ref_id": 0,
+                "discount_coupon": 0,
+                "discount_coupon_value": 0,
+                "total_amount": 10000,
+                "total_of_this_prodoct": 2500,
+                "product_cart_qty_total": 20,
+                "total_order_product_quantity": 4,
+                "cart_qty_of_this_product": 5
+            },
+            {
+                "product_id": 112,
+                "vendor_id": 18,
+                "product_verient_id": 8,
+                "total_gst": 22.0,
+                "total_cgst": 11.0,
+                "total_sgst": 11.0,
+                "total_discount": 22.0,
+                "shipping_charges": 0,
+                "invoice_id": 0,
+                "payment_mode": "cod",
+                "payment_ref_id": 0,
+                "discount_coupon": 0,
+                "discount_coupon_value": 0,
+                "total_amount": 10000,
+                "total_of_this_prodoct": 2500,
+                "product_cart_qty_total": 20,
+                "total_order_product_quantity": 4,
+                "cart_qty_of_this_product": 5
+            }
+        ]
+    }

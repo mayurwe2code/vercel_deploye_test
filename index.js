@@ -20,6 +20,7 @@ import complainSupportRouter from "./src/routers/complainSupprotRouter.js";
 import reviewRouter from "./src/routers/reviewRouter.js";
 import categoryRouter from "./src/routers/categoryRouter.js";
 import vendorAreaRouter from "./src/routers/vendorAreaRouter.js";
+import specialProductsRouter from "./src/routers/specialProductsRouter.js";
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
@@ -75,8 +76,8 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
 // });
 
 
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter);
-// SELECT count(product_id),product_id FROM `order` GROUP BY product_id
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter, specialProductsRouter);
+
 
 try {
   mongoose.connect("mongodb+srv://Raahul_verma:vw48MlF9mMcMJL7y@cluster0.hxtq31y.mongodb.net/CrudNew?retryWrites=true&w=majority", {
