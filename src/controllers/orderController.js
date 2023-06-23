@@ -467,15 +467,15 @@ export async function order_search(req, res) {
   if (req.for_ == 'admin') {
     if (req.body.user_id != '' && req.body.user_id != undefined) {
       // search_string += 'SELECT *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image  FROM order_view where'
-      search_string += 'SELECT * FROM order_view_5 where'
+      search_string += 'SELECT * FROM order_view where'
     } else {
       // search_string += 'SELECT *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image FROM `order` where'
-      search_string += 'SELECT * FROM `order_view_5` where'
+      search_string += 'SELECT * FROM `order_view` where'
     }
   } else {
     if (req.for_ == 'user') {
       // search_string = 'SELECT *,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image   FROM order where user_id="' + req.user_id + '" AND '
-      search_string = 'SELECT *  FROM `order_view_5` where user_id="' + req.user_id + '" AND '
+      search_string = 'SELECT *  FROM `order_view` where user_id="' + req.user_id + '" AND '
     }
   }
 
@@ -626,7 +626,7 @@ export async function vendor_order_search(req, res) {
   if (req.query.delivery_side) {
     search_string1 = 'SELECT * FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = "' + req.vendor_id + '" AND '
   } else {
-    search_string1 = 'SELECT *  FROM `order_view_5` where vendor_id="' + req.vendor_id + '" AND '
+    search_string1 = 'SELECT *  FROM `order_view` where vendor_id="' + req.vendor_id + '" AND '
   }
 
 
@@ -659,7 +659,7 @@ export async function vendor_order_search(req, res) {
   var limit = skip + "," + numPerPage;
 
   connection.query(
-    "SELECT count(*) as numRows FROM order_view_5",
+    "SELECT count(*) as numRows FROM order_view",
     (err, results) => {
       if (err) {
       } else {
