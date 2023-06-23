@@ -687,6 +687,9 @@ export function change_order_detaile_status(req, res) {
                 // connection.query("UPDATE `order` SET `status_order`='" + order_status + "' WHERE order_id='" + order_id + "'", (err, rows) => {
                 //     console.log("-------------order_delivery_details---order--539----------------" + err)
                 // })
+
+                connection.query("UPDATE `order` SET `status_order`='" + order_status + "' WHERE order_id='" + order_id + "'", (err, rows) => { console.log(rows) })
+
                 res.status(StatusCodes.OK).json({ message: "status changed successfull", "status": true });
             } else {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
@@ -710,6 +713,8 @@ export function delivery_verify_code_match(req, res) {
             } else {
                 res.status(200).json({ message: "not match credintials", "status": false });
             }
+
+            connection.query("UPDATE `order` SET `status_order`='delivered' WHERE order_id='" + order_id + "'", (err, rows) => { console.log(rows) })
         }
     });
 }

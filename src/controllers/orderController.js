@@ -517,7 +517,7 @@ export async function order_search(req, res) {
         numPages = Math.ceil(numRows / numPerPage);
 
         connection.query(search_string + group_by +
-          " LIMIT " +
+          " ORDER BY id DESC LIMIT " +
           limit +
           "",
           (err, results) => {

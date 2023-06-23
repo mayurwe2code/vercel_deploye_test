@@ -741,6 +741,7 @@ export function vendor_update_delivery_boy_pickuped_order(req, res) {
                     res.status(200).send({ "response": "find error" });
                 } else {
                     if (results["affectedRows"] >= 1) {
+                        connection.query("UPDATE `order` SET `status_order`='pickuped' WHERE order_id='" + order_id + "'", (err, rows) => { console.log(rows) })
                         res.status(200).send({ "status": true, "response": "order status updated successfull" });
                     } else {
                         res.status(200).send({ "status": false, "response": "find error" });

@@ -271,7 +271,7 @@ export async function search_product(req, res) {
     if (i >= 6) {
       if (i == 6) {
         if (req.body[search_obj[i]] != "") {
-          search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
+          search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%" AND   `
         }
       } else {
         if (req.body[search_obj[i]] != "") {
