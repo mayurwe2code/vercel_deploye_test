@@ -9,7 +9,8 @@ export async function add_to_cart(req, res) {
   if (check == "0") {
     res.status(200).send({ "success": false, "response": "please cart quantity add greater then 1" })
   } else {
-    connection.query("SELECT * FROM cart WHERE user_id =" + req.user_id + " AND product_verient_id = " + product_id + " AND product_verient_id=" + product_verient_id + "",
+    console.log("SELECT * FROM cart WHERE user_id ='" + req.user_id + "' AND product_verient_id = '" + product_id + "' AND product_verient_id='" + product_verient_id + "'")
+    connection.query("SELECT * FROM cart WHERE user_id ='" + req.user_id + "' AND product_verient_id = '" + product_id + "' AND product_verient_id='" + product_verient_id + "'",
       (err, rows) => {
         if (err) {
           console.log("err---------------------13-----")
@@ -18,6 +19,8 @@ export async function add_to_cart(req, res) {
             .status(StatusCodes.INSUFFICIENT_STORAGE)
             .json({ "success": false, "response": "something went wrong" });
         } else {
+          console.log(rows + "==============cart==============================")
+          console.log(rows)
           if (rows != "") {
             console.log("======================hchc")
             console.log(rows)
