@@ -35,3 +35,33 @@ export function trending_products(req, res) {
     }
   });
 }
+
+export function add_fetured_product(req, res) {
+  //console.log("req.body")
+  var { product_id, fetured_type, start_date, end_date } = req.body
+
+  connection.query('SELECT * FROM `fetured_product_table` WHERE `product_id`="' + product_id + '" AND `fetured_type`="' + fetured_type + '" AND is_deleted="1"', (err, rows, fields) => {
+    if (err) {
+      //console.log("/fetured_product" + err)
+      res.status(200).send(err)
+    } else {
+      ////console.log("_____")
+      if (rows.length) {
+        res.status(200).send({ "status": false, "message": "Already_Exist" })
+      } else {
+        connection.query('INSERT INTO `fetured_product_table`(`product_id`, `fetured_type`, `start_date`, `end_date`) VALUES ("' + product_id + '","' + fetured_type + '","' + start_date + '","' + end_date + '")', (err, rows, fields) => {
+          if (err) {
+            //console.log("/fetured_product" + err)
+            res.status(200).send(err)
+          } else {
+            rows != '' ? res.status(200).send({ "status": true, "results": rows }) : res.status(200).send({ "status": false, "message": "error" })
+          }
+        })
+        // res.status(200).send({"message":"not_match :-  product_id -- fetured_type -- is_deleted "})
+      }
+
+    }
+  })
+
+
+}

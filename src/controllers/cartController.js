@@ -104,10 +104,10 @@ export async function cartById(req, res) {
 }
 
 export async function cart_update(req, res) {
-  var { product_id, cart_product_quantity } = req.body;
+  var { product_verient_id, cart_product_quantity } = req.body;
   const check_1 = parseInt(cart_product_quantity)
   if (check_1 < 1) {
-    connection.query("delete from cart where product_id ='" + product_id + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+    connection.query("delete from cart where product_verient_id ='" + product_verient_id + "' AND user_id='" + req.user_id + "'", (err, rows) => {
       if (err) {
         console.log("err---------------------94-----")
         console.log(err)
@@ -118,7 +118,7 @@ export async function cart_update(req, res) {
     });
   } else {
     connection.query(
-      "update cart set cart_product_quantity='" + cart_product_quantity + "' where user_id='" + req.user_id + "' AND product_id='" + product_id + "'", (err, rows) => {
+      "update cart set cart_product_quantity='" + cart_product_quantity + "' where user_id='" + req.user_id + "' AND product_verient_id='" + product_verient_id + "'", (err, rows) => {
         if (err) {
           console.log("err---------------------105-----")
           console.log(err)
@@ -137,13 +137,13 @@ export async function cart_update(req, res) {
 
 export async function cart_delete(req, res) {
   const { product_id, product_verient_id } = req.body
-
+  console.log("delete from cart where product_id ='" + product_id + "' AND product_verient_id='" + product_verient_id + "' AND user_id='" + req.user_id + "'")
   connection.query("delete from cart where product_id ='" + product_id + "' AND product_verient_id='" + product_verient_id + "' AND user_id='" + req.user_id + "'", (err, rows) => {
     if (err) {
       console.log(err)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "response": "delete opration failed", "success": false });
     } else {
-      rows.affectedRows == "1" ? res.status(200).json({ "response": "delete successfull", "success": true }) : res.status(200).json({ "response": "delete opration failed", "success": false })
+      rows.affectedRows >= 1 ? res.status(200).json({ "response": "delete successfull", "success": true }) : res.status(200).json({ "response": "delete opration failed", "success": false })
     }
   });
 }
@@ -169,4 +169,5 @@ export async function cart_and_notification_count(req, res) {
     }
   });
 }
+
 
