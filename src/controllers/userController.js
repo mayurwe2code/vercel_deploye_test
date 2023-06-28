@@ -372,35 +372,37 @@ export function user_login(req, res) {
   if (req.body.email != "" && req.body.password != "") {
     if (regex.test(user_email)) {
       console.log("true")
-      connection.query('SELECT * FROM user WHERE BINARY email ="' + user_email + '" AND password ="' + password + '"', (err, rows) => {
+      connection.query('SELECT * FROM user WHERE BINARY email ="' + user_email + '"', (err, rows) => {
         if (err) {
           console.log(err)
           res.status(200).send({ "response": "login error", "status": false })
         } else {
           console.log(rows)
           if (rows != "") {
+            if (rows[0].password === password) {
+              console.log("rows[0].user_id_______________324___")
+              console.log(rows[0].id)
+              console.log(process.env.USER_JWT_SECRET_KEY)
+
+              jwt.sign({ id: rows[0].id }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
+                //console.log(token);
+                if (err) {
+                  //console.log(err)
+                }
+                let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type, image } = rows[0]
+                if (rows[0].first_name != "" && rows[0].last_name != "" && rows[0].email != "" && rows[0].password != "" && rows[0].phone_no != "" && rows[0].pincode != "" && rows[0].city != "" && rows[0].address != "" && rows[0].alternate_address != "") {
+                  res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
+                } else {
+                  res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
+                }
+              })
+            } else {
+              res.status(200).json({ "message": "Password is incorrect", "status": false })
+            }
 
 
-            console.log("rows[0].user_id_______________324___")
-            console.log(rows[0].id)
-            console.log(process.env.USER_JWT_SECRET_KEY)
-
-            jwt.sign({ id: rows[0].id }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
-              //console.log(token);
-              if (err) {
-                //console.log(err)
-              }
-              let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type, image } = rows[0]
-              if (rows[0].first_name != "" && rows[0].last_name != "" && rows[0].email != "" && rows[0].password != "" && rows[0].phone_no != "" && rows[0].pincode != "" && rows[0].city != "" && rows[0].address != "" && rows[0].alternate_address != "") {
-                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
-              } else {
-                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
-              }
-
-
-            })
           } else {
-            res.status(200).send({ "status": false, "res_code": "003", "response": "creadintial not match" })
+            res.status(200).send({ "status": false, "res_code": "003", "response": "email not exists" })
           }
         }
       })
@@ -620,16 +622,62 @@ export function social_login(req, res) {
       if (err) {
         console.log(err)
         if (err.code == "ER_DUP_ENTRY") {
-          res.status(200).send({ "response": "email already exist, check your mail or try after sometime", "status": false })
+          // res.status(200).send({ "response": "email already exist", "status": false })
+          connection.query('SELECT * FROM user WHERE BINARY email ="' + email + '"', (err, rows) => {
+            if (err) {
+              console.log(err)
+              res.status(200).send({ "response": "login error", "status": false })
+            } else {
+              console.log(rows)
+              if (rows != "") {
+
+                console.log("rows[0].user_id_______________324___")
+                console.log(rows[0].id)
+                console.log(process.env.USER_JWT_SECRET_KEY)
+
+                jwt.sign({ id: rows[0].id }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
+                  //console.log(token);
+                  if (err) {
+                    //console.log(err)
+                  }
+                  let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type, image } = rows[0]
+                  if (rows[0].first_name != "" && rows[0].last_name != "" && rows[0].email != "" && rows[0].password != "" && rows[0].phone_no != "" && rows[0].pincode != "" && rows[0].city != "" && rows[0].address != "" && rows[0].alternate_address != "") {
+                    res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
+                  } else {
+                    res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
+                  }
+                })
+              } else {
+                res.status(200).send({ "status": false, "res_code": "003", "response": "creadintial not match" })
+              }
+            }
+          })
+
         } else {
           res.status(200).send({ "response": "error", "status": false })
         }
       } else {
-        res.status(StatusCodes.OK).json({ message: "user added successfully", "status": true });
+        let uid = rows.insertId
+        jwt.sign({ id: rows.insertId }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
+          //console.log(token);
+          if (err) {
+            //console.log(err)
+          }
+          connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + rows.insertId + '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' + rows.insertId + ')","unread")', (err, rows) => {
+            if (err) {
+              //console.log({ "notification": err })
+            } else {
+              console.log("_______notification-send__94________")
+            }
+          })
+          res.send({ "status": true, "response": "successfully created your account", "user_id": rows.insertId, "token": token, "redirect_url": "http://localhost:3000/" })
+        })
+        // res.status(StatusCodes.OK).json({ message: "user added successfully", "status": true });
       }
     })
   } else {
     res.status(StatusCodes.OK).json({ message: "please fill all inputs", "status": false });
   }
+
 
 }

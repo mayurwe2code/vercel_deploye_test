@@ -246,14 +246,14 @@ export async function search_product(req, res) {
     group_by = " group by product_id "
   }
   if (req.query.is_featured == "yes") {
-    is_featured = "is_fetured != 'null' "
+    is_featured = " is_fetured != 'null' AND   "
   }
   // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
   if ("DESC" in req.query) {
-    search_string_asc_desc1 = "ORDER BY " + req.query["DESC"] + " DESC "
+    search_string_asc_desc1 = " ORDER BY " + req.query["DESC"] + " DESC "
   }
   if ("ASC" in req.query) {
-    search_string_asc_desc1 = "ORDER BY " + req.query["ASC"] + " ASC "
+    search_string_asc_desc1 = " ORDER BY " + req.query["ASC"] + " ASC "
   }
   // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
   // var query_string = "select * from product  where ";
@@ -261,7 +261,7 @@ export async function search_product(req, res) {
   console.log(req.user_id)
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + ' ';
+    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + '';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
@@ -285,7 +285,11 @@ export async function search_product(req, res) {
           search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%" AND   `
         }
       } else if (i == 7) {
-        search_string_asc_desc = ` ORDER BY ${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
+
+        if (req.body[search_obj[i]] != "") {
+          search_string_asc_desc = ` ORDER BY ${req.body[search_obj[i]]} `
+        }
+
       } else {
         if (req.body[search_obj[i]] != "") {
           var arr = JSON.stringify(req.body[search_obj[i]]);
@@ -304,8 +308,8 @@ export async function search_product(req, res) {
       }
     }
 
-
-    if (i === search_obj.length - 1 && req.query.is_featured != "yes") {
+    // && req.query.is_featured != "yes"
+    if (i === search_obj.length - 1) {
 
       search_string = search_string.substring(0, search_string.length - 7);
       // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
