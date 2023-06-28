@@ -56,7 +56,7 @@ export function complain_search(req, res) {
         } else {
             for (let k in req_obj) {
                 if (k != "") {
-                    query_ += " `" + k + "` = '" + req_obj[k] + "' AND  "
+                    query_ += " `" + k + "` = '" + req_obj[k] + "' "
                 }
             }
         }
@@ -79,7 +79,8 @@ export function complain_search(req, res) {
             console.log(err)
             res.status(200).send(err)
         } else {
-            rows.affectedRows >= 1 ? res.status(200).send({ "response": "Succesfully Update Complaint" }) : res.status(200).send({ "response": "Faild Complaint Update" })
+            console.log(rows)
+            rows.affectedRows != "" ? res.status(200).send({ "result": rows }) : res.status(200).send({ "response": "Succesfully  not Found" })
         }
     })
 }

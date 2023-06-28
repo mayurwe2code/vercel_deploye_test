@@ -610,3 +610,26 @@ export async function update_user_address(req, res) {
 //       res.status(200).send({ "response": "login error", "status": false })
 //     } else {
 // }
+
+export function social_login(req, res) {
+  console.log("singal_signup----------")
+  var email = req.body.email;
+  if (email) {
+    console.log("INSERT INTO `user`(`email`) VALUES ('" + email + "')")
+    connection.query("INSERT INTO `user`(`email`) VALUES ('" + email + "')", (err, rows) => {
+      if (err) {
+        console.log(err)
+        if (err.code == "ER_DUP_ENTRY") {
+          res.status(200).send({ "response": "email already exist, check your mail or try after sometime", "status": false })
+        } else {
+          res.status(200).send({ "response": "error", "status": false })
+        }
+      } else {
+        res.status(StatusCodes.OK).json({ message: "user added successfully", "status": true });
+      }
+    })
+  } else {
+    res.status(StatusCodes.OK).json({ message: "please fill all inputs", "status": false });
+  }
+
+}

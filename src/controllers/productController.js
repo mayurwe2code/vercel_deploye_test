@@ -238,25 +238,36 @@ export async function search_product(req, res) {
   var { price_from, price_to } = req.body;
   console.log(req.body)
   let group_by = " "
+  let is_featured = ""
+  let search_string_asc_desc = ""
+  let search_string_asc_desc1 = ""
+
   if (req.query.group == "yes") {
     group_by = " group by product_id "
   }
-
+  if (req.query.is_featured == "yes") {
+    is_featured = "is_fetured != 'null' "
+  }
   // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
-
-  var search_string_asc_desc = ""
+  if ("DESC" in req.query) {
+    search_string_asc_desc1 = "ORDER BY " + req.query["DESC"] + " DESC "
+  }
+  if ("ASC" in req.query) {
+    search_string_asc_desc1 = "ORDER BY " + req.query["ASC"] + " ASC "
+  }
+  // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
   // var query_string = "select * from product  where ";
   let search_obj = Object.keys(req.body)
   console.log(req.user_id)
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ';
+    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + ' ';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND  ';
+      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND ' + is_featured + '  ';
     } else {
-      var search_string = 'SELECT * FROM product_view where ';
+      var search_string = 'SELECT * FROM product_view where ' + is_featured + ' ';
     }
   }
 
@@ -273,6 +284,8 @@ export async function search_product(req, res) {
         if (req.body[search_obj[i]] != "") {
           search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%" AND   `
         }
+      } else if (i == 7) {
+        search_string_asc_desc = ` ORDER BY ${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
       } else {
         if (req.body[search_obj[i]] != "") {
           var arr = JSON.stringify(req.body[search_obj[i]]);
@@ -285,15 +298,18 @@ export async function search_product(req, res) {
       }
     } else {
       if (i > 1) {
-        if (search_obj[i] != undefined && req.body[search_obj[i]] != "") {
-          search_string_asc_desc = ` ORDER BY ${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
-        }
+        // if (search_obj[i] != undefined && req.body[search_obj[i]] != "") {
+        //   search_string_asc_desc = ` ORDER BY ${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
+        // }
       }
     }
-    if (i === search_obj.length - 1) {
-      search_string = search_string.substring(0, search_string.length - 6);
+
+
+    if (i === search_obj.length - 1 && req.query.is_featured != "yes") {
+
+      search_string = search_string.substring(0, search_string.length - 7);
       // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
-      search_string += search_string_asc_desc
+      search_string += search_string_asc_desc1
       // }
 
     }

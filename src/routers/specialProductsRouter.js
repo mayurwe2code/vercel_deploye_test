@@ -6,6 +6,7 @@ import { trending_products, add_fetured_product } from "../controllers/specialPr
 
 specialProductsRouter.post("/trending_products", trending_products)
 specialProductsRouter.post("/add_fetured_product", add_fetured_product)
+
 // specialProductsRouter.post("/vendor_service_area_list", vendor_service_area_list)
 // specialProductsRouter.post("/check_vendor_service_avaibility", check_vendor_service_avaibility)
 
