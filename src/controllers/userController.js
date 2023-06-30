@@ -86,8 +86,8 @@ export async function update_user(req, res) {
     alternate_address,
   } = req.body;
   let srt_user = ""
-  // console.log(req.file)
-  // console.log(req.file.filename)
+  console.log(req.file)
+  console.log(req.file.filename)
   if (req.file == undefined || req.file == '') {
     var image = "no image"
     srt_user = "update user  set `first_name`= '" +

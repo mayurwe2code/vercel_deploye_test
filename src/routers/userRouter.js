@@ -67,9 +67,5 @@ userRouter.put("/update_user_address", auth_user, update_user_address);
 userRouter.post("/social_login", social_login);
 
 // userRouter.put("/select_address", auth_user, select_address);
-
 // userRouter.post("/admin_login", admin_login);
-
-
-
 export default userRouter;
