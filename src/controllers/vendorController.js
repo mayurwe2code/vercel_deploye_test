@@ -333,7 +333,7 @@ export async function update_vendor_profile(req, res) {
     var { owner_name, shop_name, mobile, shop_address, gstn, geolocation, availability } = req.body;
     let srt_user = ""
     let srt_user1 = ""
-
+    console.log(owner_name, shop_name, mobile, shop_address, gstn, geolocation, availability)
     console.log("_________v_id__" + req.vendor_id)
     // console.log(req.file)
     // console.log(req.file.filename)
