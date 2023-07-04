@@ -412,7 +412,7 @@ export async function update_driver(req, res) {
     let srt_user = "update delivery_man  set `driver_name`='" + driver_name + "', `driver_last_name`='" + driver_last_name + "', `date_of_birth`='" + date_of_birth + "', `current_address`='" + current_address + "', `gender`='" + gender + "', `age`='" + age + "', `contect_no`='" + contect_no + "', `aadhar_no` = '" + aadhar_no + "',`licence_no`='" + licence_no + "',`licence_issue_date`='" + licence_issue_date + "',`licence_validity_date`='" + licence_validity_date + "'"
 
     for (let k in req.files) {
-        srt_user += ` ,${k} = 'https://nursery-verient-live.onrender.com/driver_profile/${req.files[k][0]["filename"]}'`
+        srt_user += ` ,${k} = ${req.protocol + "://" + req.headers.host}'/driver_profile/${req.files[k][0]["filename"]}'`
     }
 
 
@@ -488,7 +488,7 @@ export function register_your_vehicle(req, res) {
     let srt_values = "";
     for (let k in req.files) {
         str_fields += ` ,${k}`
-        srt_values += ` ,"https://nursery-verient-live.onrender.com/driver_profile/${req.files[k][0]["filename"]}"`
+        srt_values += ` ,"${req.protocol + "://" + req.headers.host}/driver_profile/${req.files[k][0]["filename"]}"`
     }
     let srt_user = ""
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
@@ -726,7 +726,7 @@ export function driver_add_by_admin(req, res) {
     let srt_values = "";
     for (let k in req.files) {
         str_fields += ` ,${k}`
-        srt_values += ` ,"https://nursery-verient-live.onrender.com/${req.files[k][0]["filename"]}"`
+        srt_values += ` ,"${req.protocol + "://" + req.headers.host}/${req.files[k][0]["filename"]}"`
     }
 
     console.log("INSERT INTO `delivery_man`(`driver_name`, `driver_last_name`, `date_of_birth`, `current_address`, `gender`, `age`, `contect_no`, `email`, `password`,`aadhar_no`, `licence_no`, `licence_issue_date`, `licence_validity_date`" + str_fields + ") VALUES ( '" + driver_name + "', '" + driver_last_name + "', '" + date_of_birth + "', '" + current_address + "', '" + gender + "', '" + age + "', '" + contect_no + "', '" + email + "', '" + password + "', '" + aadhar_no + "', '" + licence_no + "', '" + licence_issue_date + "', '" + licence_validity_date + "' " + str_fields + ")")
@@ -823,7 +823,7 @@ export function update_your_vehicle(req, res) {
     // let puc_certificate = insurance = registration = null;
     let srt_values = "";
     for (let k in req.files) {
-        srt_values += `  ,${k}="https://nursery-verient-live.onrender.com/driver_profile/${req.files[k][0]["filename"]}"`
+        srt_values += `  ,${k}="${req.protocol + "://" + req.headers.host}/driver_profile/${req.files[k][0]["filename"]}"`
     }
     let srt_user = ""
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {

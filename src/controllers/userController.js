@@ -87,7 +87,6 @@ export async function update_user(req, res) {
   } = req.body;
   let srt_user = ""
   console.log(req.file)
-  console.log(req.file.filename)
   if (req.file == undefined || req.file == '') {
     var image = "no image"
     srt_user = "update user  set `first_name`= '" +
@@ -106,7 +105,7 @@ export async function update_user(req, res) {
       alternate_address +
       "'  where id ='" + req.user_id + "'"
   } else {
-    var image = "https://nursery-verient-live.onrender.com/user_profile/" + req.file.filename;
+    var image = req.protocol + "://" + req.headers.host + "/user_profile/" + req.file.filename;
     //console.log(image)
     srt_user = "update user  set `first_name`= '" +
       first_name +
@@ -200,6 +199,10 @@ export function user_signup(req, res) {
     let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z]{2,4})+$/;
     console.log("__" + u_email + "__")
     if (regex.test(u_email)) {
+
+      connection.query("DELETE FROM user_auth_by_otp WHERE BINARY email = '" + u_email + "'",
+        (err, rows) => { })
+
       connection.query("SELECT * FROM user WHERE BINARY email = '" + u_email + "'",
         (err, rows) => {
           if (err) {
@@ -309,8 +312,11 @@ export function user_otp_verify(req, res) {
                             console.log("___________________________________________________284_chkkkkkkkkkkkkkkk=============")
                             console.log(rows)
                             jwt.sign({ id: rows[0].id }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
+                              connection.query("DELETE FROM user_auth_by_otp WHERE BINARY email = '" + user_email + "'",
+                                (err, rows) => { })
                               res.status(200).json({ "success": true, "token": token, "user_details": rows });
                             })
+
                           } else {
                             res.status(200).json({ "success": false, "token": "" });
                           }
@@ -327,6 +333,8 @@ export function user_otp_verify(req, res) {
                     if (err) {
                       //console.log(err)
                     }
+                    connection.query("DELETE FROM user_auth_by_otp WHERE BINARY email = '" + user_email + "'",
+                      (err, rows) => { })
                     connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + rows.insertId + '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' + rows.insertId + ')","unread")', (err, rows) => {
                       if (err) {
                         //console.log({ "notification": err })

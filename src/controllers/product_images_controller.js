@@ -21,7 +21,7 @@ export function add_product_image(req, res) {
       console.log("chkkkkkkkkkkkkk--------------------20")
       console.log(name_str)
       fs.writeFileSync(path.join(__dirname, '../../') + 'public/product_images/' + name_str + ".png", imgBase64, 'base64');
-      connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
+      connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "' + req.protocol + "://" + req.headers.host + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
         if (err) {
           console.log("add-image--error--data--------")
           console.log(err)
@@ -33,7 +33,7 @@ export function add_product_image(req, res) {
           obj_i["product_id"] = item["product_id"]
           obj_i["product_verient_id"] = item["product_verient_id"]
           obj_i["product_image_id"] = rows["insertId"]
-          obj_i["product_image_path"] = 'https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png'
+          obj_i["product_image_path"] = req.protocol + "://" + req.headers.host + '/product_images/' + name_str + '.png'
           obj_i["image_position"] = item["image_position"]
           console.log(obj_i)
           product_image_data[index] = obj_i
@@ -73,7 +73,7 @@ export function product_image_update(req, res) {
     }
 
     //console.log(item.vendor_id)
-    connection.query(' UPDATE `product_images` SET `product_description`="' + item.product_description + '",`product_image_name`="' + name_str + '.png",`product_image_path`= "https://nursery-verient-live.onrender.com/product_images/' + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"', (err, rows, fields) => {
+    connection.query(' UPDATE `product_images` SET `product_description`="' + item.product_description + '",`product_image_name`="' + name_str + '.png",`product_image_path`= "' + req.protocol + "://" + req.headers.host + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"', (err, rows, fields) => {
       if (err) {
         console.log(err)
         //res.status(200).send(err)
