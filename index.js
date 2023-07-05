@@ -78,6 +78,12 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
 
 app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter, specialProductsRouter);
 
+app.get("/version", (req, res) => {
+  let dat = new Date()
+  res.send({
+    "latest_update": dat, "latest_commit": "check cart and order - note find any bug - server all good"
+  })
+})
 
 try {
   mongoose.connect("mongodb+srv://Raahul_verma:vw48MlF9mMcMJL7y@cluster0.hxtq31y.mongodb.net/CrudNew?retryWrites=true&w=majority", {
