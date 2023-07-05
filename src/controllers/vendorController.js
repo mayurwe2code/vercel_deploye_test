@@ -333,7 +333,7 @@ export async function update_vendor_profile(req, res) {
     var { owner_name, shop_name, mobile, shop_address, gstn, geolocation, availability } = req.body;
     let srt_user = ""
     let srt_user1 = ""
-
+    console.log(owner_name, shop_name, mobile, shop_address, gstn, geolocation, availability)
     console.log("_________v_id__" + req.vendor_id)
     // console.log(req.file)
     // console.log(req.file.filename)
@@ -341,7 +341,7 @@ export async function update_vendor_profile(req, res) {
         var image = "no image"
         srt_user = 'UPDATE `vendor` SET `owner_name`="' + owner_name + '",`shop_name`="' + shop_name + '",`mobile`="' + mobile + '",`shop_address`="' + shop_address + '",`gstn`="' + gstn + '",`geolocation`="' + geolocation + '",`availability`="' + availability + '" '
     } else {
-        var image = "https://nursery-verient-live.onrender.com/vendor_shop_img/" + req.file.filename;
+        var image = req.protocol + "://" + req.headers.host + "/vendor_shop_img/" + req.file.filename;
         //console.log(image)
         srt_user = 'UPDATE `vendor` SET `owner_name`="' + owner_name + '",`shop_name`="' + shop_name + '",`mobile`="' + mobile + '",`shop_address`="' + shop_address + '",`gstn`="' + gstn + '",`geolocation`="' + geolocation + '",`shop_logo`="' + image + '",`availability`="' + availability + '"'
     }
@@ -384,7 +384,7 @@ export async function admin_add_vendor(req, res) {
         var image = "no image"
         srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`availability`, `created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + availability + '","admin","' + req.created_by_id + '")'
     } else {
-        var image = "https://nursery-verient-live.onrender.com/vendor_shop_img/" + req.file.filename;
+        var image = req.protocol + "://" + req.headers.host + "/vendor_shop_img/" + req.file.filename;
         //console.log(image)
         srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`shop_logo`,`availability`,`created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + image + '","' + availability + '","admin","' + req.created_by_id + '")'
     }
@@ -619,7 +619,7 @@ export async function vendor_product_list(req, res) {
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
         // var search_string = 'SELECT *,(SELECT product_image_path FROM `product_images` where product_id =product.id AND image_position = "cover" LIMIT 0,1 ) AS cover_image_url FROM `product` where product.vendor_id = "' + req.vendor_id + '"  AND  ';
-        var search_string = 'SELECT * FROM `product_view_5` where vendor_id = "' + req.vendor_id + '"  AND  ';
+        var search_string = 'SELECT * FROM `product_view` where vendor_id = "' + req.vendor_id + '"  AND  ';
     } else {
         var search_string = '';
     }
@@ -741,6 +741,7 @@ export function vendor_update_delivery_boy_pickuped_order(req, res) {
                     res.status(200).send({ "response": "find error" });
                 } else {
                     if (results["affectedRows"] >= 1) {
+                        connection.query("UPDATE `order` SET `status_order`='pickuped' WHERE order_id='" + order_id + "'", (err, rows) => { console.log(rows) })
                         res.status(200).send({ "status": true, "response": "order status updated successfull" });
                     } else {
                         res.status(200).send({ "status": false, "response": "find error" });

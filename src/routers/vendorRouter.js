@@ -70,8 +70,8 @@ vendor_router.put("/vendor_forgate_password_update", auth_vendor, vendor_forgate
 // vendor_router.put("/delete_restore_user", admin_auth, delete_restore_user);
 // vendor_router.post("/user_search", admin_auth, user_search);
 vendor_router.get("/vendor_details", auth_vendor, vendor_details);
-vendor_router.post("/update_vendor_profile", admin_auth, upload.single("image"), update_vendor_profile);
-vendor_router.post("/admin_add_vendor", admin_auth, upload.single("image"), admin_add_vendor);
+vendor_router.post("/update_vendor_profile", admin_auth, upload.single("shop_logo"), update_vendor_profile);
+vendor_router.post("/admin_add_vendor", admin_auth, upload.single("shop_logo"), admin_add_vendor);
 vendor_router.post("/vendor_list", vendor_list);
 vendor_router.post("/admin_change_vendor_status", admin_change_vendor_status);
 vendor_router.post("/search_vendor_product", fetch_user, search_vendor_product);

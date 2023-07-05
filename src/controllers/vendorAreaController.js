@@ -20,12 +20,14 @@ export function vendor_select_area(req, res) {
                     // let { area_id, pin, city, status, area_name, vendors_id } = rows[0]
                     let st = vendors_id.substring(0, vendors_id.length - 1)
                     let vendors_id_array = st.split(",");
+                    console.log("vendors_id_array" + "0000000000000000")
+                    console.log(vendors_id_array)
                     if (vendors_id_array.includes(`${req.vendor_id}`)) {
                         if (index === pin_area_length - 1) {
                             res.status(200).json({ status: true, response: "already selected", your_service_area_list: respo_array })
                         }
                     } else {
-                        let new_str = vendors_id + req.vendor_id + ", "
+                        let new_str = vendors_id + req.vendor_id + ","
                         //=====================================================================
                         connection.query("UPDATE `vendor_service_area` SET `vendors_id` ='" + new_str + "' where area_id = " + area_id + "", (err, rows, fields) => {
                             if (err) {
@@ -79,7 +81,6 @@ export function check_vendor_service_avaibility(req, res) {
     console.log("check_vendor_service_avaibility------------")
     let { pin, vendor_id } = req.body
 
-
     connection.query("SELECT * FROM `vendor_service_area` where pin = " + pin + "", (err, rows, fields) => {
         if (err) {
             console.log(err)
@@ -92,42 +93,25 @@ export function check_vendor_service_avaibility(req, res) {
                 rows.forEach((item, index) => {
                     let { area_id, pin, city, status, area_name, vendors_id } = item
 
-                    // let { area_id, pin, city, status, area_name, vendors_id } = rows[0]
                     let st = vendors_id.substring(0, vendors_id.length - 1)
                     let vendors_id_array = st.split(",");
-                    console.log("vendors_id_array------------")
-                    console.log(vendors_id_array)
-
-
-                    // var array = [1, 2, 3, 4, 5];
-                    // var valuesToCheck = [2, 4, 6];
 
                     var presentValues = vendor_id.filter(value => vendors_id_array.includes(value));
                     var absentValues = vendor_id.filter(value => !vendors_id_array.includes(value));
 
-                    console.log(presentValues); // Output: [2, 4]
-                    console.log(absentValues); // Output: [6]
-
                     if (index === pin_area_length - 1) {
-                        res.status(200).json({ "status": true, "service_availabe": presentValues, "service_not_availabe": absentValues })
+                        var status_
+                        if (presentValues == "") {
+                            status_ = false
+                        } else {
+                            status_ = true
+                        }
+                        res.status(200).json({ "status": status_, "service_available": presentValues, "service_not_available": absentValues })
                     }
-
-
-                    // if (vendors_id_array.includes(vendor_id)) {
-                    //     if (index === pin_area_length - 1) {
-                    //         res.status(200).json({ status: true, response: "Service available in this pin" })
-                    //     }
-                    // } else {
-                    //     if (index === pin_area_length - 1) {
-                    //         res.status(200).json({ status: false, response: "Service Not available in this pin" })
-                    //     }
-                    // }
                 });
             } else {
-                res.status(200).send({ "status": false, "response": "area_id not matched" })
+                res.status(200).send({ "status": false, "service_available": [], "response": "area_id not matched" })
             }
-
         }
     })
-
 }
