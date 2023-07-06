@@ -17,19 +17,19 @@ import "dotenv/config";
 // export default connection;
 
 // export default function handleDisconnect() {
-// var connection = mysql.createConnection({
-//   host: "b8ge1gim6edaq5jr1rht-mysql.services.clever-cloud.com",
-//   user: "u9fe8rqvh3wh0bpk",
-//   password: "pbzyUJkHu07N0RCQAG1t",
-//   database: "b8ge1gim6edaq5jr1rht",
-// });
-
 var connection = mysql.createConnection({
-  host: "daigle.iad1-mysql-e2-4b.dreamhost.com",
-  user: "indiakinursery",
-  password: "WE2code@2023",
-  database: "indiakinursery",
+  host: "b8ge1gim6edaq5jr1rht-mysql.services.clever-cloud.com",
+  user: "u9fe8rqvh3wh0bpk",
+  password: "pbzyUJkHu07N0RCQAG1t",
+  database: "b8ge1gim6edaq5jr1rht",
 });
+
+// var connection = mysql.createConnection({
+//   host: "daigle.iad1-mysql-e2-4b.dreamhost.com",
+//   user: "indiakinursery",
+//   password: "WE2code@2023",
+//   database: "indiakinursery",
+// });
 
 connection.connect(function (err) {
   console.log("connect-1--------------------------29")
