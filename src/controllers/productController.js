@@ -389,6 +389,7 @@ export async function search_product(req, res) {
 
 export function add_product_verient(req, res) {
   var { product_id, verient_name, quantity, unit, product_stock_quantity, price, mrp, discount, gst, cgst, sgst, verient_description, product_height, product_width, product_Weight } = req.body;
+
   connection.query("SELECT * FROM `product` WHERE id=" + product_id + " AND vendor_id = " + req.vendor_id + "", (err, results) => {
     if (err) {
       console.log(err)

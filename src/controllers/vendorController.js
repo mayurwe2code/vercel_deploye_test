@@ -478,7 +478,7 @@ export async function search_vendor_product(req, res) {
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
         var search_string = 'SELECT * ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where product.vendor_id = "' + req.vendor_id + '"  AND  ';
     } else {
-        var search_string = '';
+        var search_string = 'SELECT * ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ';
     }
     console.log(search_obj)
     if (price_from != "" && price_to != "") {
