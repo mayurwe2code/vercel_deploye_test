@@ -93,31 +93,35 @@ export function product_image_update(req, res) {
 
 export function product_image(req, res) {
   var { product_id, product_image_id } = req.body
+  let img_get_str = 'SELECT * FROM product_images WHERE '
+  // if (product_id != "" || product_image_id != "") {
+  //   var img_get_str = ' SELECT * FROM product_images WHERE '
+  //   if (product_id != "") {
+  //     img_get_str += 'product_id = "' + product_id + '" AND '
+  //   }
+  //   if (product_image_id != "") {
+  //     img_get_str += ' product_image_id = "' + product_image_id + '" AND '
+  //   }
 
-  if (product_id != "" || product_image_id != "") {
-    var img_get_str = ' SELECT * FROM product_images WHERE '
-    if (product_id != "") {
-      img_get_str += 'product_id = "' + product_id + '" AND '
+  for (let k in req.body) {
+    if (req.body[k]) {
+      img_get_str += `${k} = ${req.body[k]} AND  `
     }
-    if (product_image_id != "") {
-      img_get_str += ' product_image_id = "' + product_image_id + '" AND '
-    }
-
-    img_get_str = img_get_str.substring(0, img_get_str.length - 4);
-
-    console.log(img_get_str)
-    connection.query(img_get_str, (err, rows, fields) => {
-      if (err) {
-        console.log(err)
-        res.status(500).send({ "error": "server error" })
-      } else {
-        console.log(rows)
-        res.status(200).send(rows)
-      }
-    })
-  } else {
-    res.status(200).send({ "error": "please fill all inputs" })
   }
+  img_get_str = img_get_str.substring(0, img_get_str.length - 6);
+  console.log(img_get_str)
+  connection.query(img_get_str, (err, rows, fields) => {
+    if (err) {
+      console.log(err)
+      res.status(500).send({ "error": "server error" })
+    } else {
+      console.log(rows)
+      res.status(200).send(rows)
+    }
+  })
+  // } else {
+  //   res.status(200).send({ "error": "please fill all inputs" })
+  // }
 
 }
 

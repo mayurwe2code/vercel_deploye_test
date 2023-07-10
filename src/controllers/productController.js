@@ -65,7 +65,6 @@ export async function update_Product(req, res) {
           updat_str += ` ${k} = "${req_obj[k]}", `
           console.log(k)
         }
-
       }
     }
     updat_str = updat_str.substring(0, updat_str.length - 2);
