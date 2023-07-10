@@ -2,8 +2,8 @@ import connection from "../../Db.js";
 
 export function add_category(req, res) {
     let newlevel = 1
-    var { parent_id, level, all_parent_id, new_category, image, category_type, all_category_name } = req.body
-    if (parent_id != '' && level != '' && all_parent_id != '' && new_category != '' && category_type != '') {
+    var { parent_id, level, all_parent_id, category_name, image, category_type, all_category_name } = req.body
+    if (parent_id != '' && level != '' && all_parent_id != '' && category_name != '' && category_type != '') {
 
         if (req.file == undefined || req.file == '') {
             image = "no image"
@@ -25,7 +25,7 @@ export function add_category(req, res) {
                 all_category_name = "no"
             }
         }
-        connection.query('INSERT INTO `category`(`parent_id`,`all_parent_id`,`level`,`category_name`,`category_type`,`image`,`is_active`, `all_category_name`) VALUES (' + parent_id + ',"' + all_parent_id + '",' + newlevel + ',"' + new_category + '","' + category_type + '","' + image + '",' + 1 + ',"' + all_category_name + '")', (err, rows, fields) => {
+        connection.query('INSERT INTO `category`(`parent_id`,`all_parent_id`,`level`,`category_name`,`category_type`,`image`,`is_active`, `all_category_name`) VALUES (' + parent_id + ',"' + all_parent_id + '",' + newlevel + ',"' + category_name + '","' + category_type + '","' + image + '",' + 1 + ',"' + all_category_name + '")', (err, rows, fields) => {
             if (err) {
                 console.log("/add_category_error" + err)
                 res.status(200).send(err)
@@ -41,14 +41,14 @@ export function add_category(req, res) {
 export function update_category(req, res) {
     //console.log("req.body")
 
-    var { id, parent_id, level, all_parent_id, new_category, category_type, image } = req.body;
+    var { id, parent_id, level, all_parent_id, category_name, category_type, image } = req.body;
     var newdate = new Date();
     var category_newdate = newdate.getFullYear() + "-" + (newdate.getMonth() + 1) + "-" + newdate.getDate();
-    if (id != '' && parent_id != '' && level != '' && all_parent_id != '' && new_category != '' && category_type != '') {
+    if (id != '' && parent_id != '' && level != '' && all_parent_id != '' && category_name != '' && category_type != '') {
 
         if (req.file == undefined || req.file == '') {
             // image = "no image"
-            connection.query('UPDATE `category` SET `parent_id`="' + parent_id + '",`all_parent_id`="' + all_parent_id + '",`level`="' + level + '",`category_name`="' + new_category + '", `category_type`="' + category_type + '", `is_active`= "' + 1 + '",`updated_on`="' + category_newdate + '" WHERE `id`= "' + id + '"', (err, rows, fields) => {
+            connection.query('UPDATE `category` SET `parent_id`="' + parent_id + '",`all_parent_id`="' + all_parent_id + '",`level`="' + level + '",`category_name`="' + category_name + '", `category_type`="' + category_type + '", `is_active`= "' + 1 + '",`updated_on`="' + category_newdate + '" WHERE `id`= "' + id + '"', (err, rows, fields) => {
                 if (err) {
                     //console.log("/category_error" + err)
                     res.status(500).send(err)
@@ -57,10 +57,10 @@ export function update_category(req, res) {
                 }
             })
         } else {
-            var image = "http://192.168.29.109:8000/catgory_images/" + req.file.filename;
+            var image = req.protocol + "://" + req.headers.host + "/catgory_images/" + req.file.filename;
             //console.log(image)
 
-            connection.query('UPDATE `category` SET `parent_id`="' + parent_id + '",`all_parent_id`="' + all_parent_id + '",`level`="' + level + '",`category_name`="' + new_category + '", `category_type`="' + category_type + '",`image`="' + image + '", `is_active`= "' + 1 + '",`updated_on`="' + category_newdate + '" WHERE `id`= "' + id + '"', (err, rows, fields) => {
+            connection.query('UPDATE `category` SET `parent_id`="' + parent_id + '",`all_parent_id`="' + all_parent_id + '",`level`="' + level + '",`category_name`="' + category_name + '", `category_type`="' + category_type + '",`image`="' + image + '", `is_active`= "' + 1 + '",`updated_on`="' + category_newdate + '" WHERE `id`= "' + id + '"', (err, rows, fields) => {
                 if (err) {
                     //console.log("/category_error" + err)
                     res.status(500).send(err)
