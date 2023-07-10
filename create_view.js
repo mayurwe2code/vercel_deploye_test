@@ -37,3 +37,4 @@
 
 
 // CREATE VIEW product_view AS SELECT *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_id AND image_position = 'cover' group by product_verient_id) as all_images, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_id group by product_verient_id) as cover_image FROM product, product_verient WHERE product.id = product_verient.product_id
+

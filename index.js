@@ -200,10 +200,42 @@ app.get('/auth/logout', (req, res) => {
   });
 })
 
-app.listen(9999, () => {
-  console.log(`server is running at ${process.env.SERVERPORT}`);
-});
 
+function startServer() {
+  app.listen(9999, () => {
+    console.log(`server is running at ${process.env.SERVERPORT}`);
+  });
+}
+
+
+function checkServerStatus() {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT 1', (error) => {
+      if (error) {
+        console.error('Error executing database query:', error);
+        resolve(false); // Server status is false in case of database error
+      } else {
+        resolve(true); // Server status is true if the database query is successful
+      }
+    });
+  });
+}
+
+function monitorServer() {
+  const interval = setInterval(() => {
+    const serverStatus = checkServerStatus(); // Function to check the server's status
+    console.log("serverStatus======")
+    console.log(!serverStatus)
+    if (!serverStatus) {
+      console.log('Server crashed or encountered an error. Restarting...');
+      clearInterval(interval);
+      startServer();
+      monitorServer(); // Restart the monitoring process
+    }
+  }, 5000); // Adjust the interval as per your requirements
+}
+startServer();
+monitorServer()
 
 
 
