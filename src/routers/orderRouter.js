@@ -15,7 +15,7 @@ const orderRouter = express.Router();
 orderRouter.post("/add_order", auth_user, add_order);
 orderRouter.post("/order_list", fetch_user, order_list);
 orderRouter.post("/order_search", fetch_user, order_search);
-orderRouter.get("/order_details", auth_user, order_details);
+orderRouter.get("/order_details", fetch_user, order_details);
 orderRouter.put("/order_update", auth_user, order_update);
 orderRouter.delete("/order_delete/:id", admin_auth, order_delete);
 orderRouter.put("/order_status_update", admin_auth, order_status_update);

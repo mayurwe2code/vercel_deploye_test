@@ -24,7 +24,7 @@ export function vendor_select_area(req, res) {
                     console.log(vendors_id_array)
                     if (vendors_id_array.includes(`${req.vendor_id}`)) {
                         if (index === pin_area_length - 1) {
-                            res.status(200).json({ status: true, response: "already selected", your_service_area_list: respo_array })
+                            res.status(200).json({ status: true, response: "already selected" })
                         }
                     } else {
                         let new_str = vendors_id + req.vendor_id + ","
@@ -41,14 +41,13 @@ export function vendor_select_area(req, res) {
                                 // res.status(200).send({ "status": true, "response": "add service area successfull" })
                                 respo_array.push({ area_id, pin, city, status, area_name })
                                 if (index === pin_area_length - 1) {
-                                    res.status(200).json({ status: true, response: "succefull added your sevice area", your_service_area_list: respo_array })
+                                    res.status(200).json({ status: true, response: "succefull added your sevice area", your_service_area_list: [respo_array[0]] })
                                 }
                             }
                         })
                         console.log("false------------------------")
                     }
                 });
-
             } else {
                 res.status(200).send({ "status": false, "response": "area_id not matched" })
             }
@@ -57,24 +56,37 @@ export function vendor_select_area(req, res) {
     })
 }
 export function vendor_service_area_list(req, res) {
-    let query_ = "SELECT * FROM `vendor_service_area` WHERE status = 1 "
-    console.log(req.body)
-    for (let k in req.body) {
-        query_ += `AND  ${k} LIKE '%${req.body[k]}%'`
-    }
-    console.log(query_ + "group by pin")
-    // return false
-    connection.query(query_ + "group by pin", (err, rows, fields) => {
-        if (err) {
-            console.log(err)
-            res.status(200).send({ "status": false, "response": "find some error" })
-        } else {
-            // res.status(200).send({ "status": true, "response": rows })
-            console.log(rows)
-            res.status(200).send({ "status": true, "response": rows })
 
+    if (req.vendor_id) {
+        console.log("vendor_selected_areas-------------")
+        connection.query("SELECT * FROM vendor_service_area WHERE FIND_IN_SET('" + req.vendor_id + "', vendors_id);", (err, rows, fields) => {
+            if (err) {
+                console.log(err)
+                res.status(200).send({ "status": false, "response": "find some error" })
+            } else {
+                res.status(200).send({ "status": true, "response": rows })
+            }
+        })
+    } else {
+        let query_ = "SELECT * FROM `vendor_service_area` WHERE status = 1 "
+        console.log(req.body)
+        for (let k in req.body) {
+            query_ += `AND  ${k} LIKE '%${req.body[k]}%'`
         }
-    })
+        console.log(query_ + "group by pin")
+        // return false
+        connection.query(query_ + "group by pin", (err, rows, fields) => {
+            if (err) {
+                console.log(err)
+                res.status(200).send({ "status": false, "response": "find some error" })
+            } else {
+                // res.status(200).send({ "status": true, "response": rows })
+                console.log(rows)
+                res.status(200).send({ "status": true, "response": rows })
+
+            }
+        })
+    }
 }
 
 export function check_vendor_service_avaibility(req, res) {
@@ -112,6 +124,18 @@ export function check_vendor_service_avaibility(req, res) {
             } else {
                 res.status(200).send({ "status": false, "service_available": [], "response": "area_id not matched" })
             }
+        }
+    })
+}
+
+export function vendor_selected_areas(req, res) {
+    console.log("vendor_selected_areas-------------")
+    connection.query("SELECT * FROM vendor_service_area WHERE FIND_IN_SET('" + req.vendor_id + "', vendors_id);", (err, rows, fields) => {
+        if (err) {
+            console.log(err)
+            res.status(200).send({ "status": false, "response": "find some error" })
+        } else {
+            res.status(200).send({ "status": true, "response": rows })
         }
     })
 }

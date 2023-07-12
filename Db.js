@@ -17,13 +17,13 @@ import "dotenv/config";
 // export default connection;
 
 // export default function handleDisconnect() {
+
 var connection = mysql.createConnection({
   host: "mysql.indiakinursery.com",
   user: "indiakinursery",
   password: "WE2code@2023",
   database: "indiakinursery",
 });
-
 
 // var connection = mysql.createConnection({
 //   host: "b8ge1gim6edaq5jr1rht-mysql.services.clever-cloud.com",

@@ -645,15 +645,15 @@ export async function vendor_product_list(req, res) {
             }
 
         } else {
-            if (i > 1) {
-                if (search_obj[i] != undefined && req.body[search_obj[i]] != "") {
-                    search_string_asc_desc = ` ORDER BY ${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
-                }
+            // if (i > 1) {ORDER BY `product_view`.`id`  ASC
+            if (search_obj[i] != undefined && req.body[search_obj[i]] != "") {
+                search_string_asc_desc = ` ORDER BY product_view.${search_obj[i].replace("__", "")} ${req.body[search_obj[i]]} `
             }
+            // }
         }
         if (i === search_obj.length - 1) {
             search_string = search_string.substring(0, search_string.length - 6);
-            search_string += search_string_asc_desc
+            // search_string += search_string_asc_desc
             // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
             // }
 
@@ -691,8 +691,8 @@ export async function vendor_product_list(req, res) {
                     })
 
                 console.log("check_------------------------qyueryyyyy---545")
-                console.log("" + search_string + "GROUP BY id LIMIT " + limit + "")
-                connection.query("" + search_string + "GROUP BY id LIMIT " + limit + "",
+                console.log("" + search_string + "GROUP BY id " + search_string_asc_desc + " LIMIT " + limit + "")
+                connection.query("" + search_string + "GROUP BY id " + search_string_asc_desc + " LIMIT " + limit + "",
                     (err, results) => {
                         if (err) {
                             console.log("err___________________194")

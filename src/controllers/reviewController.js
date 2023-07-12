@@ -40,7 +40,7 @@ export function review_approved(req, res) {
                 res.status(200).send(err)
             } else {
                 //console.log("review_approved update Succecsfully")
-                res.status(200).send({ message: "Review Approved Update Succecsfully" })
+                res.status(200).send({ message: "Review " + status + " Update Succecsfully" })
             }
         })
     } else {
@@ -58,7 +58,7 @@ export function review_list(req, res) {
         //console.log(catobj)
         var objvalue = Object.values(catobj)
         var objkey = Object.keys(catobj)
-        for (m = 0; m < objkey.length; m++) {
+        for (let m = 0; m < objkey.length; m++) {
             if (objvalue[m] != '') {
                 if (m == 0) {
                     stringsearch += "`" + objkey[m] + "` LIKE '%" + objvalue[m] + "%' "
@@ -81,6 +81,7 @@ export function review_list(req, res) {
 
             //console.log("no avia")
         }
+
         connection.query('' + stringsearch + ' ORDER BY id DESC', (err, rows, fields) => {
             if (err) {
                 //console.log("/review_error"+err)

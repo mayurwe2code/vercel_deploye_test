@@ -21,7 +21,7 @@ export function add_product_image(req, res) {
       console.log("chkkkkkkkkkkkkk--------------------20")
       console.log(name_str)
       fs.writeFileSync(path.join(__dirname, '../../') + 'public/product_images/' + name_str + ".png", imgBase64, 'base64');
-      connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "' + req.protocol + "://" + req.headers.host + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
+      connection.query('INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' + item.product_id + '", "' + req.vendor_id + '","' + item.product_verient_id + '","' + item.product_description + '", "' + name_str + '.png", "' + req.protocol + "://" + req.headers.host + "/product_images/" + name_str + '.png", "' + item.image_position + '")', (err, rows, fields) => {
         if (err) {
           console.log("add-image--error--data--------")
           console.log(err)

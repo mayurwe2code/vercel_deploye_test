@@ -341,8 +341,19 @@ export async function order_list(req, res) {
 export async function order_details(req, res) {
   const id = req.query.id;
   let resp_obj = {}
+  let query_ = ''
+  let chek_token = true;
+  if ("admin_token" in req.headers) {
+    chek_token = false;
+    query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" '
+  } else {
+    query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND user_id ="' + req.user_id + '" '
+  }
+  // if("user_token" in req.headers){
 
-  connection.query('SELECT * FROM `order` WHERE order_id ="' + id + '" AND user_id ="' + req.user_id + '" ',
+  // }
+
+  connection.query(query_,
     (err, rows) => {
       if (err) {
         console.log(err)
@@ -351,6 +362,7 @@ export async function order_details(req, res) {
         if (rows != "") {
           resp_obj["success"] = true
           resp_obj["order_detaile"] = rows
+          req.user_id = rows[0]["user_id"]
           connection.query('SELECT * FROM `order_detaile1` where order_id =' + id + '',
             (err, rows) => {
               if (err) {
@@ -359,7 +371,8 @@ export async function order_details(req, res) {
               } else {
                 resp_obj["success"] = true
                 resp_obj["order_product_detaile"] = rows
-                // res.status(StatusCodes.OK).json(resp_obj);
+                // res.status(StatusCodes.OK).json(resp_obj);        
+                // if (chek_token) {
                 connection.query("select * from user where id= '" + req.user_id + "'", (err, rows) => {
                   if (err) {
                     res
@@ -370,6 +383,10 @@ export async function order_details(req, res) {
                     res.status(StatusCodes.OK).json(resp_obj);
                   }
                 })
+                // } else {
+                //   res.status(StatusCodes.OK).json(resp_obj);
+                // }
+
               }
             }
           );
@@ -639,7 +656,13 @@ export async function vendor_order_search(req, res) {
     } else {
 
       if (req.body[search_obj[i]] != "") {
-        search_string1 += ` ${search_obj[i]} = "${req.body[search_obj[i]]}" AND `
+        // search_string1 += ` ${search_obj[i]} = "${req.body[search_obj[i]]}" AND `
+
+
+        var arr = JSON.stringify(req.body[search_obj[i]]);
+        var abc = "'" + arr + "'"
+        const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
+        search_string1 += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND '
       }
     }
     if (i === search_obj.length - 1) {

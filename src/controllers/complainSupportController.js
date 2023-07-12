@@ -24,13 +24,17 @@ export function complain_update(req, res) {
         getDate();
     if (req.headers.admin_token) {
         let { id, assigned_to, status } = req.body;
+        let complain_status = '';
         if (assigned_to) {
+            complain_status = status;
             query_ = "UPDATE `comaplains_support` SET `assigned_to`='" + assigned_to + "',`status_`='" + status + "',`asign_date`='" + complaint_newdate + "',`updated_on`='" + complaint_newdate + "' WHERE `id`= " + id + ""
         } else {
+            complain_status = status;
             query_ = "UPDATE `comaplains_support` SET `status_`='" + status + "',`asign_date`='" + complaint_newdate + "',`updated_on`='" + complaint_newdate + "' WHERE `id`= " + id + ""
         }
     } else if (req.headers.vendor_token) {
         let { id, status, resolve_description } = req.body;
+        complain_status = status;
         query_ = "UPDATE `comaplains_support` SET `resolve_date`='" + complaint_newdate + "',`status_`='" + status + "',`resolve_description`='" + resolve_description + "',`updated_on`='" + complaint_newdate + "' WHERE `id`= " + id + " AND `assigned_to`=" + req.vendor_id + " "
     } else {
         query_ = ""
@@ -41,7 +45,7 @@ export function complain_update(req, res) {
             console.log(err)
             res.status(200).send(err)
         } else {
-            rows.affectedRows >= 1 ? res.status(200).send({ "response": "Succesfully Update Complaint" }) : res.status(200).send({ "response": "Faild Complaint Update" })
+            rows.affectedRows >= 1 ? res.status(200).send({ "status": false, "response": "Succesfully Update Complaint" }) : res.status(200).send({ "status": true, "response": "Faild Complaint Update", "complain_status": complain_status })
         }
     })
 }

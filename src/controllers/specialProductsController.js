@@ -2,7 +2,7 @@ import connection from "../../Db.js";
 
 export function trending_products(req, res) {
   console.log(req.body)
-  let { from_date, to_date } = req.body;
+  let { from_date, to_date, from_price, to_price, order_by } = req.body;
   let query_ = "";
   console.log(req.user_id)
   if (req.user_id != "" && req.user_id != undefined) {
@@ -21,16 +21,26 @@ export function trending_products(req, res) {
     from_date = sevenDaysAgo.toISOString().slice(0, 19).replace("T", " ");
     query_ += "`order`.created_on BETWEEN '" + from_date + "' AND '" + to_date + "'"
   }
+  if (from_price && to_price) {
+    query_ += ' AND `product_view`.price BETWEEN "' + from_price + '" AND "' + to_price + '"'
+  }
+
   for (let k in req.body) {
-    if (k != "from_date" && k != "to_date") {
+    if (k != "from_date" && k != "to_date" && k != "from_price" && k != "to_price" && k != "order_by") {
       query_ += ` AND product_view.${k} = '${req.body[k]}'`
     } else {
 
     }
   }
+  let order_by_ = ""
+  if (order_by) {
+    order_by_ = ` ORDER BY ${order_by} `
+  } else {
+    order_by_ = ` ORDER BY sale_count DESC `
+  }
 
-  console.log(query_ + " GROUP BY `order`.product_id ORDER BY sale_count DESC")
-  connection.query(query_ + ' GROUP BY `order`.product_id ORDER BY sale_count DESC', (err, rows) => {
+  console.log(query_ + " GROUP BY `order`.product_id" + order_by_ + "")
+  connection.query(query_ + ' GROUP BY `order`.product_id' + order_by_ + '', (err, rows) => {
     if (err) {
       console.log(err)
       res.status(200)
