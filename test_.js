@@ -950,33 +950,71 @@
 // ]
 
 
-import admin from 'firebase-admin'
-import { cred } from './nursery-17acf-firebase-adminsdk-z7jkd-c86bab349a.js'
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// import admin from 'firebase-admin'
+// import { cred } from './nursery-17acf-firebase-adminsdk-z7jkd-c86bab349a.js'
+// import path from 'path';
+// import { fileURLToPath } from 'url';
+// import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-// const serviceAccount = require(path.join(__dirname, 'credentials', './nursery-17acf-firebase-adminsdk-z7jkd-c86bab349a.json'));
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+// // const serviceAccount = require(path.join(__dirname, 'credentials', './nursery-17acf-firebase-adminsdk-z7jkd-c86bab349a.json'));
 
-console.log(__filename)
-// console.log(path.join(__dirname, '/nursery-17acf-firebase-adminsdk-z7jkd-c86bab349a'))
+// console.log(__filename)
+// // console.log(path.join(__dirname, '/nursery-17acf-firebase-adminsdk-z7jkd-c86bab349a'))
 
-admin.initializeApp({
-    credential: admin.credential.cert(cred)
-});
+// admin.initializeApp({
+//     credential: admin.credential.cert(cred)
+// });
 
-const uid = 'PlolHsVXWhhvAohbAH6904ezq5u1'; // Replace with the UID you want to verify
+// const uid = 'PlolHsVXWhhvAohbAH6904ezq5u1'; // Replace with the UID you want to verify
 
-admin
-    .auth()
-    .getUser(uid)
-    .then((userRecord) => {
-        // User exists
-        console.log('User exists:', userRecord.toJSON());
+// admin
+//     .auth()
+//     .getUser(uid)
+//     .then((userRecord) => {
+//         // User exists
+//         console.log('User exists:', userRecord.toJSON());
+//     })
+//     .catch((error) => {
+//         // User does not exist or error occurred
+//         console.error('Error verifying user:', error);
+//     });
+
+// import axios from 'axios'
+// import fs from 'fs'
+
+// const imageUrl = 'https://drive.google.com/thumbnail?id=1a8c7_GQky9ldEOXAhENYll4XgZMvZJvc&sz=w1000';
+// const outputPath = 'image.jpg'; // Specify the path where you want to save the image
+
+// const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
+
+// axios
+//     .get(corsProxyUrl + imageUrl, { responseType: 'stream' })
+//     .then(response => {
+//         console.log(response.data)
+//         console.log(response.error)
+//         response.data.pipe(fs.createWriteStream(outputPath))
+//             .on('finish', () => {
+//                 console.log('Image downloaded successfully!');
+//             })
+//             .on('error', error => {
+//                 console.error('Error downloading image:', error);
+//             });
+//     })
+//     .catch(error => {
+//         console.error('Error downloading image:', error);
+//     });
+
+import axios from 'axios'
+const imageUrl = 'https://drive.google.com/thumbnail?id=1a8c7_GQky9ldEOXAhENYll4XgZMvZJvc&sz=w1000';
+
+axios.get(imageUrl, { responseType: 'arraybuffer' })
+    .then(response => {
+        const imageUrl = response.request.res.responseUrl;
+        console.log('Image URL:', imageUrl);
+        console.log('Image URL find true---!');
     })
-    .catch((error) => {
-        // User does not exist or error occurred
-        console.error('Error verifying user:', error);
+    .catch(error => {
+        console.error('Error_image:', error);
     });

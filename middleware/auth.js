@@ -190,10 +190,13 @@ function fetch_user(req, res, next) {
   } else if (req.headers.user_blank == "true") {
     search_product(req, res)
   } else if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
+    console.log("chk___v token---")
+    console.log(req.headers.vendor_token)
+    console.log(process.env.VENDOR_JWT_SECRET_KEY)
     let token = jwt.verify(req.headers.vendor_token, process.env.VENDOR_JWT_SECRET_KEY);
     console.log("token+++++++++-----------------------" + token.id)
     console.log(token)
-    req.vendor_id = token.id
+    req.vendor_id = token["id"]
     next()
   } else if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
     try {

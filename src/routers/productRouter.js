@@ -37,10 +37,8 @@ productRouter.post("/addProduct", admin_auth, addproduct);
 productRouter.post("/add_product_verient", admin_auth, add_product_verient);
 productRouter.put("/update_product", admin_auth, update_Product);
 productRouter.put("/update_Product_verient", admin_auth, update_Product_verient);
-
 productRouter.get("/getproduct", getallProduct);
 productRouter.get("/getproduct/:id", getProductbyId);
-
 productRouter.put("/delete_product", admin_auth, delete_product);
 productRouter.put("/delete_restore_product_verient", admin_auth, delete_restore_product_verient);
 productRouter.post("/search", fetch_user, search_product);

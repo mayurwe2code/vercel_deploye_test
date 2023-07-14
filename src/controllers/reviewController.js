@@ -18,7 +18,7 @@ export function review_rating(req, res) {
                         res.status(200).send(err)
                     } else {
                         //console.log("review_rating Data Insert Succecsfully")
-                        res.status(201).send({ message: "Review Rating Data Insert Succecsfully" })
+                        res.status(201).send({ status: true, message: "Review Rating Data Insert Succecsfully" })
                     }
                 })
             } else {
@@ -40,11 +40,11 @@ export function review_approved(req, res) {
                 res.status(200).send(err)
             } else {
                 //console.log("review_approved update Succecsfully")
-                res.status(200).send({ message: "Review " + status + " Update Succecsfully" })
+                res.status(200).send({ status: true, message: "Review " + status + " Update Succecsfully" })
             }
         })
     } else {
-        res.status(200).send({ "response": "please send admin token" })
+        res.status(200).send({ status: false, "response": "please send admin token" })
     }
 }
 

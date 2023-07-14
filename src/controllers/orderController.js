@@ -1,7 +1,6 @@
 import connection from "../../Db.js";
 import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer"
-
 import fetch from 'node-fetch';
 export async function add_order(req, res) {
 
@@ -10,6 +9,15 @@ export async function add_order(req, res) {
   let vendor_order_detail_obj = {};
   let product_array = req.body["order"];
   let { first_name, last_name, email, phone_no, image, pincode, city, address, user_log, user_lat } = req.body["delivery_address"];
+
+  connection.query("UPDATE `user` SET `pincode`='" + pincode + "',`city`='" + city + "',`address`='" + address + "',`user_log`='" + user_log + "',`user_lat`='" + user_lat + "' WHERE id='" + req.user_id + "'",
+    (err, result) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log("user adress update success")
+      }
+    })
   var fcm_tokens = [];
   console.log("user_id=============================================11");
   console.log(req.user_id);
@@ -56,13 +64,13 @@ export async function add_order(req, res) {
                   console.log("________chk qty.")
                   console.log(result)
                   console.log(parseInt(result[0]["product_stock_quantity"]))
-                  var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["total_order_product_quantity"])
+                  var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
                   console.log("--------------------update_stock_qty-----------------")
                   console.log(update_stock_qty)
                   // if (update_stock_qty >= 0 && item["total_order_product_quantity"] > 0) {
                   console.log("_____________update_stock_qty >= 0 && item[total_order_product_quantity] > 0________________line chek 52")
 
-                  connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + order_no_old + '", "12", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
+                  connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + order_no_old + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
                     if (err) {
                       console.log(err)
                       response_send.push({ "order_detail_insert_error": err, "index_no": index })
@@ -144,7 +152,7 @@ export async function add_order(req, res) {
                   console.log(result)
 
                   console.log(parseInt(result[0]["product_stock_quantity"]))
-                  var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["total_order_product_quantity"])
+                  var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
                   console.log("--------------------update_stock_qty-----------------")
                   console.log(update_stock_qty)
                   console.log("update_stock_qty >= 0 && item[total_order_product_quantity] > 0--------------line---138")
@@ -211,7 +219,7 @@ export async function add_order(req, res) {
 
 
 
-                        connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + orderno + '", "12", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
+                        connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + orderno + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
                           if (err) {
                             console.log(err)
                             response_send.push({ "order_detail_insert_error": err, "index_no": index })
@@ -346,8 +354,13 @@ export async function order_details(req, res) {
   if ("admin_token" in req.headers) {
     chek_token = false;
     query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" '
-  } else {
+  } else if (req.user_id) {
     query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND user_id ="' + req.user_id + '" '
+  }
+  else {
+    if (req.vendor_id) {
+      query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND vendor_id ="' + req.req.vendor_id + '" '
+    }
   }
   // if("user_token" in req.headers){
 
@@ -534,7 +547,7 @@ export async function order_search(req, res) {
         numPages = Math.ceil(numRows / numPerPage);
 
         connection.query(search_string + group_by +
-          " ORDER BY id DESC LIMIT " +
+          " ORDER BY created_on DESC LIMIT " +
           limit +
           "",
           (err, results) => {
@@ -689,11 +702,11 @@ export async function vendor_order_search(req, res) {
         numRows = results[0].numRows;
         numPages = Math.ceil(numRows / numPerPage);
         console.log(search_string1 +
-          " LIMIT " +
+          "ORDER BY order_date DESC LIMIT " +
           limit +
           "")
         connection.query(search_string1 +
-          " LIMIT " +
+          "ORDER BY order_date DESC LIMIT " +
           limit +
           "",
           (err, results) => {

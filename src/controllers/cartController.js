@@ -80,7 +80,9 @@ export async function add_to_cart(req, res) {
 }
 // (select count(*) cart where  user_id="' + req.user_id + '") AS cart_count, 
 export function cart_list(req, res) {
-  var str_cart = 'select *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = cart_view_1.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = cart_view_1.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image from cart_view_1 where user_id="' + req.user_id + '"'
+  // var str_cart = 'select *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = cart_view_1.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = cart_view_1.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image from cart_view_1 where user_id="' + req.user_id + '"'
+
+  var str_cart = 'select cart.id,user_id,cart.product_id,cart.product_verient_id,cart_product_quantity,cart.created_on AS cart_created_on,cart.updated_on AS cart_updated_on,is_status,vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,product_view.created_on,product_view.updated_on,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight,all_images_url,is_fetured,cover_image,avgRatings  from cart,product_view where cart.product_verient_id = product_view.product_verient_id AND user_id="' + req.user_id + '"'
 
   console.log(str_cart)
   connection.query(str_cart, (err, rows) => {

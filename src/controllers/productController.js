@@ -265,7 +265,7 @@ export async function search_product(req, res) {
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND ' + is_featured + '  ';
+      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND verient_is_deleted ="0" AND ' + is_featured + '  ';
     } else {
       var search_string = 'SELECT * FROM product_view where ' + is_featured + ' ';
     }
@@ -287,17 +287,38 @@ export async function search_product(req, res) {
       } else if (i == 7) {
 
         if (req.body[search_obj[i]] != "") {
-          search_string_asc_desc = ` ORDER BY ${req.body[search_obj[i]]} `
+          search_string_asc_desc1 = ` ORDER BY ${req.body[search_obj[i]]} `
         }
 
       } else {
-        if (req.body[search_obj[i]] != "") {
-          var arr = JSON.stringify(req.body[search_obj[i]]);
-          var abc = "'" + arr + "'"
-          const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
-          search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+        // if (req.body[search_obj[i]] != "") {
+        //   var arr = JSON.stringify(req.body[search_obj[i]]);
+        //   var abc = "'" + arr + "'"
+        //   const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
+        //   search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+        //   // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+        // }
 
-          // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+        if (req.body[search_obj[i]] != "") {
+          var key_for_query = search_obj[i]
+          console.log(req.body[search_obj[i]])
+          var multi_val_ar = req.body[search_obj[i]]
+          console.log(multi_val_ar)
+          for (var k = 0; k < multi_val_ar.length; k++) {
+            if (k == multi_val_ar.length - 1) {
+              search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) AND   `
+            } else {
+              search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) OR     `
+            }
+            // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+          };
+
+
+          // var arr = JSON.stringify(req.body[search_obj[i]]);
+          // var abc = "'" + arr + "'"
+          // const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
+          // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+          // // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
         }
       }
     } else {
