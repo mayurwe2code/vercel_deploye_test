@@ -33,7 +33,7 @@ export function vendor_signup(req, res) {
                                 } else {
                                     if (rows != '') {
                                         const mail_configs = {
-                                            from: 'ashish.we2code@gmail.com',
+                                            from: 'rahul.verma.we2code@gmail.com',
                                             to: u_email,
                                             subject: 'Nursery_live one time password',
                                             text: "use otp within 60 sec.",
@@ -42,8 +42,8 @@ export function vendor_signup(req, res) {
                                         nodemailer.createTransport({
                                             service: 'gmail',
                                             auth: {
-                                                user: 'ashish.we2code@gmail.com',
-                                                pass: 'nczaguozpagczmjv'
+                                                user: "rahul.verma.we2code@gmail.com",
+                                                pass: "sfbmekwihdamgxia",
                                             }
                                         })
                                             .sendMail(mail_configs, (err) => {
@@ -245,7 +245,7 @@ export function vendor_forgate_password(req, res) {
                         } else {
                             if (rows != '') {
                                 const mail_configs = {
-                                    from: 'ashish.we2code@gmail.com',
+                                    from: 'rahul.verma.we2code@gmail.com',
                                     to: req.body.email,
                                     subject: 'Nursery_live one time password',
                                     text: "use otp within 60 sec.",
@@ -254,8 +254,8 @@ export function vendor_forgate_password(req, res) {
                                 nodemailer.createTransport({
                                     service: 'gmail',
                                     auth: {
-                                        user: 'ashish.we2code@gmail.com',
-                                        pass: 'nczaguozpagczmjv'
+                                        user: "rahul.verma.we2code@gmail.com",
+                                        pass: "sfbmekwihdamgxia",
                                     }
                                 })
                                     .sendMail(mail_configs, (err) => {

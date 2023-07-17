@@ -259,7 +259,7 @@ export async function add_order(req, res) {
               }
             })
             const mail_configs = {
-              from: 'ashish.we2code@gmail.com',
+              from: 'rahul.verma.we2code@gmail.com',
               to: email,
               subject: 'order status ',
               text: "order added successfully",
@@ -268,8 +268,8 @@ export async function add_order(req, res) {
             nodemailer.createTransport({
               service: 'gmail',
               auth: {
-                user: 'ashish.we2code@gmail.com',
-                pass: 'nczaguozpagczmjv'
+                user: "rahul.verma.we2code@gmail.com",
+                pass: "sfbmekwihdamgxia",
               }
             })
               .sendMail(mail_configs, (err) => {
@@ -612,7 +612,7 @@ export function order_status_update(req, res) {
               res.status(500).send({ "response": "find error", "status": false });
             } else {
               const mail_configs = {
-                from: 'ashish.we2code@gmail.com',
+                from: 'rahul.verma.we2code@gmail.com',
                 to: email_user,
                 subject: 'order status change',
                 text: "order your order current staus is " + req.body.status_order + "",
@@ -621,8 +621,8 @@ export function order_status_update(req, res) {
               nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
-                  user: 'ashish.we2code@gmail.com',
-                  pass: 'nczaguozpagczmjv'
+                  user: "rahul.verma.we2code@gmail.com",
+                  pass: "sfbmekwihdamgxia",
                 }
               })
                 .sendMail(mail_configs, (err) => {
