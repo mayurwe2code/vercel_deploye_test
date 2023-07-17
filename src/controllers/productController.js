@@ -234,7 +234,7 @@ export async function delete_restore_product_verient(req, res) {
   );
 
 }
-
+// (SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product_view.category) )AS category_name,
 export async function search_product(req, res) {
   var { price_from, price_to } = req.body;
   console.log(req.body)
@@ -262,7 +262,7 @@ export async function search_product(req, res) {
   console.log(req.user_id)
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + '';
+    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
@@ -283,7 +283,7 @@ export async function search_product(req, res) {
     if (i >= 6) {
       if (i == 6) {
         if (req.body[search_obj[i]] != "") {
-          search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%" AND   `
+          search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category_name LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%" AND   `
         }
       } else if (i == 7) {
 

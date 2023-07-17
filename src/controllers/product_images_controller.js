@@ -57,23 +57,29 @@ export function add_product_image(req, res) {
 
 export function product_image_update(req, res) {
   console.log("product_image_________________________________________-")
+  var query_ = ""
   let base64_images = req.body
   // console.log(base64_images)
   let iterations = base64_images.length - 1;
   base64_images.forEach(function (item, index) {
-    let imgBase64 = item.img_64
-    let img_num = Math.floor(100000 + Math.random() * 900000);
+
     try {
+      let imgBase64 = item.img_64
+      let img_num = Math.floor(100000 + Math.random() * 900000);
       var base64Data = imgBase64.replace("data:image/png;base64,", "");
       var name_str = "" + item.product_image_name.split(" ").join("") + "_" + img_num + ""
 
       fs.writeFileSync(path.join(__dirname, '../../') + 'public/product_images/' + name_str + ".png", base64Data, 'base64');
+
+      query_ = 'UPDATE `product_images` SET `product_image_name`="' + name_str + '.png",`product_image_path`= "' + req.protocol + "://" + req.headers.host + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"'
     } catch (err) {
       console.log(err)
+      query_ = 'UPDATE `product_images` SET `image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"'
     }
 
     //console.log(item.vendor_id)
-    connection.query(' UPDATE `product_images` SET `product_description`="' + item.product_description + '",`product_image_name`="' + name_str + '.png",`product_image_path`= "' + req.protocol + "://" + req.headers.host + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"', (err, rows, fields) => {
+    //'UPDATE `product_images` SET `product_description`="' + item.product_description + '",`product_image_name`="' + name_str + '.png",`product_image_path`= "' + req.protocol + "://" + req.headers.host + name_str + '.png",`image_position`="' + item.image_position + '" WHERE product_image_id = "' + item.product_image_id + '" AND product_id = "' + item.product_id + '" AND product_verient_id ="' + item.product_verient_id + '"'
+    connection.query(query_, (err, rows, fields) => {
       if (err) {
         console.log(err)
         //res.status(200).send(err)

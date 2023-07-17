@@ -500,7 +500,7 @@ export async function search_vendor_product(req, res) {
         if (i >= 6) {
             if (i == 6) {
                 if (req.body[search_obj[i]] != "") {
-                    search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
+                    search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR category_name LIKE "%${req.body[search_obj[i]]}%" AND   `
                 }
             } else {
                 if (search_obj[i] == "is_verient") {
