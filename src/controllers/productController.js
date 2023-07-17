@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 export async function addproduct(req, res) {
   var { name, seo_tag, brand, review, rating, description, category, care_and_Instructions, benefits } = req.body;
   console.log("body--" + JSON.stringify(req.body));
+  console.log(req.body);
   console.log("vvvvvvvvvvvvvv" + req.vendor_id)
   if (req.vendor_id != "" && req.vendor_id != undefined) {
     console.log('INSERT INTO `product` (`vendor_id`,`name`,`seo_tag`,`category`,`description`,`care_and_Instructions`,`benefits`,`created_by`, `created_by_id`) values ("' + req.vendor_id + '","' + name + '","' + seo_tag + '","' + category + '","' + description + '","' + care_and_Instructions + '","' + benefits + '","' + req.created_by + '","' + req.created_by_id + '")')
