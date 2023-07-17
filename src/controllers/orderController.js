@@ -359,7 +359,7 @@ export async function order_details(req, res) {
   }
   else {
     if (req.vendor_id) {
-      query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND vendor_id ="' + req.req.vendor_id + '" '
+      query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND vendor_id ="' + req.vendor_id + '" '
     }
   }
   // if("user_token" in req.headers){

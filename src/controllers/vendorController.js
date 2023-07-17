@@ -465,7 +465,17 @@ export async function search_vendor_product(req, res) {
     var { price_from, price_to } = req.body;
     console.log(req.body)
     // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
+    var group_by = ' '
+    if (req.query.group == "yes") {
+        group_by = " group by product_id "
+    }
 
+    if ("DESC" in req.query) {
+        search_string_asc_desc = " ORDER BY " + req.query["DESC"] + " DESC "
+    }
+    if ("ASC" in req.query) {
+        search_string_asc_desc = " ORDER BY " + req.query["ASC"] + " ASC "
+    }
     var string = "";
     if (req.body.is_verient) {
         string = "join";
@@ -493,7 +503,7 @@ export async function search_vendor_product(req, res) {
                     search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
                 }
             } else {
-                if (req.body[search_obj[i]] == "yes") {
+                if (search_obj[i] == "is_verient") {
                     console.log("nonono" + req.body[search_obj[i]])
                 } else {
                     if (req.body[search_obj[i]] != "") {
@@ -515,6 +525,7 @@ export async function search_vendor_product(req, res) {
         }
         if (i === search_obj.length - 1) {
             search_string = search_string.substring(0, search_string.length - 6);
+            search_string += group_by
             search_string += search_string_asc_desc
             // if (search_obj[2] != undefined && req.body[search_obj[2]] != "") {
             // }
@@ -543,7 +554,7 @@ export async function search_vendor_product(req, res) {
                 connection.query(search_string.replace("*", "count(*) AS `count_rows` "),
                     (err, results) => {
                         console.log("results---------------------------------------")
-                        console.log(results)
+                        // console.log(results)
                         try {
                             count_rows = results[0]["count_rows"]
                         } catch (e) {
