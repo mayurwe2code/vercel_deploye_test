@@ -104,15 +104,13 @@ export async function add_order(req, res) {
 
                         }
                       });
+
                       connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + "  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                         if (err) {
                           console.log("rows----------------err-------delete---")
                           console.log(err)
                           console.log({ "response": "delete opration failed", "success": false });
                         } else {
-                          // console.log("rows-----------------------delete---row")
-                          // console.log(rows)
-
                         }
                       });
                     }
@@ -216,9 +214,6 @@ export async function add_order(req, res) {
                             // rows.affectedRows == "1" ? console.log({ "response": "delete successfull", "success": true }) : res.console.log({ "response": "delete opration failed", "success": false })
                           }
                         });
-
-
-
                         connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + orderno + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
                           if (err) {
                             console.log(err)
@@ -228,6 +223,8 @@ export async function add_order(req, res) {
                             response_send.push({ "order_detail_insert_successfull": result, "index_no": index })
                             console.log("______________product detaile insert  data___________176")
                             console.log(result)
+                            // vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]
+                            // vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]
                           }
                         }
                         );
@@ -653,6 +650,13 @@ export async function vendor_order_search(req, res) {
   // var search_string = "where ";
   var search_string1 = ""
   console.log(req.vendor_id)
+  let group_by = ""
+  if (req.query.group == "yes") {
+    group_by = " GROUP BY order_id "
+  } else {
+
+  }
+
   if (req.query.delivery_side) {
     search_string1 = 'SELECT * FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = "' + req.vendor_id + '" AND '
   } else {
@@ -701,12 +705,12 @@ export async function vendor_order_search(req, res) {
       } else {
         numRows = results[0].numRows;
         numPages = Math.ceil(numRows / numPerPage);
-        console.log(search_string1 +
+        console.log(search_string1 + group_by +
           "ORDER BY order_date DESC LIMIT " +
           limit +
           "")
-        connection.query(search_string1 +
-          "ORDER BY order_date DESC LIMIT " +
+        connection.query(search_string1 + group_by +
+          " ORDER BY order_date DESC LIMIT " +
           limit +
           "",
           (err, results) => {

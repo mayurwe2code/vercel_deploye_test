@@ -352,14 +352,15 @@ export async function search_product(req, res) {
   var limit = skip + "," + numPerPage;
 
   connection.query(
-    "SELECT count(*) as numRows FROM product",
+    "SELECT count(*) as numRows FROM product_view " + group_by,
     (err, results) => {
       if (err) {
       } else {
         numRows = results[0].numRows;
         numPages = Math.ceil(numRows / numPerPage);
         var count_rows;
-        connection.query(search_string.replace("*", "count(*) AS `count_rows` "),
+        var new_qry_ = search_string + group_by
+        connection.query(new_qry_.replace("*", "count(*) AS `count_rows` "),
           (err, results) => {
             console.log("results---------------------------------------")
             console.log(results)
