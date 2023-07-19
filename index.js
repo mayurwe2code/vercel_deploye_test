@@ -80,9 +80,12 @@ app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, 
 
 app.get("/version", (req, res) => {
   let dat = new Date()
+  // connection.end()
+  // connection
   res.send({
     "latest_update": dat, "latest_commit": "check cart and order - note find any bug - server all good"
   })
+
 })
 
 try {

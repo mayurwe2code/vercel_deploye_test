@@ -467,14 +467,14 @@ export async function search_vendor_product(req, res) {
     // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
     var group_by = ' '
     if (req.query.group == "yes") {
-        group_by = " group by product_id "
+        group_by = " group by product.id "
     }
 
     if ("DESC" in req.query) {
-        search_string_asc_desc = " ORDER BY " + req.query["DESC"] + " DESC "
+        search_string_asc_desc = " ORDER BY product." + req.query["DESC"] + " DESC "
     }
     if ("ASC" in req.query) {
-        search_string_asc_desc = " ORDER BY " + req.query["ASC"] + " ASC "
+        search_string_asc_desc = " ORDER BY product." + req.query["ASC"] + " ASC "
     }
     var string = "";
     if (req.body.is_verient) {
@@ -487,6 +487,10 @@ export async function search_vendor_product(req, res) {
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
         var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where product.vendor_id = "' + req.vendor_id + '" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0 ) AND is_deleted = 0  AND  ';
+
+        // product.vendor_id = "17" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0) AND is_deleted = 0
+
+        // GROUP BY product.id ORDER BY product.created_on DESC LIMIT 0, 100;
     } else {
         var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ';
     }
@@ -500,7 +504,8 @@ export async function search_vendor_product(req, res) {
         if (i >= 6) {
             if (i == 6) {
                 if (req.body[search_obj[i]] != "") {
-                    search_string += `name LIKE "%${req.body[search_obj[i]]}%" OR category_name LIKE "%${req.body[search_obj[i]]}%" AND   `
+                    search_string += `name LIKE "%${req.body[search_obj[i]]}%" AND   `
+                    // OR category_name LIKE "%${req.body[search_obj[i]]}%" 
                 }
             } else {
                 if (search_obj[i] == "is_verient") {
@@ -604,7 +609,17 @@ export async function search_vendor_product(req, res) {
 export function order_verify_by_vendor(req, res) {
     let { order_verify, order_id } = req.body
     console.log("check order_verify_by_admin" + req.vendor_id)
-    connection.query("UPDATE `order` SET `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'", (err, rows, fields) => {
+    let query_ = ""
+    if (order_verify == "accepted") {
+        query_ += "UPDATE `order` SET `status_order` = 'accepted_by_vendor', `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'"
+    }
+    if (order_verify == "rejected") {
+        query_ += "UPDATE `order` SET `status_order` = 'rejected_by_vendor', `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'"
+    }
+    if (order_verify == "pending") {
+        query_ += "UPDATE `order` SET `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'"
+    }
+    connection.query(query_, (err, rows, fields) => {
         if (err) {
             console.log(err)
             res.status(200).send({ "status": false, "response": "find some error" })
@@ -614,15 +629,37 @@ export function order_verify_by_vendor(req, res) {
     })
 }
 
-export function vendor_orders_status(req, res) {
-    connection.query("SELECT count(*) AS total_orders_from_order_table,(SELECT COUNT(*) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'accepted') AS accepted_order,(SELECT COUNT(*) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'rejected') AS rejected_order,(SELECT COUNT(*) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'pending') AS pending_order,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "') AS total_orders_from_order_delivery_table ,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'ready_to_pickup' ) AS ready_to_pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Pickup' ) AS pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Delivered' ) AS delivered_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Rejected_by_customer' ) AS rejected_by_customer_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Failed_Delivery_Attempts' ) AS failed_Delivery_Attempts_orders FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "'", (err, rows, fields) => {
-        if (err) {
-            console.log(err)
-            res.status(200).send({ "status": false, "response": "find some error" })
-        } else {
-            res.status(200).send({ "status": true, "response": rows })
-        }
-    })
+export async function vendor_orders_status(req, res) {
+    //   let {} = req.query
+    const executeQuery = (query) => {
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    console.log(error)
+                    reject(error);
+                } else {
+                    console.log(results[0])
+                    resolve(results[0]);
+                }
+            });
+        });
+    };
+    const queries = [
+        'SELECT COUNT(DISTINCT(order_id)) AS new_order FROM `order_view` where vendor_id="17" AND  status_order IN ("accepted_by_vendor","pending","shipped","approved","packed","Pickuped","ready_to_pickup") ',
+        'SELECT COUNT(DISTINCT(order_id)) AS rejected_order FROM order_view WHERE vendor_id = ' + req.vendor_id + ' AND status_order IN ("rejected_by_vendor", "Rejected_by_customer", "Failed_Delivery_Attempts", "cancel")',
+        'SELECT COUNT(DISTINCT(order_id)) AS in_progerss FROM order_view WHERE vendor_id = ' + req.vendor_id + ' AND status_order IN ("accepted_by_vendor", "pending", "shipped", "approved", "packed", "Pickuped", "ready_to_pickup")',
+        'SELECT COUNT(DISTINCT(order_id)) AS delivered FROM order_view WHERE vendor_id =' + req.vendor_id + ' AND status_order IN ("Delivered")',
+    ];
+    try {
+        const results = await Promise.all(queries.map(query => executeQuery(query)));
+        let orders_status = Object.assign({}, ...results)
+        console.log(orders_status)
+
+        res.status(200).send({ "status": true, orders_status })
+    } catch (error) {
+        res.status(200).send({ "status": false, results: [] })
+    }
+
 }
 export async function vendor_product_list(req, res) {
     console.log(req.body)

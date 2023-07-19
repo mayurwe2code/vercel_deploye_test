@@ -268,7 +268,7 @@ export async function search_product(req, res) {
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
       var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND verient_is_deleted ="0" AND ' + is_featured + '  ';
     } else {
-      var search_string = 'SELECT * FROM product_view where ' + is_featured + ' ';
+      var search_string = 'SELECT * FROM product_view where ' + is_featured + ' verient_is_deleted ="0" AND   ';
     }
   }
 

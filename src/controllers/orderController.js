@@ -2,6 +2,17 @@ import connection from "../../Db.js";
 import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer"
 import fetch from 'node-fetch';
+
+
+// const my_fun = async () => {
+//   for (let i = 0; i < 10; i++) {
+//     await executeFunction1();
+//     await executeFunction2();
+//     console.log('Both functions completed');
+//   }
+// };
+
+// my_fun();
 export async function add_order(req, res) {
 
   let vendore_id_array = [];
@@ -33,221 +44,190 @@ export async function add_order(req, res) {
         // var { first_name, last_name, email, phone_no, image } = result[0]
         // console.log({ first_name, last_name, email, phone_no })
         // if (first_name && last_name && email && phone_no && pincode && city && address && alternate_address && user_log && user_lat) {
-        console.log("true_______line___23")
-        console.log("user_id=============================================24")
         if (result[0].token_for_notification != "" && result[0].token_for_notification != undefined && result[0].token_for_notification != null) { fcm_tokens.push(result[0].token_for_notification) }
 
-        console.log(product_array)
-
-        product_array.forEach((item, index) => {
-          console.log("_______item-------------line--30__" + index)
-          console.log(item)
-          console.log(order_no_obj)
-          console.log(vendore_id_array)
-          if (vendore_id_array.includes(item["vendor_id"])) {
-
-            let order_no_old = order_no_obj[item["vendor_id"]]
-
-            let verify_code = JSON.stringify(order_no_old * 13)
-            if (verify_code.length > 7) {
-              verify_code = verify_code.substring(0, verify_code.length - 1)
-            }
-
-            console.log("++++++++++++++++++++++++++line---36___" + item["product_id"])
-            connection.query("SELECT product_stock_quantity FROM `product_verient` WHERE product_verient_id='" + item["product_verient_id"] + "'",
-              (err, result) => {
-                if (err) {
-                  console.log(err)
-                  response_send.push({ "product_quantity": err })
-                  // res.status(500).send(err);
-                } else {
-                  console.log("________chk qty.")
-                  console.log(result)
-                  console.log(parseInt(result[0]["product_stock_quantity"]))
-                  var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
-                  console.log("--------------------update_stock_qty-----------------")
-                  console.log(update_stock_qty)
-                  // if (update_stock_qty >= 0 && item["total_order_product_quantity"] > 0) {
-                  console.log("_____________update_stock_qty >= 0 && item[total_order_product_quantity] > 0________________line chek 52")
-
-                  connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + order_no_old + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
-                    if (err) {
-                      console.log(err)
-                      response_send.push({ "order_detail_insert_error": err, "index_no": index })
-                      // res.status(500).send({ "response": "find error", "status": false });
-                    } else {
-                      console.log("______________product detaile insert  data___line_______106_")
-                      response_send.push({ "order_detail_insert_successfull": result, "index_no": index })
-                      console.log(result)
-
-                      connection.query(
-                        "UPDATE `product_verient` SET product_stock_quantity = '" + update_stock_qty + "' WHERE product_verient_id='" + item["product_verient_id"] + "'",
-                        (err, result) => {
-                          if (err) {
-                            console.log(err)
-                            // res.status(500).send({ "response": "find error", "status": false });
-                          } else {
-                            // res.status(200).json({ message: result });
-                          }
-                        }
-                      );
-                      console.log("=======before    order    cart remove==========top=============")
-                      console.log("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'")
-                      connection.query("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
-                        if (err) {
-                          console.log("rows----------------err-------delete---")
-                          console.log(err)
-                          console.log({ "response": "delete opration failed", "success": false });
-                        } else {
-                          // console.log("rows-----------------------delete---row")
-                          // console.log(rows)
-
-                        }
-                      });
-
-                      connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + "  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
-                        if (err) {
-                          console.log("rows----------------err-------delete---")
-                          console.log(err)
-                          console.log({ "response": "delete opration failed", "success": false });
-                        } else {
-                        }
-                      });
-                    }
-                  }
-                  );
-                  //     }
-                  //   }
-                  // );
-                  // } else {
-                  //   // res.send({ "response": "product stock unavailable", "status": false })
-                  //   console.log({ "response": "product stock unavailable", "status": false })
-                  // }
-
-                }
+        const order_insert = (item, index) => {
+          return new Promise((resolve) => {
+            console.log("vendore_id_array-and-vendor_id-----------" + index + "---------arraychk")
+            console.log(vendore_id_array)
+            console.log(item["vendor_id"])
+            if (vendore_id_array.includes(item["vendor_id"])) {
+              console.log("---vendore_id_array.includes(item[vendor_id])--true-")
+              console.log(vendore_id_array.includes(item["vendor_id"]))
+              let order_no_old = order_no_obj[item["vendor_id"]]
+              let verify_code = JSON.stringify(order_no_old * 13)
+              if (verify_code.length > 7) {
+                verify_code = verify_code.substring(0, verify_code.length - 1)
               }
-            )
-          } else {
-            let orderno = Math.floor(100000 + Math.random() * 900000);
-            vendore_id_array.push(item["vendor_id"])
-            order_no_obj[item["vendor_id"]] = orderno
-            vendor_order_detail_obj[item["vendor_id"]] = {}
-            vendor_order_detail_obj[item["vendor_id"]]["vendor_id"] = item["vendor_id"]
-            vendor_order_detail_obj[item["vendor_id"]]["order_no"] = orderno
-            vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] = item["total_of_this_prodoct"]
-            vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] = item["cart_qty_of_this_product"]
-            let verify_code = JSON.stringify(orderno * 13)
-            if (verify_code.length > 7) {
-              verify_code = verify_code.substring(0, verify_code.length - 1)
-            }
-            connection.query("SELECT product_stock_quantity FROM product_verient WHERE product_verient_id='" + item["product_verient_id"] + "'",
-              (err, result) => {
-                if (err) {
-                  // res.status(500).send(err);
-                  response_send.push({ "get_product_stock_quantity_error": err, "index_no": index })
-                } else {
-                  console.log("________chk qty_____line___128.")
-                  console.log(result)
+              connection.query("SELECT product_stock_quantity FROM `product_verient` WHERE product_verient_id='" + item["product_verient_id"] + "'",
+                (err, result) => {
+                  if (err) {
+                    console.log(err)
+                    response_send.push({ "product_quantity": err })
+                  } else {
+                    var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
 
-                  console.log(parseInt(result[0]["product_stock_quantity"]))
-                  var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
-                  console.log("--------------------update_stock_qty-----------------")
-                  console.log(update_stock_qty)
-                  console.log("update_stock_qty >= 0 && item[total_order_product_quantity] > 0--------------line---138")
-                  // if (update_stock_qty >= 0 && item["total_order_product_quantity"] > 0) {
-                  connection.query(
-                    "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`) VALUES ('" + orderno + "','" + item["product_id"] + "','" + req.user_id + "', '" + item["vendor_id"] + "', '" + item["total_order_product_quantity"] +
-                    "','" +
-                    item["total_amount"] +
-                    "','" +
-                    item["total_gst"] +
-                    "','" +
-                    item["total_cgst"] +
-                    "','" +
-                    item["total_sgst"] +
-                    "','" +
-                    item["total_discount"] +
-                    "','" +
-                    item["shipping_charges"] +
-                    "','" +
-                    orderno +
-                    "','" +
-                    item["payment_mode"] +
-                    "','" +
-                    item["payment_ref_id"] +
-                    "','" +
-                    item["discount_coupon"] +
-                    "','" +
-                    item["discount_coupon_value"] +
-                    "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + address + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "' ,'" + verify_code + "')",
-                    (err, rows) => {
+                    connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + order_no_old + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
                       if (err) {
                         console.log(err)
-                        response_send.push({ "order_insert_error": err, "index_no": index })
-                        // res.status(StatusCodes.INSUFFICIENT_STORAGE).json({ "response": "find error", "status": false });
+                        response_send.push({ "order_detail_insert_error": err, "index_no": index })
                       } else {
-                        console.log("rows=====170")
-                        console.log(rows)
-                        response_send.push({ "order_insert_successfull": rows, "index_no": index })
+                        console.log("______________product detaile insert  data___line_______106_")
+                        response_send.push({ "order_detail_insert_successfull": result, "index_no": index })
+                        console.log(result)
+
                         connection.query(
-                          // UPDATE `product` SET `product_stock_quantity` = '11' WHERE `product`.`id` = 16;
-                          "UPDATE `product_verient` SET product_stock_quantity='" + update_stock_qty + "' WHERE product_verient_id='" + item["product_verient_id"] + "'",
+                          "UPDATE `product_verient` SET product_stock_quantity = '" + update_stock_qty + "' WHERE product_verient_id='" + item["product_verient_id"] + "'",
                           (err, result) => {
                             if (err) {
                               console.log(err)
-                              // res.status(500).send({ "response": "find error", "status": false });
                             } else {
                               // res.status(200).json({ message: result });
+
                             }
                           }
                         );
-                        console.log("=======before    order    cart remove========bottom===============")
-                        console.log("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'")
                         connection.query("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                           if (err) {
-                            console.log("rows------201----------err-------delete---")
+                            console.log("rows----------------err-------delete---")
                             console.log(err)
                             console.log({ "response": "delete opration failed", "success": false });
                           } else {
-                            // console.log("rows---------205--------------delete---row")
-                            // console.log(rows)
-                            // rows.affectedRows == "1" ? console.log({ "response": "delete successfull", "success": true }) : res.console.log({ "response": "delete opration failed", "success": false })
+                            // console.log("rows-----------------------delete---row")
                           }
                         });
-                        connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + orderno + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
+                        connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + "  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                           if (err) {
+                            console.log("rows----------------err-------delete---")
                             console.log(err)
-                            response_send.push({ "order_detail_insert_error": err, "index_no": index })
-                            // res.status(500).send({ "response": "find error", "status": false });
                           } else {
-                            response_send.push({ "order_detail_insert_successfull": result, "index_no": index })
-                            console.log("______________product detaile insert  data___________176")
-                            console.log(result)
-                            // vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]
-                            // vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]
                           }
-                        }
-                        );
-
-                        // send_emal-----------------etc.
-                        //resend--------------------
-                        console.log(rows)
-                        // res.send("okay")
+                          resolve()
+                        });
                       }
                     }
-                  );
-                  // } else {
-                  //   // res.send({ "response": "product stock unavailable", "status": false })
-                  //   response_send.push({ "product_stock_unavailable": "erreer", "index_no": index })
-                  //   console.log({ "response": "product stock unavailable", "status": false })
-                  // }
+                    );
+                    //     }
+                    //   }
+                    // );
+                    // } else {
+                    //   // res.send({ "response": "product stock unavailable", "status": false })
+                    //   console.log({ "response": "product stock unavailable", "status": false })
+                    // }
 
+                  }
                 }
+              )
+            } else {
+              console.log("---vendore_id_array.includes(item[vendor_id])--false-")
+              let orderno = Math.floor(100000 + Math.random() * 900000);
+              vendore_id_array.push(item["vendor_id"])
+              order_no_obj[item["vendor_id"]] = orderno
+              vendor_order_detail_obj[item["vendor_id"]] = {}
+              vendor_order_detail_obj[item["vendor_id"]]["vendor_id"] = item["vendor_id"]
+              vendor_order_detail_obj[item["vendor_id"]]["order_no"] = orderno
+              vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] = item["total_of_this_prodoct"]
+              vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] = item["cart_qty_of_this_product"]
+              let verify_code = JSON.stringify(orderno * 13)
+              if (verify_code.length > 7) {
+                verify_code = verify_code.substring(0, verify_code.length - 1)
               }
-            )
-          }
+              connection.query("SELECT product_stock_quantity FROM product_verient WHERE product_verient_id='" + item["product_verient_id"] + "'",
+                (err, result) => {
+                  if (err) {
+                    // res.status(500).send(err);
+                    response_send.push({ "get_product_stock_quantity_error": err, "index_no": index })
+                  } else {
+                    var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
+                    connection.query(
+                      "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`) VALUES ('" + orderno + "','" + item["product_id"] + "','" + req.user_id + "', '" + item["vendor_id"] + "', '" + item["total_order_product_quantity"] +
+                      "','" +
+                      item["total_amount"] +
+                      "','" +
+                      item["total_gst"] +
+                      "','" +
+                      item["total_cgst"] +
+                      "','" +
+                      item["total_sgst"] +
+                      "','" +
+                      item["total_discount"] +
+                      "','" +
+                      item["shipping_charges"] +
+                      "','" +
+                      orderno +
+                      "','" +
+                      item["payment_mode"] +
+                      "','" +
+                      item["payment_ref_id"] +
+                      "','" +
+                      item["discount_coupon"] +
+                      "','" +
+                      item["discount_coupon_value"] +
+                      "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + address + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "' ,'" + verify_code + "')",
+                      (err, rows) => {
+                        if (err) {
+                          console.log(err)
+                          response_send.push({ "order_insert_error": err, "index_no": index })
+                        } else {
+                          console.log("rows=====170")
+                          console.log(rows)
+                          response_send.push({ "order_insert_successfull": rows, "index_no": index })
+                          connection.query(
+                            "UPDATE `product_verient` SET product_stock_quantity='" + update_stock_qty + "' WHERE product_verient_id='" + item["product_verient_id"] + "'",
+                            (err, result) => {
+                              if (err) {
+                                console.log(err)
+                              } else {
+                              }
+                            }
+                          );
+                          connection.query("delete from cart where product_verient_id ='" + item["product_verient_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+                            if (err) {
+                              console.log(err)
+                            } else {
+                              // console.log("rows---------205--------------delete---row")
+                            }
+                          });
+                          connection.query('INSERT INTO order_detaile1 (`id`, `order_id`, `order_cart_count`, `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image`) SELECT `id`, "' + orderno + '", "' + item["cart_qty_of_this_product"] + '", `vendor_id`, `name`, `seo_tag`, `brand`, `category`, `is_deleted`, `status`, `review`, `rating`, `description`, `is_active`, `created_by`, `created_by_id`, `created_on`, `updated_on`, `product_verient_id`, `product_id`, `verient_name`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `verient_is_deleted`, `verient_status`, `discount`, `verient_description`, `verient_is_active`, `verient_created_on`, `verient_updated_on`, `product_height`, `product_width`, `product_Weight`, `all_images_url`, `cover_image` FROM	product_view WHERE product_verient_id = ' + item["product_verient_id"] + '', (err, result) => {
+                            if (err) {
+                              console.log(err)
+                              response_send.push({ "order_detail_insert_error": err, "index_no": index })
+                            } else {
+                              response_send.push({ "order_detail_insert_successfull": result, "index_no": index })
+                              console.log("______________product detaile insert  data___________176")
+                              console.log(result)
+
+                              connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"]}` + "  where `order_id` ='" + orderno + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+                                if (err) {
+                                  console.log("rows----------------err-------delete---")
+                                  console.log(err)
+                                } else {
+                                }
+                                resolve()
+                              });
+                            }
+                          }
+                          );
+                          console.log(rows)
+                        }
+                      }
+                    );
+                  }
+                }
+              )
+            }
+          });
+        };
+        product_array.forEach(async (item, index) => {
+
+          await order_insert(item, index)
+
           if (index === product_array.length - 1) {
             console.log(response_send)
+            var order_ar = []
+            for (var k in order_no_obj) {
+              order_ar.push(order_no_obj[k])
+            }
             connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + req.user_id + '","user","successfully placed order,order_no=","unread"),("001","admin","recived order (order_no. =) by ' + first_name + ', user_id ' + req.user_id + '","unread")', (err, rows) => {
               if (err) {
                 //console.log({ "notification": err })
@@ -273,20 +253,17 @@ export async function add_order(req, res) {
                 if (err) {
                   console.log(vendor_order_detail_obj)
 
-                  res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
+                  // res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
                   return //console.log({ "email_error": err });
                 } else {
                   console.log(vendor_order_detail_obj)
-                  res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
+                  // res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
 
                   return { "send_mail_status": "send successfully" };
                 }
               })
-            var order_ar = []
-            for (var k in order_no_obj) {
-              order_ar.push(order_no_obj[k])
-            }
 
+            res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
             if (fcm_tokens != "") {
               var notification = {
                 "title": "nurser_live order notification",
@@ -317,7 +294,6 @@ export async function add_order(req, res) {
 
       }
     })
-
 }
 
 export async function order_list(req, res) {
