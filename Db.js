@@ -1,6 +1,6 @@
 import mysql from "mysql2";
 import "dotenv/config";
-
+import ReconnectCore from 'reconnect-core';
 // node
 // console.log();
 // const connection = mysql.createConnection({
@@ -51,7 +51,7 @@ connection.connect(function (err) {
   console.log("connect-1--------------------------29")
   if (err) {
     console.log('error when connecting to db:', err);
-    setTimeout(connection, 2000);
+    setTimeout(connection.connect(), 2000);
   }
 });
 connection.on('error', function (err) {
@@ -67,30 +67,33 @@ connection.on('error', function (err) {
 // }
 // connection
 export default connection;
-// import ReconnectCore from 'reconnect-core';
-// import mysql from 'mysql2/promise';
 
-// const dbConfig = {
-//   host: 'mysql.indiakinursery.com',
-//   user: 'indiakinursery',
-//   password: "WE2code@2023",
-//   database: "indiakinursery",
-//   waitForConnections: true,
-//   connectionLimit: 10,
-//   maxIdle: 10,
-//   idleTimeout: 60000,
-//   queueLimit: 0,
-//   enableKeepAlive: true,
-//   keepAliveInitialDelay: 0
-// };
 
-// const connectFunc = async () => {
-//   const connection1 = await mysql.createConnection(dbConfig);
-//   return connection1;
-// };
+// // import mysql from 'mysql2/promise';
 
-// const reconnect = ReconnectCore(connectFunc);
+// var connection ;
+// async function testdb_connect() {
+//   const dbConfig = {
+//     host: 'mysql.indiakinursery.com',
+//     user: 'indiakinursery',
+//     password: "WE2code@2023",
+//     database: "indiakinursery",
+//     waitForConnections: true,
+//     connectionLimit: 10,
+//     maxIdle: 10,
+//     idleTimeout: 60000,
+//     queueLimit: 0,
+//     enableKeepAlive: true,
+//     keepAliveInitialDelay: 0
+//   };
+//   const connectFunc = async () => {
+//     const connection1 = await mysql.createConnection(dbConfig);
+//     return connection1;
+//   };
+//   const reconnect = ReconnectCore(connectFunc);
+//   const dbConnection = reconnect({ forever: true });
+//    connection = await dbConnection;
+// }
 
-// const dbConnection = reconnect({ forever: true });
-// const connection = dbConnection;
+// testdb_connect()
 // export default connection;

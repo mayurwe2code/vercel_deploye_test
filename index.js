@@ -54,8 +54,8 @@ app.use(bodyParser.urlencoded({ limit: '500mb', extended: true, parameterLimit: 
 
 app.use(express.static("public"));
 
-
-connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))", (err, rows) => {
+// SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))
+connection.query("SELECT product.id, product.name, GROUP_CONCAT(product_verient.product_verient_id) AS verients FROM product LEFT JOIN product_verient ON product.id = product_verient.product_id GROUP BY product.id, product.name", (err, rows) => {
   if (err) {
     console.log("error-------------------SET GLOBAL sql_mode===========" + err)
   } else {
