@@ -1,4 +1,4 @@
-import mysql from "mysql";
+import mysql from "mysql2";
 import "dotenv/config";
 
 // node
@@ -17,11 +17,26 @@ import "dotenv/config";
 // export default connection;
 
 // export default function handleDisconnect() {
+
+
+// var connection = mysql.createConnection({
+//   host: "mysql.indiakinursery.com",
+//   user: "indiakinursery",
+//   password: "WE2code@2023",
+//   database: "indiakinursery",
+// });
 var connection = mysql.createConnection({
-  host: "mysql.indiakinursery.com",
-  user: "indiakinursery",
+  host: 'mysql.indiakinursery.com',
+  user: 'indiakinursery',
   password: "WE2code@2023",
   database: "indiakinursery",
+  waitForConnections: true,
+  connectionLimit: 10,
+  maxIdle: 10,
+  idleTimeout: 60000,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 });
 
 
@@ -43,7 +58,7 @@ connection.on('error', function (err) {
   console.log('db error', err);
   // if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
   // handleDisconnect();
-  setTimeout(connection, 1000);
+  connection.connect()
   // } else {
   //   throw err;
   // }
@@ -51,3 +66,30 @@ connection.on('error', function (err) {
 // }
 // connection
 export default connection;
+// import ReconnectCore from 'reconnect-core';
+// import mysql from 'mysql2/promise';
+
+// const dbConfig = {
+//   host: 'mysql.indiakinursery.com',
+//   user: 'indiakinursery',
+//   password: "WE2code@2023",
+//   database: "indiakinursery",
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   maxIdle: 10,
+//   idleTimeout: 60000,
+//   queueLimit: 0,
+//   enableKeepAlive: true,
+//   keepAliveInitialDelay: 0
+// };
+
+// const connectFunc = async () => {
+//   const connection1 = await mysql.createConnection(dbConfig);
+//   return connection1;
+// };
+
+// const reconnect = ReconnectCore(connectFunc);
+
+// const dbConnection = reconnect({ forever: true });
+// const connection = dbConnection;
+// export default connection;
