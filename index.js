@@ -32,7 +32,7 @@ import { ensureAuth, ensureGuest } from './middleware/auth.js'
 
 
 const app = express();
-connection
+// connection
 app.use(cors());
 
 // app.use(express.json({ limit: '90mb' }));
@@ -205,6 +205,7 @@ app.get('/auth/logout', (req, res) => {
 
 
 function startServer() {
+  connection
   app.listen(9999, () => {
     console.log(`server is running at ${process.env.SERVERPORT}`);
   });
@@ -216,7 +217,7 @@ function checkServerStatus() {
     connection.query('SELECT 1', (error) => {
       if (error) {
         console.error('Error executing database query:', error);
-        resolve(false); // Server status is false in case of database error
+        reject(false); // Server status is false in case of database error
       } else {
         resolve(true); // Server status is true if the database query is successful
       }
@@ -234,7 +235,7 @@ function monitorServer() {
       startServer();
       monitorServer(); // Restart the monitoring process
     }
-  }, 5000); // Adjust the interval as per your requirements
+  }, 1000); // Adjust the interval as per your requirements
 }
 startServer();
 monitorServer()
