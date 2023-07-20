@@ -581,52 +581,82 @@ export async function search_vendor_product(req, res) {
                             var data1 = JSON.parse(JSON.stringify(results));
                             var product_chk_ar = [];
                             console.log("data1---------------------")
-                            console.log(data1)
-                            data1.forEach((item, index) => {
-                                var product_id = item["product_id"];
+                            // console.log(data1)
+                            if (data1.length) {
 
-                                if (product_chk_ar.includes(product_id)) {
-                                    // Find the product in formate_data and push the verient into its "verients" array
-                                    var product = formate_data.find(obj => obj.id == product_id);
-                                    product.verients.push({
-                                        product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image
-                                    });
-                                } else {
-                                    product_chk_ar.push(product_id);
-                                    var product = {
-                                        id: product_id,
-                                        name: item.name,
-                                        seo_tag: item.seo_tag, brand: item.brand, category: item.category, is_deleted: item.is_deleted, status: item.status, review: item.review, rating: item.rating, description: item.description, care_and_Instructions: item.care_and_Instructions, benefits: item.benefits, is_active: item.is_active, created_by: item.created_by, created_by_id: item.created_by_id, created_on: item.created_on, updated_on: item.updated_on, product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image,
-                                        verients: [{
+                                data1.forEach((item, index) => {
+                                    var product_id = item["id"];
+
+                                    if (product_chk_ar.includes(product_id)) {
+                                        // Find the product in formate_data and push the verient into its "verients" array
+                                        var product = formate_data.find(obj => obj.id == product_id);
+                                        product.verients.push({
                                             product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image
-                                        }]
-                                    };
-                                    formate_data.push(product);
-                                }
-                                if (data1.length - 1 == index) {
-                                    console.log(formate_data)
-                                    var responsePayload = {
-                                        results: formate_data,
-                                    };
-                                    if (page < numPages) {
-                                        responsePayload.pagination = {
-                                            count_rows: count_rows,
-                                            current: page,
-                                            perPage: numPerPage,
-                                            previous: page > 0 ? page - 1 : undefined,
-                                            next: page < numPages - 1 ? page + 1 : undefined,
+                                        });
+                                    } else {
+                                        product_chk_ar.push(product_id);
+
+                                        var product = {
+                                            id: product_id,
+                                            name: item.name,
+                                            seo_tag: item.seo_tag, brand: item.brand, category: item.category, is_deleted: item.is_deleted, status: item.status, review: item.review, rating: item.rating, description: item.description, care_and_Instructions: item.care_and_Instructions, benefits: item.benefits, is_active: item.is_active, created_by: item.created_by, created_by_id: item.created_by_id, created_on: item.created_on, updated_on: item.updated_on, product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image
                                         };
-                                    } else
-                                        responsePayload.pagination = {
-                                            err:
-                                                "queried page " +
-                                                page +
-                                                " is >= to maximum page number " +
-                                                numPages,
+                                        if (item.product_verient_id) {
+                                            product["verients"] = []
+                                            product["verients"].push({
+                                                product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image
+                                            })
+                                        }
+
+                                        formate_data.push(product);
+                                    }
+                                    if (data1.length - 1 == index) {
+                                        console.log(formate_data)
+                                        var responsePayload = {
+                                            results: formate_data,
                                         };
-                                    res.status(200).send(responsePayload);
-                                }
-                            });
+                                        if (page < numPages) {
+                                            responsePayload.pagination = {
+                                                count_rows: count_rows,
+                                                current: page,
+                                                perPage: numPerPage,
+                                                previous: page > 0 ? page - 1 : undefined,
+                                                next: page < numPages - 1 ? page + 1 : undefined,
+                                            };
+                                        } else
+                                            responsePayload.pagination = {
+                                                err:
+                                                    "queried page " +
+                                                    page +
+                                                    " is >= to maximum page number " +
+                                                    numPages,
+                                            };
+                                        res.status(200).send(responsePayload);
+                                    }
+                                });
+                            } else {
+                                var responsePayload = {
+                                    results: results,
+                                };
+                                if (page < numPages) {
+                                    responsePayload.pagination = {
+                                        count_rows: count_rows,
+                                        current: page,
+                                        perPage: numPerPage,
+                                        previous: page > 0 ? page - 1 : undefined,
+                                        next: page < numPages - 1 ? page + 1 : undefined,
+                                    };
+                                } else
+                                    responsePayload.pagination = {
+                                        err:
+                                            "queried page " +
+                                            page +
+                                            " is >= to maximum page number " +
+                                            numPages,
+                                    };
+                                res.status(200).send(responsePayload);
+                            }
+
 
                             // //console.log("_____")
 
