@@ -244,7 +244,7 @@ export async function search_product(req, res) {
   let search_string_asc_desc1 = ""
 
   if (req.query.group == "yes") {
-    group_by = " group by product_id "
+    group_by = " GROUP BY product_id  "
   }
   if (req.query.is_featured == "yes") {
     is_featured = " is_fetured != 'null' AND   "
@@ -262,13 +262,13 @@ export async function search_product(req, res) {
   console.log(req.user_id)
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *,(SELECT COUNT(`order`.product_id) AS sale_count From `order` WHERE `order`.product_id=product_view.product_id),(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
+    var search_string = 'SELECT *, (SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-      var search_string = 'SELECT * ,(SELECT COUNT(`order`.product_id) AS sale_count From `order` WHERE `order`.product_id=product_view.product_id) FROM product_view where vendor_id = "' + req.vendor_id + '" AND verient_is_deleted ="0" AND ' + is_featured + '  ';
+      var search_string = 'SELECT * FROM product_view where vendor_id = "' + req.vendor_id + '" AND verient_is_deleted ="0" AND ' + is_featured + '  ';
     } else {
-      var search_string = 'SELECT *,(SELECT COUNT(`order`.product_id) AS sale_count From `order` WHERE `order`.product_id=product_view.product_id) FROM product_view where ' + is_featured + ' verient_is_deleted ="0" AND   ';
+      var search_string = 'SELECT * FROM product_view where ' + is_featured + ' verient_is_deleted ="0" AND   ';
     }
   }
 
@@ -288,7 +288,7 @@ export async function search_product(req, res) {
       } else if (i == 7) {
 
         if (req.body[search_obj[i]] != "") {
-          search_string_asc_desc1 = ` ORDER BY ${req.body[search_obj[i]]} `
+          search_string_asc_desc1 = `${group_by} ORDER BY ${req.body[search_obj[i]]} `
         }
 
       } else {
@@ -372,8 +372,8 @@ export async function search_product(req, res) {
 
           })
 
-        console.log("" + search_string + group_by + " LIMIT " + limit + "")
-        connection.query("" + search_string + group_by + " LIMIT " + limit + "",
+        console.log("" + search_string + " LIMIT " + limit + "")
+        connection.query("" + search_string + " LIMIT " + limit + "",
           (err, results) => {
             if (err) {
               console.log("err___________________194")
