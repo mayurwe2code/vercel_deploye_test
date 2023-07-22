@@ -227,7 +227,7 @@ function checkServerStatus() {
 function monitorServer() {
   const interval = setInterval(() => {
     const serverStatus = checkServerStatus(); // Function to check the server's status
-    console.log("checkServerStatus--if--get--false--means--server--is--good-----result = " + !serverStatus)
+    // console.log("checkServerStatus--if--get--false--means--server--is--good-----result = " + !serverStatus)
     // console.log()
     if (!serverStatus) {
       console.log('Server crashed or encountered an error. Restarting...');
