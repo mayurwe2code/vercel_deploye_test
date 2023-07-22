@@ -74,17 +74,25 @@ export function complain_search(req, res) {
         }
 
     } else {
-        query_ = ""
+        if (req.headers.user_token) {
+            let { status_ } = req.body;
+            if (status_) {
+                query_ = "SELECT * FROM `comaplains_support` WHERE `status_` = '" + status_ + "' AND `assigned_to` = '" + req.user_id + "'"
+            } else {
+                query_ = "SELECT * FROM `comaplains_support` WHERE `user_id` = '" + req.user_id + "'"
+            }
+
+        }
     }
 
     console.log("----querry-check---" + query_)
     connection.query(query_, async (err, rows, fields) => {
         if (err) {
             console.log(err)
-            res.status(200).send(err)
+            res.status(200).send({ err })
         } else {
             console.log(rows)
-            rows.affectedRows != "" ? res.status(200).send({ "result": rows }) : res.status(200).send({ "response": "Succesfully  not Found" })
+            rows.length != "" ? res.status(200).send({ status: true, "result": rows }) : res.status(200).send({ status: false, "response": "not Found" })
         }
     })
 }

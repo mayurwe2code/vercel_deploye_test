@@ -175,13 +175,12 @@ function fetch_user(req, res, next) {
       console.log("chek______________________________________________middleware___" + req.headers.user_token)
       let token = jwt.verify(req.headers.user_token, process.env.USER_JWT_SECRET_KEY);
       console.log(token)
-
       if (req.headers.user_token != "" && req.headers.user_token != undefined) {
         req.user_id = token.id
         req.for_ = "user"
         next()
       } else {
-        res.send({ "error": "user token error" })
+        res.send({ status: false, "error": "user token error" })
       }
 
     } catch (err) {

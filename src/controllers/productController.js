@@ -272,13 +272,13 @@ export async function search_product(req, res) {
 
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *,(SELECT IF(COUNT(`order`.product_id)>10,COUNT(`order`.product_id),NULL) From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS order_count ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
+    var search_string = 'SELECT *,(SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-      var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,COUNT(`order`.product_id),NULL) From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS order_count FROM product_view where vendor_id = "' + req.vendor_id + '" AND verient_is_deleted ="0" AND ' + is_featured + '  ';
+      var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending FROM product_view where vendor_id = "' + req.vendor_id + '" AND verient_is_deleted ="0" AND ' + is_featured + '  ';
     } else {
-      var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,COUNT(`order`.product_id),NULL) From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS order_count FROM product_view where ' + is_featured + ' verient_is_deleted ="0" AND   ';
+      var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending FROM product_view where ' + is_featured + ' verient_is_deleted ="0" AND   ';
     }
   }
 
@@ -312,24 +312,36 @@ export async function search_product(req, res) {
 
         if (req.body[search_obj[i]] != "") {
           var key_for_query = search_obj[i]
-          console.log(req.body[search_obj[i]])
           var multi_val_ar = req.body[search_obj[i]]
-          console.log(multi_val_ar)
-          for (var k = 0; k < multi_val_ar.length; k++) {
-            if (k == multi_val_ar.length - 1) {
-              search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) AND   `
-            } else {
-              search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) OR     `
-            }
+
+          if (search_obj[i] == "avgRatings") {
+            for (var m = 0; m < multi_val_ar.length; m++) {
+              let rat_for = parseFloat(multi_val_ar[m]) - 0.5;
+              let rat_to = parseFloat(multi_val_ar[m]) + 0.5;
+              search_string += '( `avgRatings` BETWEEN "' + rat_for + '" AND "' + rat_to + '") OR    '
+              if (m == multi_val_ar.length - 1) {
+                search_string += '( `avgRatings` BETWEEN "' + rat_for + '" AND "' + rat_to + '") AND   '
+              }
+            };
+
+          } else {
+
+            for (var k = 0; k < multi_val_ar.length; k++) {
+              if (k == multi_val_ar.length - 1) {
+                search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) AND   `
+              } else {
+                search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) OR     `
+              }
+              // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+            };
+
+
+            // var arr = JSON.stringify(req.body[search_obj[i]]);
+            // var abc = "'" + arr + "'"
+            // const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
             // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
-          };
-
-
-          // var arr = JSON.stringify(req.body[search_obj[i]]);
-          // var abc = "'" + arr + "'"
-          // const id = abc.substring(abc.lastIndexOf("'[") + 2, abc.indexOf("]'"));
-          // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
-          // // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+            // // search_string+= `${search_obj[i]} = "${req.body[search_obj[i]]}" AND   `
+          }
         }
       }
     } else {

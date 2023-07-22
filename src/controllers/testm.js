@@ -657,3 +657,9 @@
 // "SELECT *,(SELECT COUNT(`order`.product_id) AS sale_count From `order` WHERE product_view.product_id=`order`.product_id AND `order`.created_on BETWEEN '" + from_date + "' AND '" + to_date + "') FROM `product_view`"
 
 // SELECT *, (SELECT COUNT(`order`.product_id) AS is_trending From `order` WHERE product_view.product_id = `order`.product_id AND`order`.created_on BETWEEN '" + from_date + "' AND '" + to_date + "')> 10 AS is_trending FROM`product_view`;
+
+// SELECT *,(SELECT COUNT(`order`.product_id) AS count_order From `order` WHERE product_view.product_id=`order`.product_id AND `order`.created_on BETWEEN '2023-06-20 11:34:05' AND '2023-07-20 11:34:05' AND count_order > 10) AS order_count FROM `product_view`;
+
+
+
+// SELECT *,(SELECT IF(COUNT(`order`.product_id)>10,COUNT(`order`.product_id),NULL) From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN '2023-06-20 11:34:05' AND '2023-07-20 11:34:05')) AS order_count FROM `product_view`;
