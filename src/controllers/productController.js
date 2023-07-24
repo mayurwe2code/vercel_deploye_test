@@ -242,19 +242,21 @@ export async function search_product(req, res) {
   let is_featured = ""
   let search_string_asc_desc = ""
   let search_string_asc_desc1 = ""
-
   if (req.query.group == "yes") {
     group_by = " GROUP BY product_id  "
+  } else {
+    console.log("------------check--group----------------" + req.query.group)
   }
   if (req.query.is_featured == "yes") {
     is_featured = " is_fetured != 'null' AND   "
   }
   // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
-  if ("DESC" in req.query) {
-    search_string_asc_desc1 = " ORDER BY " + req.query["DESC"] + " DESC "
-  }
-  if ("ASC" in req.query) {
-    search_string_asc_desc1 = " ORDER BY " + req.query["ASC"] + " ASC "
+  if (req.query["DESC"]) {
+    search_string_asc_desc1 = group_by + " ORDER BY " + req.query["DESC"] + " DESC "
+  } else if (req.query["ASC"]) {
+    search_string_asc_desc1 = group_by + " ORDER BY " + req.query["ASC"] + " ASC "
+  } else {
+    search_string_asc_desc1 = group_by + " ORDER BY verient_created_on  DESC "
   }
   // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
   // var query_string = "select * from product  where ";

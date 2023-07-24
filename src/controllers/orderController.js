@@ -96,7 +96,8 @@ export async function add_order(req, res) {
                             // console.log("rows-----------------------delete---row")
                           }
                         });
-                        connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + "  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+                        // only_this_product_gst,only_this_product_cgst,only_this_product_sgst
+                        connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] += item["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] += item["cart_qty_of_this_product"]}` + " ,`only_this_product_gst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_gst"] += parseFloat(item["only_this_product_gst"])}` + "' ,`only_this_product_cgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_cgst"] += parseFloat(item["only_this_product_cgst"])}` + "' , `only_this_product_sgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_sgst"] += parseFloat(item["only_this_product_sgst"])}` + "'  where `order_id` ='" + order_no_old + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                           if (err) {
                             console.log("rows----------------err-------delete---")
                             console.log(err)
@@ -128,6 +129,11 @@ export async function add_order(req, res) {
               vendor_order_detail_obj[item["vendor_id"]]["order_no"] = orderno
               vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] = item["total_of_this_prodoct"]
               vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"] = item["cart_qty_of_this_product"]
+              vendor_order_detail_obj[item["vendor_id"]]["only_this_product_gst"] = parseFloat(item["only_this_product_gst"])
+              vendor_order_detail_obj[item["vendor_id"]]["only_this_product_cgst"] = parseFloat(item["only_this_product_cgst"])
+              vendor_order_detail_obj[item["vendor_id"]]["only_this_product_sgst"] = parseFloat(item["only_this_product_sgst"])
+              // only_this_product_gst,only_this_product_cgst,only_this_product_sgst
+
               let verify_code = JSON.stringify(orderno * 13)
               if (verify_code.length > 7) {
                 verify_code = verify_code.substring(0, verify_code.length - 1)
@@ -196,8 +202,8 @@ export async function add_order(req, res) {
                               response_send.push({ "order_detail_insert_successfull": result, "index_no": index })
                               console.log("______________product detaile insert  data___________176")
                               console.log(result)
-
-                              connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"]}` + "  where `order_id` ='" + orderno + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+                              // only_this_product_gst,only_this_product_cgst,only_this_product_sgst
+                              connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"]}` + " ,`only_this_product_gst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_gst"]}` + "',`only_this_product_cgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_cgst"]}` + "',`only_this_product_sgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_sgst"]}` + "' where `order_id` ='" + orderno + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                                 if (err) {
                                   console.log("rows----------------err-------delete---")
                                   console.log(err)

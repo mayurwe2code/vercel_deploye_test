@@ -469,7 +469,7 @@ export async function search_vendor_product(req, res) {
     if (req.query.group == "yes") {
         group_by = " group by product.id "
     }
-
+    console.log("ckkkkkkk---472--" + group_by)
     if ("DESC" in req.query) {
         search_string_asc_desc = " ORDER BY product." + req.query["DESC"] + " DESC "
     }
@@ -620,6 +620,7 @@ export async function search_vendor_product(req, res) {
 
                                             var product = {
                                                 id: product_id,
+                                                product_id: product_id,
                                                 name: item.name,
                                                 seo_tag: item.seo_tag, brand: item.brand, category: item.category, is_deleted: item.is_deleted, status: item.status, review: item.review, rating: item.rating, description: item.description, care_and_Instructions: item.care_and_Instructions, benefits: item.benefits, is_active: item.is_active, created_by: item.created_by, created_by_id: item.created_by_id, created_on: item.created_on, updated_on: item.updated_on, product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image
                                             };

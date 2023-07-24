@@ -9,9 +9,7 @@ export function add_category(req, res) {
             image = "no image"
         } else {
             var image = req.protocol + "://" + req.headers.host + "/catgory_images/" + req.file.filename;
-            //console.log(image)
         }
-
         //if(level>1){
         newlevel = parseInt(level) + 1
         //}else{
