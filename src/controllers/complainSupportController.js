@@ -56,7 +56,7 @@ export function complain_search(req, res) {
     if (req.headers.admin_token) {
         let req_obj = req.body;
         if (Object.values(req_obj).every(element => element === "")) {
-            query_ = "SELECT * FROM `comaplains_support`"
+            query_ = "SELECT * FROM `comaplains_support` LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` "
         } else {
             for (let k in req_obj) {
                 if (k != "") {
@@ -77,9 +77,10 @@ export function complain_search(req, res) {
         if (req.headers.user_token) {
             let { status_ } = req.body;
             if (status_) {
-                query_ = "SELECT * FROM `comaplains_support` WHERE `status_` = '" + status_ + "' AND `assigned_to` = '" + req.user_id + "'"
+                // query_ = "SELECT * FROM `comaplains_support` WHERE `status_` = '" + status_ + "' AND `assigned_to` = '" + req.user_id + "'"
+                query_ = "SELECT * FROM `comaplains_support`  LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` WHERE  `comaplains_support`.`user_id` = '" + req.user_id + "' AND `status_` = '" + status_ + ""
             } else {
-                query_ = "SELECT * FROM `comaplains_support` WHERE `user_id` = '" + req.user_id + "'"
+                query_ = "SELECT * FROM `comaplains_support`  LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` WHERE  `comaplains_support`.`user_id` = '" + req.user_id + "'"
             }
 
         }

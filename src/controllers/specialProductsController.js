@@ -2,18 +2,18 @@ import connection from "../../Db.js";
 
 export function trending_products(req, res) {
   console.log(req.body)
-  let { from_date, to_date, from_price, to_price, order_by } = req.body;
+  let { from_date, to_date, from_price, to_price, order_by, search } = req.body;
   let query_ = "";
   let query_for_count_row = "";
   console.log(req.user_id)
   if (req.user_id != "" && req.user_id != undefined) {
-    query_ = 'SELECT COUNT(*) as total_count, COUNT(`order`.product_id) AS sale_count, `order`.product_id, `order`.created_on,`product_view`.`id`,`product_view`.`vendor_id`,`product_view`.`name`,`product_view`.`seo_tag`,`product_view`.`brand`,`product_view`.`category`,`product_view`.`is_deleted`,`product_view`.`status`,`product_view`.`review`,`product_view`.`rating`,`product_view`.`description`,`product_view`.`is_active`,`product_view`.`created_by`,`product_view`.`created_by_id`,`product_view`.`created_on`,`product_view`.`updated_on`,`product_view`.`product_verient_id`,`product_view`.`product_id`,`product_view`.`verient_name`,`product_view`.`quantity`,`product_view`.`unit`,`product_view`.`product_stock_quantity`,`product_view`.`price`,`product_view`.`mrp`,`product_view`.`gst`,`product_view`.`sgst`,`product_view`.`cgst`,`product_view`.`verient_is_deleted`,`product_view`.`verient_status`,`product_view`.`discount`,`product_view`.`verient_description`,`product_view`.`verient_is_active`,`product_view`.`verient_created_on`,`product_view`.`verient_updated_on`,`product_view`.`product_height`,`product_view`.`product_width`,`product_view`.`product_Weight`,`product_view`.`cover_image`,`product_view`.`all_images_url`,`product_view`.`avgRatings` ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count  FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
+    query_ = 'SELECT COUNT(`order`.product_id) AS sale_count, `order`.product_id, `order`.created_on,`product_view`.`id`,`product_view`.`vendor_id`,`product_view`.`name`,`product_view`.`seo_tag`,`product_view`.`brand`,`product_view`.`category`,`product_view`.`is_deleted`,`product_view`.`status`,`product_view`.`review`,`product_view`.`rating`,`product_view`.`description`,`product_view`.`is_active`,`product_view`.`created_by`,`product_view`.`created_by_id`,`product_view`.`created_on`,`product_view`.`updated_on`,`product_view`.`product_verient_id`,`product_view`.`product_id`,`product_view`.`verient_name`,`product_view`.`quantity`,`product_view`.`unit`,`product_view`.`product_stock_quantity`,`product_view`.`price`,`product_view`.`mrp`,`product_view`.`gst`,`product_view`.`sgst`,`product_view`.`cgst`,`product_view`.`verient_is_deleted`,`product_view`.`verient_status`,`product_view`.`discount`,`product_view`.`verient_description`,`product_view`.`verient_is_active`,`product_view`.`verient_created_on`,`product_view`.`verient_updated_on`,`product_view`.`product_height`,`product_view`.`product_width`,`product_view`.`product_Weight`,`product_view`.`cover_image`,`product_view`.`all_images_url`,`product_view`.`avgRatings` ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count  FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
 
-    query_for_count_row = 'SELECT COUNT(DISTINCT(product_view.id)) as total_count FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
+    query_for_count_row = 'SELECT COUNT(DISTINCT(`order`.product_id)) as total_count FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
   } else {
-    query_ = 'SELECT COUNT(*) as total_count, COUNT(`order`.product_id) AS sale_count, `order`.product_id, `order`.created_on,`product_view`.`id`,`product_view`.`vendor_id`,`product_view`.`name`,`product_view`.`seo_tag`,`product_view`.`brand`,`product_view`.`category`,`product_view`.`is_deleted`,`product_view`.`status`,`product_view`.`review`,`product_view`.`rating`,`product_view`.`description`,`product_view`.`is_active`,`product_view`.`created_by`,`product_view`.`created_by_id`,`product_view`.`created_on`,`product_view`.`updated_on`,`product_view`.`product_verient_id`,`product_view`.`product_id`,`product_view`.`verient_name`,`product_view`.`quantity`,`product_view`.`unit`,`product_view`.`product_stock_quantity`,`product_view`.`price`,`product_view`.`mrp`,`product_view`.`gst`,`product_view`.`sgst`,`product_view`.`cgst`,`product_view`.`verient_is_deleted`,`product_view`.`verient_status`,`product_view`.`discount`,`product_view`.`verient_description`,`product_view`.`verient_is_active`,`product_view`.`verient_created_on`,`product_view`.`verient_updated_on`,`product_view`.`product_height`,`product_view`.`product_width`,`product_view`.`product_Weight`,`product_view`.`cover_image`,`product_view`.`all_images_url`,`product_view`.`avgRatings` FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
+    query_ = 'SELECT COUNT(*) as total_count, COUNT(`order`.product_id) AS sale_count, `order`.product_id, `order`.created_on,`product_view`.`id`,`product_view`.`vendor_id`,`product_view`.`name`,`product_view`.`category_name`,`product_view`.`seo_tag`,`product_view`.`brand`,`product_view`.`category`,`product_view`.`is_deleted`,`product_view`.`status`,`product_view`.`review`,`product_view`.`rating`,`product_view`.`description`,`product_view`.`is_active`,`product_view`.`created_by`,`product_view`.`created_by_id`,`product_view`.`created_on`,`product_view`.`updated_on`,`product_view`.`product_verient_id`,`product_view`.`product_id`,`product_view`.`verient_name`,`product_view`.`quantity`,`product_view`.`unit`,`product_view`.`product_stock_quantity`,`product_view`.`price`,`product_view`.`mrp`,`product_view`.`gst`,`product_view`.`sgst`,`product_view`.`cgst`,`product_view`.`verient_is_deleted`,`product_view`.`verient_status`,`product_view`.`discount`,`product_view`.`verient_description`,`product_view`.`verient_is_active`,`product_view`.`verient_created_on`,`product_view`.`verient_updated_on`,`product_view`.`product_height`,`product_view`.`product_width`,`product_view`.`product_Weight`,`product_view`.`cover_image`,`product_view`.`all_images_url`,`product_view`.`avgRatings` FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
 
-    query_for_count_row = 'SELECT COUNT(DISTINCT(product_view.id)) as total_count FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
+    query_for_count_row = 'SELECT COUNT(DISTINCT(`order`.product_id)) as total_count FROM `order` LEFT JOIN `product_view` ON `order`.product_id = `product_view`.product_id WHERE '
   }
   if (from_date && to_date) {
     query_ += '`order`.created_on BETWEEN "' + from_date + ' 12:00:00" AND "' + to_date + ' 23:59:00"'
@@ -27,15 +27,36 @@ export function trending_products(req, res) {
     query_ += "(`order`.created_on BETWEEN '" + from_date + "' AND '" + to_date + "')"
     query_for_count_row += "`order`.created_on BETWEEN '" + from_date + "' AND '" + to_date + "'"
   }
-  if (from_price && to_price) {
-    query_ += ' AND `(product_view`.price BETWEEN "' + from_price + '" AND "' + to_price + '")'
-    query_for_count_row += ' AND `product_view`.price BETWEEN "' + from_price + '" AND "' + to_price + '"'
+
+  if (search) {
+    query_ += ` AND product_view.name LIKE "%${search}%" OR product_view.verient_name LIKE "%${search}%" OR seo_tag LIKE "%${search}%" OR category_name LIKE "%${search}%" `
+    query_for_count_row += ` AND product_view.name LIKE "%${search}%" OR product_view.verient_name LIKE "%${search}%" OR seo_tag LIKE "%${search}%" OR category_name LIKE "%${search}%" `
   }
 
+  if (from_price && to_price) {
+    query_ += ' AND (`product_view`.price BETWEEN "' + from_price + '" AND "' + to_price + '")'
+    query_for_count_row += ' AND (`product_view`.price BETWEEN "' + from_price + '" AND "' + to_price + '")'
+  }
+
+
+
   for (let k in req.body) {
-    if (k != "from_date" && k != "to_date" && k != "from_price" && k != "to_price" && k != "order_by") {
-      query_ += ` AND product_view.${k} = '${req.body[k]}'`
-      query_for_count_row += ` AND product_view.${k} = '${req.body[k]}'`
+    if (k != "from_date" && k != "to_date" && k != "from_price" && k != "to_price" && k != "order_by" && k != "search") {
+      var key_for_query = `product_view.${k}`
+      var multi_val_ar = req.body[k]
+      for (var m = 0; m < multi_val_ar.length; m++) {
+        if (m == multi_val_ar.length - 1) {
+          query_ += ` AND  FIND_IN_SET('${multi_val_ar[m]}', ${key_for_query}) `
+          query_for_count_row += ` AND  FIND_IN_SET('${multi_val_ar[m]}', ${key_for_query}) `
+        } else {
+          query_ += ` OR  FIND_IN_SET('${multi_val_ar[m]}', ${key_for_query}) `
+          query_for_count_row += ` OR  FIND_IN_SET('${multi_val_ar[m]}', ${key_for_query}) `
+        }
+        // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
+      };
+
+      // query_ += ` AND product_view.${k} = '${req.body[k]}'`
+      // query_for_count_row += ` AND product_view.${k} = '${req.body[k]}'`
     } else {
 
     }

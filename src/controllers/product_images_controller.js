@@ -15,6 +15,12 @@ export function add_product_image(req, res) {
   base64_images.forEach(function (item, index) {
     var imgBase64 = item.img_64
     var img_num = Math.floor(100000 + Math.random() * 900000);
+
+    if (item["image_position"] == "cover") {
+      connection.query(`UPDATE \`product_images\` SET \`image_position\`='' WHERE product_verient_id =${item["product_verient_id"]} AND product_id = ${item["product_id"]} AND vendor_id = ${req.vendor_id}`, (err, rows, fields) => {
+      })
+    }
+
     try {
       // var base64Data = imgBase64.replace("data:image/png;base64,", "");
       var name_str = "" + item["product_image_name"] + "_" + img_num + ""
@@ -63,6 +69,10 @@ export function product_image_update(req, res) {
   let iterations = base64_images.length - 1;
   base64_images.forEach(function (item, index) {
 
+    if (item["image_position"] == "cover") {
+      connection.query(`UPDATE \`product_images\` SET \`image_position\`='' WHERE product_verient_id =${item["product_verient_id"]} AND product_id = ${item["product_id"]} `, (err, rows, fields) => {
+      })
+    }
     try {
       let imgBase64 = item.img_64
       let img_num = Math.floor(100000 + Math.random() * 900000);
@@ -134,6 +144,10 @@ export function product_image(req, res) {
 
 export function add_remove_cover_image(req, res) {
   var { image_position, product_image_id, product_id, product_verient_id } = req.body
+  if (image_position == "cover") {
+    connection.query(`UPDATE \`product_images\` SET \`image_position\`='' WHERE product_verient_id =${product_verient_id} AND product_id = ${product_id} `, (err, rows, fields) => {
+    })
+  }
   connection.query(' UPDATE `product_images` SET `image_position`="' + image_position + '" WHERE product_image_id = "' + product_image_id + '" AND product_id = "' + product_id + '" AND product_verient_id="' + product_verient_id + '"', (err, rows, fields) => {
     if (err) {
       console.log(err)

@@ -469,20 +469,24 @@ export async function search_vendor_product(req, res) {
     if (req.query.group == "yes") {
         group_by = " group by product.id "
     }
-    console.log("ckkkkkkk---472--" + group_by)
-    if ("DESC" in req.query) {
-        search_string_asc_desc = " ORDER BY product." + req.query["DESC"] + " DESC "
-    }
-    if ("ASC" in req.query) {
-        search_string_asc_desc = " ORDER BY product." + req.query["ASC"] + " ASC "
-    }
     var string = "";
+
     if (req.body.is_verient) {
+        var search_string_asc_desc = ` ORDER BY verient_created_on DESC `
         string = "join";
     } else {
+        var search_string_asc_desc = ` ORDER BY product.created_on DESC `
         string = "left join";
     }
-    var search_string_asc_desc = ""
+    console.log("ckkkkkkk---472--" + group_by)
+    if (req.query["DESC"]) {
+        search_string_asc_desc = " ORDER BY product." + req.query["DESC"] + " DESC "
+    }
+    if (req.query["ASC"]) {
+        search_string_asc_desc = " ORDER BY product." + req.query["ASC"] + " ASC "
+    }
+
+
     // var query_string = "select * from product  where ";
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
@@ -567,6 +571,10 @@ export async function search_vendor_product(req, res) {
                         }
 
                     })
+                // count_total_data
+                // connection.query("" + search_string + " LIMIT " + limit + "",
+                // (err, results) => {  
+                // })
 
                 console.log("check_------------------------qyueryyyyy---545")
                 console.log("" + search_string + " LIMIT " + limit + "")

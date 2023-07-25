@@ -54,8 +54,8 @@ app.use(bodyParser.urlencoded({ limit: '500mb', extended: true, parameterLimit: 
 
 app.use(express.static("public"));
 
-// 
-connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))", (err, rows) => {
+// SELECT GROUP_CONCAT(image_path) AS concatenated_images FROM ( SELECT product_image_id AS image_path FROM product_images WHERE product_verient_id = '1' ORDER BY image_position ASC ) AS ordered_images;
+connection.query("SELECT GROUP_CONCAT(product_images.product_image_path) FROM product_images WHERE product_verient_id = '1' ORDER BY image_position ASC", (err, rows) => {
   if (err) {
     console.log("error-------------------SET GLOBAL sql_mode===========" + err)
   } else {
