@@ -171,12 +171,7 @@ app.get("/log", ensureAuth, async (req, res) => {
           })
           res.send({ "response": "successfully created", "user_id": rows, "user_email": rows.insertId, "token": token, "redirect_url": "http://localhost:3000/" })
         });
-
-
       }
-
-
-
     }
   })
   // res.redirect("http://localhost:3000/")

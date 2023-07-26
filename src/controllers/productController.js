@@ -323,6 +323,15 @@ export async function search_product(req, res) {
               }
             };
 
+          } else if (search_obj[i] == "discount_up" || search_obj[i] == "discount_upto") {
+            var discount_up_upto = req.body[search_obj[i]]
+            console.log("chk---new---filter-----------------")
+            if (search_obj[i] == "discount_up") {
+              search_string += '( `discount` BETWEEN "' + discount_up_upto + '" AND "100") AND   '
+            }
+            if (search_obj[i] == "discount_upto") {
+              search_string += '( `discount` BETWEEN "1" AND "' + discount_up_upto + '") AND   '
+            }
           } else {
 
             for (var k = 0; k < multi_val_ar.length; k++) {

@@ -478,8 +478,6 @@ export function chouse_driver_for_delivery(req, res) {
     );
 }
 
-
-
 export function register_your_vehicle(req, res) {
     let { company_name, model, color, registration_no_of_vehicle, chassis_number, vehicle_owner_name, puc_expiration_date, insurance_expiration_date, registration_expiration_date } = req.body
 
