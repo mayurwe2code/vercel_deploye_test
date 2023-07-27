@@ -411,10 +411,11 @@ export async function update_driver(req, res) {
 
     let srt_user = "update delivery_man  set `driver_name`='" + driver_name + "', `driver_last_name`='" + driver_last_name + "', `date_of_birth`='" + date_of_birth + "', `current_address`='" + current_address + "', `gender`='" + gender + "', `age`='" + age + "', `contect_no`='" + contect_no + "', `aadhar_no` = '" + aadhar_no + "',`licence_no`='" + licence_no + "',`licence_issue_date`='" + licence_issue_date + "',`licence_validity_date`='" + licence_validity_date + "'"
 
+    console.log("req.files--------------------------")
+    console.log(req.files)
     for (let k in req.files) {
         srt_user += ` ,${k} = ${req.protocol + "://" + req.headers.host}'/driver_profile/${req.files[k][0]["filename"]}'`
     }
-
 
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
         srt_user += " where driver_id ='" + driver_id + "'"
@@ -424,7 +425,7 @@ export async function update_driver(req, res) {
         srt_user = ""
     }
 
-    console.log(srt_user)
+    console.log("----srt_user--------" + srt_user)
     connection.query(srt_user, (err, rows) => {
         if (err) {
             console.log(err)
@@ -569,7 +570,7 @@ export function order_asign_by_delivery_admin(req, res) {
 }
 
 export function get_delivery_detaile_list(req, res) {
-    let filter = "SELECT orders_details_id,payment,order_status,payment_method,order_delivery_details.created_on AS order_asign_date, order_delivery_details.driver_id,driver_name,driver_last_name,date_of_birth,contect_no , order_delivery_details.order_id, order_date, product_id,shipping_charges, order_delivery_details.delivery_date,delivery_lat,delivery_log, user_name, address, `order`.email AS user_email, pin_code, city, user_image, phone_no, total_order_product_quantity, order_delivery_details.vehicle_id,registration_no_of_vehicle,status_comment FROM `order_delivery_details` LEFT JOIN delivery_man ON order_delivery_details.driver_id = delivery_man.driver_id LEFT JOIN `order` ON order_delivery_details.order_id = `order`.order_id LEFT JOIN `vehicle_detaile` ON vehicle_detaile.vehicle_id = order_delivery_details.vehicle_id where"
+    let filter = "SELECT orders_details_id,payment,order_status,payment_method,order_delivery_details.created_on AS order_asign_date, order_delivery_details.driver_id,driver_name,driver_last_name,date_of_birth,contect_no , order_delivery_details.order_id, order_date, product_id,shipping_charges, order_delivery_details.delivery_date,delivery_lat,delivery_log, user_name, address, `order`.email AS user_email,`order`.status_order AS status_order, pin_code, city, user_image, phone_no, total_order_product_quantity, order_delivery_details.vehicle_id,registration_no_of_vehicle,status_comment FROM `order_delivery_details` LEFT JOIN delivery_man ON order_delivery_details.driver_id = delivery_man.driver_id LEFT JOIN `order` ON order_delivery_details.order_id = `order`.order_id LEFT JOIN `vehicle_detaile` ON vehicle_detaile.vehicle_id = order_delivery_details.vehicle_id where"
     let req_obj = req.body
 
     if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
@@ -697,6 +698,8 @@ export function change_order_detaile_status(req, res) {
 }
 
 export function delivery_verify_code_match(req, res) {
+    const jsDate = new Date();
+    const formattedDate = jsDate.toISOString().slice(0, 19).replace('T', ' ')
     let { order_id, order_delivery_confirm_code } = req.body
     connection.query("SELECT * FROM `order_delivery_details` WHERE driver_id='" + req.driver_id + "' AND order_id='" + order_id + "' AND order_delivery_confirm_code ='" + order_delivery_confirm_code + "' ", (err, rows) => {
         if (err) {
@@ -704,15 +707,15 @@ export function delivery_verify_code_match(req, res) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
         } else {
             if (rows != "") {
-                connection.query("UPDATE `order_delivery_details` SET `order_status`='delivered' WHERE driver_id='" + req.driver_id + "' AND order_id='" + order_id + "' AND order_delivery_confirm_code ='" + order_delivery_confirm_code + "' ", (err, rows) => {
-                    console.log(rows)
+                connection.query("UPDATE `order_delivery_details` SET `order_status`='delivered',`delivered_date` = NOW() WHERE driver_id='" + req.driver_id + "' AND order_id='" + order_id + "' AND order_delivery_confirm_code ='" + order_delivery_confirm_code + "'", (err, rows) => {
+                    console.log(err)
                 })
                 res.status(StatusCodes.OK).json({ message: "Confirmation  successfull", "status": true });
             } else {
                 res.status(200).json({ message: "not match credintials", "status": false });
             }
 
-            connection.query("UPDATE `order` SET `status_order`='delivered' WHERE order_id='" + order_id + "'", (err, rows) => { console.log(rows) })
+            connection.query("UPDATE `order` SET `status_order`='delivered'", (err, rows) => { console.log("---" + err) })
         }
     });
 }
@@ -742,7 +745,7 @@ export async function order_details_for_driver(req, res) {
     const id = req.query.id;
     let resp_obj = {}
     // select order_id,user_id,vendor_id,total_order_product_quantity,total_amount  ,total_gst,total_cgst,total_sgst,total_discount,shipping_charges,payment_mode,payment_ref_id,order_date,delivery_date,discount_coupon ,discount_coupon_value from `order` where order_id ="398080" AND user_id ="35" GROUP BY order_id
-    connection.query('select order_id,user_id,vendor_id,total_order_product_quantity,total_amount  ,total_gst,total_cgst,total_sgst,total_discount,shipping_charges,payment_mode,payment_ref_id,order_date,delivery_date,discount_coupon ,discount_coupon_value from `order`  where order_id ="' + id + '" GROUP BY order_id',
+    connection.query('select * from `order`  where order_id ="' + id + '" GROUP BY order_id',
         (err, rows) => {
             if (err) {
                 console.log(err)
@@ -752,7 +755,7 @@ export async function order_details_for_driver(req, res) {
                     resp_obj["success"] = true
                     resp_obj["order_detaile"] = rows
 
-                    connection.query('select *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_detaile.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_detaile.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image FROM order_detaile where order_id =' + id + '',
+                    connection.query('select * FROM order_detaile1 where order_id =' + id + '',
                         (err, rows) => {
                             if (err) {
                                 res.status(StatusCodes.INSUFFICIENT_STORAGE).json(err);

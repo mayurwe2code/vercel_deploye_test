@@ -24,8 +24,6 @@ import multer from "multer"
 //---------------------------------------------------------------------------------------------------------------------------------
 
 var storage = multer.diskStorage({
-
-
     destination: function (req, file, callback) {
         callback(null, 'public/driver_profile/');
     },

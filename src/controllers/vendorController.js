@@ -754,8 +754,10 @@ export function order_verify_by_vendor(req, res) {
                             console.log(rows[0])
                             let { order_id, product_id, user_id, vendor_id, total_order_product_quantity, total_amount, total_gst, total_cgst, total_sgst, total_discount, shipping_charges, invoice_id, payment_mode, payment_ref_id, order_date, delivery_date, invoice_date, discount_coupon, discount_coupon_value, created_on, updated_on, status_order, delivery_lat, delivery_log, user_name, address, email, pin_code, city, user_image, phone_no, delivery_verify_code, verify_by_vendor, only_this_order_product_total, only_this_order_product_quantity, only_this_product_gst, only_this_product_cgst, only_this_product_sgst } = rows[0]
                             // console.log({ order_id, payment, payment_method, order_delivery_confirm_code })
+                            const dateObject = new Date(delivery_date);
+                            const formattedDate = dateObject.toISOString().slice(0, 19).replace('T', ' ');
 
-                            connection.query("INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`) VALUES ('" + order_id + "','vendor','" + only_this_order_product_total + "', '" + payment_mode + "', '" + delivery_verify_code + "' ,'" + req.vendor_id + "')", (err, rows) => {
+                            connection.query("INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`,`delivery_date`) VALUES ('" + order_id + "','vendor','" + only_this_order_product_total + "', '" + payment_mode + "', '" + delivery_verify_code + "' ,'" + req.vendor_id + "','" + formattedDate + "')", (err, rows) => {
                                 if (err) {
                                     console.log(err)
                                     if (err.code == "ER_DUP_ENTRY") {
@@ -931,28 +933,43 @@ export async function vendor_product_list(req, res) {
     );
 }
 
-export function vendor_update_delivery_boy_pickuped_order(req, res) {
+export async function vendor_update_delivery_boy_pickuped_order(req, res) {
     console.log("vendor_update_delivery_boy_pickuped_order-------------------")
-    let { order_id, pickuped } = req.body
+    let { order_id, pickuped, ready_to_pickup } = req.body
 
-    if (pickuped === "yes") {
-        connection.query("UPDATE `order_delivery_details` SET `order_status`='pickuped' WHERE order_id='" + order_id + "'",
+    async function db_update(query_1, query_2) {
+        connection.query(query_1,
             (err, results) => {
                 if (err) {
                     console.log("err___________________")
                     console.log(err)
-                    res.status(200).send({ "response": "find error" });
+                    res.status(200).send({ "status": false, "response": "find error" });
                 } else {
                     if (results["affectedRows"] >= 1) {
-                        connection.query("UPDATE `order` SET `status_order`='pickuped' WHERE order_id='" + order_id + "'", (err, rows) => { console.log(rows) })
+                        connection.query(query_2, (err, rows) => { console.log(rows) })
                         res.status(200).send({ "status": true, "response": "order status updated successfull" });
                     } else {
                         res.status(200).send({ "status": false, "response": "find error" });
                     }
                 }
             })
-    } else {
-        res.status(200).send({ "status": false, "response": "accepted only yes in pickuped feild" });
     }
-
+    if (order_id) {
+        if (!ready_to_pickup && pickuped === "yes") {
+            let query_1 = "UPDATE `order_delivery_details` SET `order_status`='pickuped' WHERE order_id='" + order_id + "' AND driver_id IS NOT NULL "
+            let query_2 = "UPDATE `order` SET `status_order`='pickuped' WHERE order_id='" + order_id + "'"
+            db_update(query_1, query_2)
+        }
+        if (!pickuped && ready_to_pickup === "yes") {
+            let query_1 = "UPDATE `order_delivery_details` SET `order_status`='ready_to_pickup' WHERE order_id='" + order_id + "'"
+            let query_2 = "UPDATE `order` SET `status_order`='ready_to_pickup' WHERE order_id='" + order_id + "'"
+            db_update(query_1, query_2)
+        }
+        if (pickuped && ready_to_pickup) {
+            console.log("------------------if--3")
+            res.status(200).send({ "status": false, "response": "find error" })
+        }
+    } else {
+        res.status(200).send({ "status": false, "response": "plesase fill order_id input" })
+    }
 }

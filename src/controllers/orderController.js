@@ -14,7 +14,10 @@ import fetch from 'node-fetch';
 
 // my_fun();
 export async function add_order(req, res) {
-
+  const currentDate = new Date();
+  const futureDate = new Date(currentDate);
+  futureDate.setDate(currentDate.getDate() + 7);
+  const formattedDateTime = futureDate.toISOString().slice(0, 19).replace('T', ' ');
   let vendore_id_array = [];
   let order_no_obj = {};
   let vendor_order_detail_obj = {};
@@ -54,11 +57,11 @@ export async function add_order(req, res) {
             if (vendore_id_array.includes(item["vendor_id"])) {
               console.log("---vendore_id_array.includes(item[vendor_id])--true-")
               console.log(vendore_id_array.includes(item["vendor_id"]))
-              let order_no_old = order_no_obj[item["vendor_id"]]
-              let verify_code = JSON.stringify(order_no_old * 13)
-              if (verify_code.length > 7) {
-                verify_code = verify_code.substring(0, verify_code.length - 1)
-              }
+              // let order_no_old = order_no_obj[item["vendor_id"]]
+              // let verify_code = JSON.stringify(order_no_old * 13)
+              // if (verify_code.length > 7) {
+              //   verify_code = verify_code.substring(0, verify_code.length - 1)
+              // }
               connection.query("SELECT product_stock_quantity FROM `product_verient` WHERE product_verient_id='" + item["product_verient_id"] + "'",
                 (err, result) => {
                   if (err) {
@@ -122,6 +125,7 @@ export async function add_order(req, res) {
             } else {
               console.log("---vendore_id_array.includes(item[vendor_id])--false-")
               let orderno = Math.floor(100000 + Math.random() * 900000);
+              const verify_code = Math.floor(100000 + Math.random() * 900000);
               vendore_id_array.push(item["vendor_id"])
               order_no_obj[item["vendor_id"]] = orderno
               vendor_order_detail_obj[item["vendor_id"]] = {}
@@ -134,10 +138,6 @@ export async function add_order(req, res) {
               vendor_order_detail_obj[item["vendor_id"]]["only_this_product_sgst"] = parseFloat(item["only_this_product_sgst"])
               // only_this_product_gst,only_this_product_cgst,only_this_product_sgst
 
-              let verify_code = JSON.stringify(orderno * 13)
-              if (verify_code.length > 7) {
-                verify_code = verify_code.substring(0, verify_code.length - 1)
-              }
               connection.query("SELECT product_stock_quantity FROM product_verient WHERE product_verient_id='" + item["product_verient_id"] + "'",
                 (err, result) => {
                   if (err) {
@@ -146,7 +146,7 @@ export async function add_order(req, res) {
                   } else {
                     var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["cart_qty_of_this_product"])
                     connection.query(
-                      "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`) VALUES ('" + orderno + "','" + item["product_id"] + "','" + req.user_id + "', '" + item["vendor_id"] + "', '" + item["total_order_product_quantity"] +
+                      "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`,`delivery_date`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`) VALUES ('" + orderno + "','" + item["product_id"] + "','" + req.user_id + "', '" + item["vendor_id"] + "', '" + item["total_order_product_quantity"] +
                       "','" +
                       item["total_amount"] +
                       "','" +
@@ -164,10 +164,7 @@ export async function add_order(req, res) {
                       "','" +
                       item["payment_mode"] +
                       "','" +
-                      item["payment_ref_id"] +
-                      "','" +
-                      item["discount_coupon"] +
-                      "','" +
+                      item["payment_ref_id"] + "','" + formattedDateTime + "','" + item["discount_coupon"] + "','" +
                       item["discount_coupon_value"] +
                       "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + address + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "' ,'" + verify_code + "')",
                       (err, rows) => {
@@ -568,8 +565,6 @@ export async function order_search(req, res) {
 export function order_status_update(req, res) {
   console.log("order_status_update-----------------")
   console.log(req.body)
-
-
   let { status_order, order_id } = req.body
 
   console.log("check order_verify_by_admineee" + req.vendor_id)
@@ -604,7 +599,8 @@ export function order_status_update(req, res) {
             console.log(rows[0])
             let { order_id, product_id, user_id, vendor_id, total_order_product_quantity, total_amount, total_gst, total_cgst, total_sgst, total_discount, shipping_charges, invoice_id, payment_mode, payment_ref_id, order_date, delivery_date, invoice_date, discount_coupon, discount_coupon_value, created_on, updated_on, status_order, delivery_lat, delivery_log, user_name, address, email, pin_code, city, user_image, phone_no, delivery_verify_code, verify_by_vendor, only_this_order_product_total, only_this_order_product_quantity, only_this_product_gst, only_this_product_cgst, only_this_product_sgst } = rows[0]
             // console.log({ order_id, payment, payment_method, order_delivery_confirm_code })
-
+            const dateObject = new Date(delivery_date);
+            const formattedDate = dateObject.toISOString().slice(0, 19).replace('T', ' ');
             connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + user_id + '","user","order your order current staus is ' + status_order + '","unread"),("001","admin","successfully changed user (user_id ' + user_id + ') order status","unread")', (err, rows) => {
               if (err) {
                 //console.log({ "notification": err })
@@ -635,7 +631,7 @@ export function order_status_update(req, res) {
               })
 
             if (status_order == "approved") {
-              connection.query("INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`) VALUES ('" + order_id + "','vendor','" + only_this_order_product_total + "', '" + payment_mode + "', '" + delivery_verify_code + "' ,'" + req.vendor_id + "')", (err, result) => {
+              connection.query("INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`,`delivery_date`) VALUES ('" + order_id + "','vendor','" + only_this_order_product_total + "', '" + payment_mode + "', '" + delivery_verify_code + "' ,'" + req.vendor_id + "','" + formattedDate + "')", (err, result) => {
                 if (err) {
                   console.log(err)
                   if (err.code == "ER_DUP_ENTRY") {
