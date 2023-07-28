@@ -303,14 +303,14 @@ export async function order_list(req, res) {
 
   if (req.for_ == 'admin') {
     if (user_id != '') {
-      str_order = "select * from `order` where user_id='" + user_id + "'"
+      str_order = "select * ,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date from `order` where user_id='" + user_id + "'"
     } else {
-      str_order = "select * from `order`"
+      str_order = "select * ,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date from `order`"
     }
   } else {
     if (req.for_ == 'user') {
       user_id = ""
-      str_order = "select * from `order` where user_id='" + req.user_id + "'"
+      str_order = "select *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date from `order` where user_id='" + req.user_id + "'"
     }
   }
   connection.query(str_order, (err, rows) => {
@@ -329,13 +329,13 @@ export async function order_details(req, res) {
   let chek_token = true;
   if ("admin_token" in req.headers) {
     chek_token = false;
-    query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" '
+    query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE order_id ="' + id + '" '
   } else if (req.user_id) {
-    query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND user_id ="' + req.user_id + '" '
+    query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE order_id ="' + id + '" AND user_id ="' + req.user_id + '" '
   }
   else {
     if (req.vendor_id) {
-      query_ += 'SELECT * FROM `order` WHERE order_id ="' + id + '" AND vendor_id ="' + req.vendor_id + '" '
+      query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE order_id ="' + id + '" AND vendor_id ="' + req.vendor_id + '" '
     }
   }
   // if("user_token" in req.headers){
@@ -473,15 +473,15 @@ export async function order_search(req, res) {
   if (req.for_ == 'admin') {
     if (req.body.user_id != '' && req.body.user_id != undefined) {
       // search_string += 'SELECT *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image  FROM order_view where'
-      search_string += 'SELECT * FROM order_view where'
+      search_string += 'SELECT *,(select delivered_date from `order_delivery_details` where `order_view`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM order_view where'
     } else {
       // search_string += 'SELECT *, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image FROM `order` where'
-      search_string += 'SELECT * FROM `order_view` where'
+      search_string += 'SELECT *,(select delivered_date from `order_delivery_details` where `order_view`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order_view` where'
     }
   } else {
     if (req.for_ == 'user') {
       // search_string = 'SELECT *,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_id = order_view.product_id AND image_position = "cover" group by product_images.product_id) AS cover_image   FROM order where user_id="' + req.user_id + '" AND '
-      search_string = 'SELECT *  FROM `order_view` where user_id="' + req.user_id + '" AND '
+      search_string = 'SELECT * ,(select delivered_date from `order_delivery_details` where `order_view`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order_view` where user_id="' + req.user_id + '" AND '
     }
   }
 
@@ -590,7 +590,7 @@ export function order_status_update(req, res) {
         //  res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
         console.log(rows)
 
-        connection.query("SELECT * FROM `order` WHERE `order_id` = '" + order_id + "'", (err, rows, fields) => {
+        connection.query("SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE `order_id` = '" + order_id + "'", (err, rows, fields) => {
           if (err) {
             console.log(err)
             // res.status(200).send({ "status": false, "response": "find some error" })
@@ -680,7 +680,7 @@ export async function vendor_order_search(req, res) {
   if (req.query.delivery_side) {
     search_string1 = 'SELECT * FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = "' + req.vendor_id + '" AND '
   } else {
-    search_string1 = 'SELECT *  FROM `order_view` where vendor_id="' + req.vendor_id + '" AND '
+    search_string1 = 'SELECT * ,(select delivered_date from `order_delivery_details` where `order_view`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order_view` where vendor_id="' + req.vendor_id + '" AND '
   }
 
 
