@@ -57,7 +57,7 @@ export async function add_order(req, res) {
             if (vendore_id_array.includes(item["vendor_id"])) {
               console.log("---vendore_id_array.includes(item[vendor_id])--true-")
               console.log(vendore_id_array.includes(item["vendor_id"]))
-              // let order_no_old = order_no_obj[item["vendor_id"]]
+              let order_no_old = order_no_obj[item["vendor_id"]]
               // let verify_code = JSON.stringify(order_no_old * 13)
               // if (verify_code.length > 7) {
               //   verify_code = verify_code.substring(0, verify_code.length - 1)
