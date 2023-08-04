@@ -21,6 +21,7 @@ import reviewRouter from "./src/routers/reviewRouter.js";
 import categoryRouter from "./src/routers/categoryRouter.js";
 import vendorAreaRouter from "./src/routers/vendorAreaRouter.js";
 import specialProductsRouter from "./src/routers/specialProductsRouter.js";
+import wishlistRouter from './src/routers/wishlist_router.js'
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
@@ -76,7 +77,7 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
 // });
 
 
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter, specialProductsRouter);
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter, specialProductsRouter, wishlistRouter);
 
 app.get("/version", (req, res) => {
   let dat = new Date()

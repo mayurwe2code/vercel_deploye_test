@@ -271,7 +271,7 @@ export async function search_product(req, res) {
   var from_date = sevenDaysAgo.toISOString().slice(0, 19).replace("T", " ");
 
   if (req.user_id != "" && req.user_id != undefined) {
-    var search_string = 'SELECT *,(SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
+    var search_string = 'SELECT *,(SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count,(SELECT id FROM wishlist WHERE wishlist.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS wishlist FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
   } else {
 
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
