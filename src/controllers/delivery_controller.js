@@ -469,7 +469,8 @@ export function add_working_area(req, res) {
         query_ += "INSERT INTO `driver_working_area`(`driver_id`,`city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES (" + driver_id + ",'" + city + "','" + area_name + "'," + pin_code + "," + driver_log + "," + driver_lat + ")"
     }
     if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
-        query_ += "INSERT INTO `driver_working_area`( `city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES ('" + city + "','" + area_name + "'," + pin_code + "," + driver_log + "," + driver_lat + ")"
+        if (!driver_lat && !driver_log) { driver_lat = 0; driver_log = 0 }
+        query_ += "INSERT INTO `driver_working_area`( `driver_id`,`city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES ('" + req.driver_id + "','" + city + "','" + area_name + "','" + pin_code + "','" + driver_log + "','" + driver_lat + "')"
     }
     console.log(query_)
     connection.query(query_, (err, rows) => {
@@ -647,6 +648,7 @@ export function delivery_area_list(req, res) {
     }
 
     qyery_ = qyery_.substring(0, qyery_.length - 5);
+    console.log(qyery_)
     connection.query(qyery_, (err, rows) => {
         if (err) {
             console.log(err)
@@ -828,9 +830,14 @@ export function driver_list(req, res) {
     );
 }
 export function vehicle_list(req, res) {
-    let query_ = "SELECT * FROM `vehicle_detaile` WHERE"
+    let { search } = req.body
+    let query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE"
+    if (search) {
+        //vehicle_owner_name,chassis_number,registration_no_of_vehicle,model,company_name
+        query_ += ` vehicle_owner_name LIKE '%${search}%' OR chassis_number LIKE '%${search}%' OR registration_no_of_vehicle LIKE '%${search}%' OR model LIKE '%${search}%' OR company_name LIKE '%${search}%' AND  `
+    }
     for (let k in req.body) {
-        if (req.body[k] != "") {
+        if (req.body[k] != "" && k != "search") {
             query_ += ` ${k} = '${req.body[k]}' AND  `
         }
     }
