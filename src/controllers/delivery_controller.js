@@ -356,13 +356,37 @@ export async function driver_details(req, res) {
         }
     });
 }
+// export async function only_driver_list(req, res) {
+//     let query_ = "select * from delivery_man where"
+//     for (let k in req.body) {
+//         if (req.body[k] != "") {
+//             query_ += ` ${k} = '${req.body[k]}' AND  `
+//         }
+//     }
+//     query_ = query_.substring(0, query_.length - 5)
+//     console.log(query_)
+//     connection.query(query_, (err, rows) => {
+//         if (err) {
+//             res
+//                 .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//                 .json({ message: "something went wrong", "status": false });
+//         } else {
+//             res.status(StatusCodes.OK).json(rows);
+//         }
+//     });
+// }
 export async function only_driver_list(req, res) {
     let query_ = "select * from delivery_man where"
+    if (req.body.search) {
+        query_ += ` driver_name LIKE '%${req.body.search}%' OR driver_last_name LIKE '%${req.body.search}%' AND  `
+    }
     for (let k in req.body) {
-        if (req.body[k] != "") {
+        if (req.body[k] != "" && k != "search") {
             query_ += ` ${k} = '${req.body[k]}' AND  `
         }
     }
+
+
     query_ = query_.substring(0, query_.length - 5)
     console.log(query_)
     connection.query(query_, (err, rows) => {
@@ -439,10 +463,10 @@ export async function update_driver(req, res) {
 }
 
 export function add_working_area(req, res) {
-    let { city, area_name, pin_code, driver_log, driver_lat } = req.body
+    let { city, area_name, pin_code, driver_log, driver_lat, driver_id } = req.body
     let query_ = ""
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
-        query_ += "INSERT INTO `driver_working_area`(`city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES ('" + city + "','" + area_name + "'," + pin_code + "," + driver_log + "," + driver_lat + ")"
+        query_ += "INSERT INTO `driver_working_area`(`driver_id`,`city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES (" + driver_id + ",'" + city + "','" + area_name + "'," + pin_code + "," + driver_log + "," + driver_lat + ")"
     }
     if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
         query_ += "INSERT INTO `driver_working_area`( `city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES ('" + city + "','" + area_name + "'," + pin_code + "," + driver_log + "," + driver_lat + ")"
@@ -465,7 +489,9 @@ export function chouse_driver_for_delivery(req, res) {
     if (nearest_of_delivery_pin != "" && nearest_of_delivery_pin != undefined && nearest_of_delivery_pin != null) {
         query_ += "SELECT *, ( 3959 * acos( cos( radians(" + delivery_lat + ") ) * cos( radians( driver_lat ) ) * cos( radians( driver_log ) - radians(" + delivery_log + ") ) + sin( radians(" + delivery_lat + ") ) * sin( radians( driver_lat ) ) ) ) AS distance FROM driver_working_area  LEFT JOIN delivery_man ON driver_working_area.driver_id = delivery_man.driver_id  HAVING distance < " + nearest_of_delivery_pin + " "
     } else {
-        query_ += "SELECT * FROM driver_working_area  LEFT JOIN delivery_man ON driver_working_area.driver_id = delivery_man.driver_id "
+        //if you want only show this driver , when selected working area
+        // query_ += "SELECT * FROM driver_working_area  LEFT JOIN delivery_man ON driver_working_area.driver_id = delivery_man.driver_id "
+        query_ += "SELECT delivery_man.*,vehicle_detaile.model FROM delivery_man,vehicle_detaile where delivery_man.driver_id = vehicle_detaile.driver_id GROUP BY delivery_man.driver_id "
     }
     console.log(query_)
     connection.query(query_, (err, rows) => {
@@ -574,12 +600,12 @@ export function get_delivery_detaile_list(req, res) {
     let req_obj = req.body
 
     if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
-        filter += " delivery_date between '" + req.body.date_from + "' AND '" + req.body.date_to + "' AND  "
+        filter += " order_delivery_details.delivery_date between '" + req.body.date_from + "' AND '" + req.body.date_to + "' AND  "
     }
 
     for (let k in req_obj) {
         if (req_obj[k] != "" && k != "date_from" && k != "date_to") {
-            filter += ` ${k} = '${req_obj[k]}' AND  `
+            filter += ` order_delivery_details.${k} = '${req_obj[k]}' AND  `
         }
     }
 
@@ -606,7 +632,10 @@ export function get_delivery_detaile_list(req, res) {
 
 
 export function delivery_area_list(req, res) {
-    let qyery_ = "SELECT * FROM `driver_working_area` WHERE"
+    //old_code
+    let qyery_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = driver_working_area.driver_id ) AS driver_name FROM `driver_working_area` WHERE"
+
+    // let qyery_ = "SELECT driver_working_area.*, driver_name FROM `driver_working_area`,`delivery_man` WHERE driver_working_area.driver_id = delivery_man.driver_id GROUP BY driver_working_area.driver_id"
     console.log(req.query)
     for (let k in req.query) {
         if (req.query[k] != "") { qyery_ += ` ${k} = '${req.query[k]}' AND  ` }
