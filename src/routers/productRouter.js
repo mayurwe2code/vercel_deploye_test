@@ -42,4 +42,5 @@ productRouter.get("/getproduct/:id", getProductbyId);
 productRouter.put("/delete_product", admin_auth, delete_product);
 productRouter.put("/delete_restore_product_verient", admin_auth, delete_restore_product_verient);
 productRouter.post("/search", fetch_user, search_product);
+
 export default productRouter;

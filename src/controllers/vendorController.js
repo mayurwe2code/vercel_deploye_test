@@ -463,7 +463,7 @@ export function admin_change_vendor_status(req, res) {
 
 export async function search_vendor_product(req, res) {
     var { price_from, price_to } = req.body;
-    console.log(req.body)
+    // console.log(req.body)
     // 'SELECT *, (SELECT id FROM cart WHERE cart.product_id = product.id AND user_id = "' + req.user + '") FROM products  AND '
     var group_by = ' '
     if (req.query.group == "yes") {
@@ -478,7 +478,7 @@ export async function search_vendor_product(req, res) {
         var search_string_asc_desc = ` ORDER BY product.created_on DESC `
         string = "left join";
     }
-    console.log("ckkkkkkk---472--" + group_by)
+    // console.log("ckkkkkkk---472--" + group_by)
     if (req.query["DESC"]) {
         search_string_asc_desc = " ORDER BY product." + req.query["DESC"] + " DESC "
     }
@@ -486,17 +486,17 @@ export async function search_vendor_product(req, res) {
         search_string_asc_desc = " ORDER BY product." + req.query["ASC"] + " ASC "
     }
 
+    // ((SELECT ROUND(AVG(review.review_rating), 1) FROM review WHERE review.product_id = product.id) BETWEEN "2.5" AND "3.5") OR((SELECT ROUND(AVG(review.review_rating), 1) FROM review WHERE review.product_id = product.id) BETWEEN "2.5" AND "3.5") ORDER BY product.created_on DESC LIMIT 0, 4;
 
-    // var query_string = "select * from product  where ";
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
-        var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where product.vendor_id = "' + req.vendor_id + '" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0 ) AND is_deleted = 0  AND  ';
+        var search_string = 'SELECT id,product.vendor_id AS vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" GROUP BY product_images.product_verient_id) AS cover_image,(SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id) AS avgRatings FROM product ' + string + ' product_verient ON product.id = product_verient.product_id WHERE product.vendor_id = "' + req.vendor_id + '" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0) AND is_deleted = 0 AND ';
 
         // product.vendor_id = "17" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0) AND is_deleted = 0
 
         // GROUP BY product.id ORDER BY product.created_on DESC LIMIT 0, 100;
     } else {
-        var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ';
+        var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image, (select round(avg(`review`.`review_rating`),1) from `review` where (`review`.`product_id` = `product`.`id`)) AS `avgRatings` FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ';
     }
 
     if (price_from != "" && price_to != "") {
@@ -513,7 +513,19 @@ export async function search_vendor_product(req, res) {
                 }
             } else {
                 if (search_obj[i] == "is_verient") {
-                    console.log("nonono" + req.body[search_obj[i]])
+                    // console.log("nonono" + req.body[search_obj[i]])
+                } else if (search_obj[i] == "avgRatings") {
+                    var key_for_query = "avgRatings"
+                    var multi_val_ar = req.body["avgRatings"]
+                    for (var m = 0; m < multi_val_ar.length; m++) {
+                        let rat_for = parseFloat(multi_val_ar[m]) - 0.5;
+                        let rat_to = parseFloat(multi_val_ar[m]) + 0.5;
+                        search_string += '(( (SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id) BETWEEN "' + rat_for + '" AND "' + rat_to + '") OR    '
+                        if (m == multi_val_ar.length - 1) {
+                            search_string += '( (SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id) BETWEEN "' + rat_for + '" AND "' + rat_to + '")) AND   '
+                        }
+                    };
+
                 } else {
                     if (req.body[search_obj[i]] != "") {
                         var arr = JSON.stringify(req.body[search_obj[i]]);
@@ -541,7 +553,7 @@ export async function search_vendor_product(req, res) {
 
         }
     }
-    console.log(search_string)
+    // console.log(search_string)
     var pg = req.query;
     var numRows;
 
@@ -562,7 +574,7 @@ export async function search_vendor_product(req, res) {
                 var count_rows;
                 connection.query(search_string.replace("*", "count(*) AS `count_rows` "),
                     (err, results) => {
-                        console.log("results---------------------------------------")
+                        // console.log("results---------------------------------------")
                         // console.log(results)
                         try {
                             count_rows = results[0]["count_rows"]
@@ -588,7 +600,7 @@ export async function search_vendor_product(req, res) {
                             var formate_data = [];
                             var data1 = JSON.parse(JSON.stringify(results));
                             var product_chk_ar = [];
-                            console.log("data1---------------------")
+                            // console.log("data1---------------------")
                             // console.log(data1)
                             if (req.body.is_verient) {
                                 var responsePayload = {
@@ -630,7 +642,8 @@ export async function search_vendor_product(req, res) {
                                                 id: product_id,
                                                 product_id: product_id,
                                                 name: item.name,
-                                                seo_tag: item.seo_tag, brand: item.brand, category: item.category, is_deleted: item.is_deleted, status: item.status, review: item.review, rating: item.rating, description: item.description, care_and_Instructions: item.care_and_Instructions, benefits: item.benefits, is_active: item.is_active, created_by: item.created_by, created_by_id: item.created_by_id, created_on: item.created_on, updated_on: item.updated_on, product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image
+                                                vendor_id: item.vendor_id,
+                                                seo_tag: item.seo_tag, brand: item.brand, category: item.category, is_deleted: item.is_deleted, status: item.status, review: item.review, rating: item.rating, description: item.description, care_and_Instructions: item.care_and_Instructions, benefits: item.benefits, is_active: item.is_active, created_by: item.created_by, created_by_id: item.created_by_id, created_on: item.created_on, updated_on: item.updated_on, product_verient_id: item.product_verient_id, verient_name: item.verient_name, quantity: item.quantity, unit: item.unit, product_stock_quantity: item.product_stock_quantity, price: item.price, mrp: item.mrp, gst: item.gst, sgst: item.sgst, cgst: item.cgst, verient_is_deleted: item.verient_is_deleted, verient_status: item.verient_status, discount: item.discount, verient_description: item.verient_description, verient_is_active: item.verient_is_active, verient_created_on: item.verient_created_on, verient_updated_on: item.verient_updated_on, product_height: item.product_height, product_width: item.product_width, product_Weight: item.product_Weight, all_images_url: item.all_images_url, cover_image: item.cover_image, avgRatings: item.avgRatings
                                             };
                                             if (item.product_verient_id) {
                                                 product["verients"] = []
@@ -642,7 +655,7 @@ export async function search_vendor_product(req, res) {
                                             formate_data.push(product);
                                         }
                                         if (data1.length - 1 == index) {
-                                            console.log(formate_data)
+                                            // console.log(formate_data)
                                             var responsePayload = {
                                                 results: formate_data,
                                             };

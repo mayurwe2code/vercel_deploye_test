@@ -346,8 +346,9 @@ export async function driver_details(req, res) {
     console.log("========================friver id test")
     console.log(req.driver_id)
     // return false
-    connection.query("select * from user_and_vehicle_view_1 where driver_id= '" + req.driver_id + "'", (err, rows) => {
+    connection.query("SELECT * FROM delivery_man LEFT JOIN vehicle_detaile ON delivery_man.driver_id = vehicle_detaile.driver_id where delivery_man.driver_id= '" + req.driver_id + "'", (err, rows) => {
         if (err) {
+            console.log(err)
             res
                 .status(StatusCodes.INTERNAL_SERVER_ERROR)
                 .json({ message: "something went wrong", "status": false });
@@ -466,6 +467,7 @@ export function add_working_area(req, res) {
     let { city, area_name, pin_code, driver_log, driver_lat, driver_id } = req.body
     let query_ = ""
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
+        if (!driver_lat && !driver_log) { driver_lat = 0; driver_log = 0 }
         query_ += "INSERT INTO `driver_working_area`(`driver_id`,`city`, `area_name`, `pin_code`, `driver_log`, `driver_lat`) VALUES (" + driver_id + ",'" + city + "','" + area_name + "'," + pin_code + "," + driver_log + "," + driver_lat + ")"
     }
     if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
@@ -528,6 +530,7 @@ export function register_your_vehicle(req, res) {
     }
     console.log("srt_user====================================================srt_user")
     console.log(srt_user)
+    // return false
     connection.query(srt_user, (err, rows) => {
         if (err) {
             console.log(err)
@@ -590,7 +593,7 @@ export function order_asign_by_delivery_admin(req, res) {
                 }
                 );
             } else {
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "driver has no vehicle", "status": false });
+                res.status(StatusCodes.OK).json({ message: "driver has no vehicle", "status": false });
             }
         }
     });
@@ -601,7 +604,7 @@ export function get_delivery_detaile_list(req, res) {
     let req_obj = req.body
 
     if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
-        filter += " order_delivery_details.delivery_date between '" + req.body.date_from + "' AND '" + req.body.date_to + "' AND  "
+        filter += " order_delivery_details.delivery_date between '" + req.body.date_from + " 00:00:00' AND '" + req.body.date_to + " 23:59:59' AND  "
     }
 
     for (let k in req_obj) {
@@ -615,11 +618,11 @@ export function get_delivery_detaile_list(req, res) {
     }
 
     filter = filter.substring(0, filter.length - 5);
-    console.log("filter==============================================");
     console.log(filter);
     console.log(filter + "GROUP BY order_delivery_details.order_id");
+    console.log("filter==============================================");
 
-
+    console.log(filter + "GROUP BY order_delivery_details.order_id")
     connection.query(filter + "GROUP BY order_delivery_details.order_id", (err, rows) => {
         if (err) {
             console.log(err)
@@ -758,7 +761,7 @@ export function driver_add_by_admin(req, res) {
     let srt_values = "";
     for (let k in req.files) {
         str_fields += ` ,${k}`
-        srt_values += ` ,"${req.protocol + "://" + req.headers.host}/${req.files[k][0]["filename"]}"`
+        srt_values += ` ,"${req.protocol + "://" + req.headers.host}/driver_profile/${req.files[k][0]["filename"]}"`
     }
 
     console.log("INSERT INTO `delivery_man`(`driver_name`, `driver_last_name`, `date_of_birth`, `current_address`, `gender`, `age`, `contect_no`, `email`, `password`,`aadhar_no`, `licence_no`, `licence_issue_date`, `licence_validity_date`" + str_fields + ") VALUES ( '" + driver_name + "', '" + driver_last_name + "', '" + date_of_birth + "', '" + current_address + "', '" + gender + "', '" + age + "', '" + contect_no + "', '" + email + "', '" + password + "', '" + aadhar_no + "', '" + licence_no + "', '" + licence_issue_date + "', '" + licence_validity_date + "' " + str_fields + ")")
@@ -776,7 +779,15 @@ export async function order_details_for_driver(req, res) {
     const id = req.query.id;
     let resp_obj = {}
     // select order_id,user_id,vendor_id,total_order_product_quantity,total_amount  ,total_gst,total_cgst,total_sgst,total_discount,shipping_charges,payment_mode,payment_ref_id,order_date,delivery_date,discount_coupon ,discount_coupon_value from `order` where order_id ="398080" AND user_id ="35" GROUP BY order_id
-    connection.query('select * from `order`  where order_id ="' + id + '" GROUP BY order_id',
+    var qry_ = "";
+    if (req.headers.driver_token) {
+        qry_ = 'select * from `order` ,`order_delivery_details` where order_delivery_details.order_id = `order`.order_id AND order_delivery_details.order_id =  "' + id + '" AND order_delivery_details.driver_id = "' + req.driver_id + '" '
+    }
+    if (req.headers.delivery_admin_token) {
+        qry_ = 'select * from `order` ,`order_delivery_details` where order_delivery_details.order_id = `order`.order_id AND order_delivery_details.order_id =  "' + id + '" '
+    }
+
+    connection.query(qry_,
         (err, rows) => {
             if (err) {
                 console.log(err)

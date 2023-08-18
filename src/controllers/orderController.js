@@ -14,6 +14,8 @@ import fetch from 'node-fetch';
 
 // my_fun();
 export async function add_order(req, res) {
+  let invoice_id = Math.floor(100000 + Math.random() * 900000);
+
   const currentDate = new Date();
   const futureDate = new Date(currentDate);
   futureDate.setDate(currentDate.getDate() + 7);
@@ -124,6 +126,7 @@ export async function add_order(req, res) {
               )
             } else {
               console.log("---vendore_id_array.includes(item[vendor_id])--false-")
+
               let orderno = Math.floor(100000 + Math.random() * 900000);
               const verify_code = Math.floor(100000 + Math.random() * 900000);
               vendore_id_array.push(item["vendor_id"])
@@ -158,9 +161,9 @@ export async function add_order(req, res) {
                       "','" +
                       item["total_discount"] +
                       "','" +
-                      item["shipping_charges"] +
+                      100 +
                       "','" +
-                      orderno +
+                      invoice_id +
                       "','" +
                       item["payment_mode"] +
                       "','" +
@@ -200,7 +203,7 @@ export async function add_order(req, res) {
                               console.log("______________product detaile insert  data___________176")
                               console.log(result)
                               // only_this_product_gst,only_this_product_cgst,only_this_product_sgst
-                              connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"]}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"]}` + " ,`only_this_product_gst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_gst"]}` + "',`only_this_product_cgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_cgst"]}` + "',`only_this_product_sgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_sgst"]}` + "' where `order_id` ='" + orderno + "' AND user_id='" + req.user_id + "'", (err, rows) => {
+                              connection.query("UPDATE `order` SET `only_this_order_product_total` = " + `${vendor_order_detail_obj[item["vendor_id"]]["total_of_this_prodoct"] + 100}` + " ,`only_this_order_product_quantity`=" + `${vendor_order_detail_obj[item["vendor_id"]]["cart_qty_of_this_product"]}` + " ,`only_this_product_gst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_gst"]}` + "',`only_this_product_cgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_cgst"]}` + "',`only_this_product_sgst`='" + `${vendor_order_detail_obj[item["vendor_id"]]["only_this_product_sgst"]}` + "' where `order_id` ='" + orderno + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                                 if (err) {
                                   console.log("rows----------------err-------delete---")
                                   console.log(err)
@@ -266,7 +269,7 @@ export async function add_order(req, res) {
                 }
               })
 
-            res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
+            res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "invoice_id": invoice_id, "vendors_order_detailes": vendor_order_detail_obj, "success": true });
             if (fcm_tokens != "") {
               var notification = {
                 "title": "nurser_live order notification",
@@ -386,6 +389,76 @@ export async function order_details(req, res) {
     }
   )
 }
+// export async function PAYMENT_details(req, res) {
+//   let { id, invoice_id } = req.query
+//   console.log(req.query)
+//   let condition_ = ""
+//   let resp_obj = {}
+//   let query_ = ''
+//   let chek_token = true;
+//   if (invoice_id) {
+//     condition_ = " `order`.`invoice_id` = '" + invoice_id + "' "
+//   }
+//   if (id) {
+//     condition_ = " `order`.`order_id` = '" + id + "' "
+//   }
+
+//   if ("admin_token" in req.headers) {
+//     chek_token = false;
+//     query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE ' + condition_ + ' '
+
+//   } else if (req.user_id) {
+//     query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE ' + condition_ + ' AND user_id ="' + req.user_id + '" '
+//   }
+//   else {
+//     if (req.vendor_id) {
+//       query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE ' + condition_ + ' AND vendor_id ="' + req.vendor_id + '" '
+//     }
+//   }
+//   // if("user_token" in req.headers){
+
+//   // }
+//   console.log("-------" + query_)
+//   connection.query(query_,
+//     (err, rows) => {
+//       if (err) {
+//         console.log(err)
+//         res.status(StatusCodes.INSUFFICIENT_STORAGE).json(err);
+//       } else {
+//         if (rows != "") {
+
+//           rows.forEach((item, index) => {
+//             rows[index]["order_product_detaile"];
+//             connection.query('SELECT * FROM `order_detaile1` where order_id =' + item["order_id"] + '',
+//               (err, rows1) => {
+//                 if (err) {
+//                   console.log(err)
+//                   res.status(StatusCodes.INSUFFICIENT_STORAGE).json(err);
+//                 } else {
+//                   rows[index]["order_product_detaile"] = rows1;
+//                   if (rows.length == index - 1) {
+//                     req.user_id = item["user_id"]
+//                     connection.query("select * from user where id= '" + req.user_id + "'", (err, rows2) => {
+//                       if (err) {
+//                         res
+//                           .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//                           .json({ message: "something went wrong", "status": false });
+//                       } else {
+//                         rows["user_detaile"] = rows2
+//                         res
+//                           .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//                           .json({ message: "ok", result: rows, "status": true });
+//                       }
+//                     })
+//                   }
+//                 }
+//               })
+//           })
+
+//         }
+//       }
+//     })
+// }
 
 export async function order_update(req, res) {
   var {
@@ -397,7 +470,6 @@ export async function order_update(req, res) {
     total_sgst,
     total_discount,
     shipping_charges,
-    invoice_id,
     payment_mode,
     payment_ref_id,
     discount_coupon,

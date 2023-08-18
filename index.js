@@ -84,7 +84,7 @@ app.get("/version", (req, res) => {
   // connection.end()
   // connection
   res.send({
-    "latest_update": dat, "latest_commit": "check  -  server good 09/8 18:04"
+    "latest_update": dat, "latest_commit": "check  -  server good 18/8 18:33"
   })
 
 })
@@ -98,8 +98,6 @@ try {
 } catch (e) {
   console.log(e)
 }
-
-
 
 
 import passportConfig from "./passport.js";
