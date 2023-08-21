@@ -520,10 +520,10 @@ export function register_your_vehicle(req, res) {
     }
     let srt_user = ""
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
-        srt_user = "INSERT INTO `vehicle_detaile`(`company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES('" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
+        srt_user = "INSERT INTO `vehicle_detaile`(`vehicle_add_by`,`company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES('admin','" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
 
     } else if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
-        srt_user = "INSERT INTO `vehicle_detaile`(`driver_id`, `company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES( '" + req.driver_id + "', '" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
+        srt_user = "INSERT INTO `vehicle_detaile`(`vehicle_add_by`,`driver_id`, `company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES( 'driver','" + req.driver_id + "', '" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
 
     } else {
         srt_user = ""
@@ -899,15 +899,25 @@ export function change_vehicle_feild(req, res) {
     let srt_user = "UPDATE `vehicle_detaile` SET"
     console.log("UPDATE `vehicle_detaile` SET")
     console.log(req.body)
+    if (req.headers.driver_token && req.driver_id) { req.body.driver_id = req.driver_id }
+
     for (let k in req.body) {
         console.log("__" + req.body[k] + "___")
         srt_user += `  ${k}="${req.body[k]}",`
     }
     console.log(srt_user)
 
+    if (req.headers.admin_token && req.body.driver_id) {
+        srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'admin' `
+    }
+    if (req.headers.driver_token && req.body.driver_id) {
+        srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
+    }
     srt_user = srt_user.substring(0, srt_user.length - 1)
-    console.log(srt_user + ` where vehicle_id = '${req.body.vehicle_id}' `)
-    connection.query(srt_user + ` where vehicle_id = '${req.body.vehicle_id}' `, (err, rows) => {
+    console.log(srt_user)
+
+
+    connection.query(srt_user, (err, rows) => {
         if (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
