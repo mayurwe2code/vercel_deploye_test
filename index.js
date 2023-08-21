@@ -84,7 +84,7 @@ app.get("/version", (req, res) => {
   // connection.end()
   // connection
   res.send({
-    "latest_update": dat, "latest_commit": "check  -  server good 18/8 18:33"
+    "latest_update": dat, "latest_commit": "check  -  server good 21/8 11:47"
   })
 
 })
