@@ -3,20 +3,42 @@ export function add_complain(req, res) {
     console.log("add_complain----------------------")
     var { order_id, first_name, last_name, contect_no, subject, email, description } = req.body
     //return false
-    connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "')", async (error, rows, fields) => {
-        if (error) {
-            //console.log("error"+err)
-            res.status(200).send({ "status": false, error })
-        } else {
-            //console.log("_____")
-            res.status(201).send({ "status": true, "Message": "Complaint Added" })
 
-        }
-    })
+    if (order_id) {
+        connection.query("SELECT * FROM `order` WHERE order_id = '" + order_id + "'  ", async (error, rows, fields) => {
+            if (rows != "") {
+                var vendor_id = rows[0]["vendor_id"]
+                connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`asign_date`,`assigned_to`,`for_complain`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "','NOW()','" + vendor_id + "','order_related')", async (error, rows, fields) => {
+                    if (error) {
+                        //console.log("error"+err)
+                        res.status(200).send({ "status": false, error })
+                    } else {
+                        //console.log("_____")
+                        res.status(201).send({ "status": true, "Message": "Complaint Added" })
+
+                    }
+                })
+            }
+        })
+    } else {
+        connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`for_complain`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "','other')", async (error, rows, fields) => {
+            if (error) {
+                //console.log("error"+err)
+                res.status(200).send({ "status": false, error })
+            } else {
+                //console.log("_____")
+                res.status(201).send({ "status": true, "Message": "Complaint Added" })
+
+            }
+        })
+    }
+
+
 }
 
 export function complain_update(req, res) {
     //console.log("req.body")
+    let complain_status = '';
 
     let query_ = ""
     let newdate = new Date();
@@ -24,7 +46,6 @@ export function complain_update(req, res) {
         getDate();
     if (req.headers.admin_token) {
         let { id, assigned_to, status } = req.body;
-        let complain_status = '';
         if (assigned_to) {
             complain_status = status;
             query_ = "UPDATE `comaplains_support` SET `assigned_to`='" + assigned_to + "',`status_`='" + status + "',`asign_date`='" + complaint_newdate + "',`updated_on`='" + complaint_newdate + "' WHERE `id`= " + id + ""
@@ -56,7 +77,7 @@ export function complain_search(req, res) {
     if (req.headers.admin_token) {
         let req_obj = req.body;
         if (Object.values(req_obj).every(element => element === "")) {
-            query_ = "SELECT * FROM `comaplains_support` LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` "
+            query_ = "SELECT comaplains_support.*,`user`.`first_name` AS profile_first_name , `user`.`last_name` AS profile_last_name , `user`.`email` AS profile_email , `password`, `phone_no`, `pincode`, `city`, `address`, `alternate_address`, `image`, `token_for_notification`, `user_log`, `user_lat`, `alternetive_user_lat`, `alternetive_user_log` FROM `comaplains_support` LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` "
         } else {
             for (let k in req_obj) {
                 if (k != "") {

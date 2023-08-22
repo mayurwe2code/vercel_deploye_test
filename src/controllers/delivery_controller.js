@@ -377,7 +377,7 @@ export async function driver_details(req, res) {
 //     });
 // }
 export async function only_driver_list(req, res) {
-    let query_ = "select * from delivery_man where"
+    let query_ = "select * from delivery_man LEFT JOIN vehicle_detaile ON vehicle_detaile.driver_id = delivery_man.driver_id where"
     if (req.body.search) {
         query_ += ` driver_name LIKE '%${req.body.search}%' OR driver_last_name LIKE '%${req.body.search}%' AND  `
     }
@@ -523,6 +523,8 @@ export function register_your_vehicle(req, res) {
         srt_user = "INSERT INTO `vehicle_detaile`(`vehicle_add_by`,`company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES('admin','" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
 
     } else if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
+        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`vehicle_id` = '" + req.driver_id + "'", (err, rows) => { });
+
         srt_user = "INSERT INTO `vehicle_detaile`(`vehicle_add_by`,`driver_id`, `company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES( 'driver','" + req.driver_id + "', '" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
 
     } else {
@@ -899,30 +901,34 @@ export function change_vehicle_feild(req, res) {
     let srt_user = "UPDATE `vehicle_detaile` SET"
     console.log("UPDATE `vehicle_detaile` SET")
     console.log(req.body)
-    if (req.headers.driver_token && req.driver_id) { req.body.driver_id = req.driver_id }
+    if (req.headers.driver_token && req.driver_id) {
+        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "'", (err, rows) => { });
+        req.body.driver_id = req.driver_id
+    }
 
     for (let k in req.body) {
         console.log("__" + req.body[k] + "___")
         srt_user += `  ${k}="${req.body[k]}",`
     }
-    console.log(srt_user)
 
+
+    srt_user = srt_user.substring(0, srt_user.length - 1)
+    console.log(srt_user)
     if (req.headers.admin_token && req.body.driver_id) {
+        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "'", (err, rows) => { });
         srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'admin' `
     }
     if (req.headers.driver_token && req.body.driver_id) {
         srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
     }
-    srt_user = srt_user.substring(0, srt_user.length - 1)
     console.log(srt_user)
-
 
     connection.query(srt_user, (err, rows) => {
         if (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
         } else {
-            if (rows.affectedRows == '1') { res.status(StatusCodes.OK).json({ message: "vehicle feild updated successfull", "status": true }); } else {
+            if (rows.affectedRows >= 1) { res.status(StatusCodes.OK).json({ message: "vehicle feild updated successfull", "status": true }); } else {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
             }
 
