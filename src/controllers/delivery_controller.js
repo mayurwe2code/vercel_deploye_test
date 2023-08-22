@@ -383,7 +383,7 @@ export async function only_driver_list(req, res) {
     }
     for (let k in req.body) {
         if (req.body[k] != "" && k != "search") {
-            query_ += ` ${k} = '${req.body[k]}' AND  `
+            query_ += ` \`delivery_man\`.${k} = '${req.body[k]}' AND  `
         }
     }
 
@@ -712,8 +712,8 @@ export function change_order_detaile_status(req, res) {
     if (req.headers.driver_token != "" && req.headers.driver_token != undefined && req.headers.driver_token != null) {
         query_ = "UPDATE `order_delivery_details` SET `order_status`='" + req.body.order_status + "', `last_modification_by`='delivery_man', `last_modification_by_id`='" + req.driver_id + "',`status_comment`='" + req.body.status_comment + "'"
     }
-    console.log(query_ + " WHERE order_id='" + order_id + "'")
-    connection.query(query_ + " WHERE order_id='" + order_id + "'", (err, rows) => {
+    console.log(query_ + " WHERE order_id='" + order_id + "' AND driver_id IS NULL")
+    connection.query(query_ + " WHERE order_id='" + order_id + "' AND driver_id IS NULL", (err, rows) => {
         if (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
