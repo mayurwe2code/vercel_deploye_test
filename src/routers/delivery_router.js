@@ -47,7 +47,7 @@ delivery_router.put("/delete_restore_driver", fetch_admin_driver, delete_restore
 delivery_router.put("/update_driver", fetch_admin_driver, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'licence', maxCount: 1 }, { name: 'aadhar_card', maxCount: 1 }]), update_driver);
 delivery_router.post("/driver_add_by_admin", upload.fields([{ name: 'image', maxCount: 1 }, { name: 'licence', maxCount: 1 }, { name: 'aadhar_card', maxCount: 1 }]), driver_add_by_admin);
 delivery_router.get("/order_details_for_driver", fetch_admin_driver, order_details_for_driver);
-delivery_router.post("/vehicle_list", vehicle_list);
+delivery_router.post("/vehicle_list", fetch_admin_driver, vehicle_list);
 delivery_router.post("/driver_list", driver_list);
 delivery_router.post("/only_driver_list", only_driver_list);
 delivery_router.post("/add_working_area", fetch_admin_driver, add_working_area);

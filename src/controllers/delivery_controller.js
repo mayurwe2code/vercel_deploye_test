@@ -377,7 +377,8 @@ export async function driver_details(req, res) {
 //     });
 // }
 export async function only_driver_list(req, res) {
-    let query_ = "select * from delivery_man LEFT JOIN vehicle_detaile ON vehicle_detaile.driver_id = delivery_man.driver_id where"
+    let query_ = "select delivery_man.*, vehicle_id,vehicle_add_by,company_name,model,color,registration_no_of_vehicle,chassis_number,vehicle_owner_name,make_of_vehicle,vehicle_registerd_by,puc_expiration_date,insurance_expiration_date,registration_expiration_date,registration,puc_certificate,insurance, vehicle_detaile.is_active AS vehicle_is_active from delivery_man LEFT JOIN vehicle_detaile ON vehicle_detaile.driver_id = delivery_man.driver_id where vehicle_detaile.is_active = '1' AND  "
+
     if (req.body.search) {
         query_ += ` driver_name LIKE '%${req.body.search}%' OR driver_last_name LIKE '%${req.body.search}%' AND  `
     }
@@ -389,9 +390,10 @@ export async function only_driver_list(req, res) {
 
 
     query_ = query_.substring(0, query_.length - 5)
-    console.log(query_)
+    console.log("ck------||" + query_)
     connection.query(query_, (err, rows) => {
         if (err) {
+            console.log(err)
             res
                 .status(StatusCodes.INTERNAL_SERVER_ERROR)
                 .json({ message: "something went wrong", "status": false });
@@ -844,7 +846,13 @@ export function driver_list(req, res) {
 }
 export function vehicle_list(req, res) {
     let { search } = req.body
-    let query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE"
+    if (req.headers.driver_token) {
+        var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = '" + req.driver_id + "' AND is_active = '1' AND  "
+    }
+    if (req.headers.admin_token) {
+        var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE"
+    }
+    // let query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = "+req.driver_id+" is_active = '1' AND  "
     if (search) {
         //vehicle_owner_name,chassis_number,registration_no_of_vehicle,model,company_name
         query_ += ` vehicle_owner_name LIKE '%${search}%' OR chassis_number LIKE '%${search}%' OR registration_no_of_vehicle LIKE '%${search}%' OR model LIKE '%${search}%' OR company_name LIKE '%${search}%' AND  `
@@ -902,7 +910,8 @@ export function change_vehicle_feild(req, res) {
     console.log("UPDATE `vehicle_detaile` SET")
     console.log(req.body)
     if (req.headers.driver_token && req.driver_id) {
-        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "'", (err, rows) => { });
+        connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
+        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
         req.body.driver_id = req.driver_id
     }
 
@@ -915,11 +924,13 @@ export function change_vehicle_feild(req, res) {
     srt_user = srt_user.substring(0, srt_user.length - 1)
     console.log(srt_user)
     if (req.headers.admin_token && req.body.driver_id) {
-        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "'", (err, rows) => { });
+        connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
+        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
+
         srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'admin' `
     }
     if (req.headers.driver_token && req.body.driver_id) {
-        srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
+        srt_user += ` where vehicle_detaile.driver_id = '${req.body.driver_id}' AND vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
     }
     console.log(srt_user)
 
