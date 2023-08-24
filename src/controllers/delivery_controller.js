@@ -177,7 +177,7 @@ export function driver_login(req, res) {
     if (req.body.email != "" && req.body.password != "") {
         if (regex.test(user_email)) {
             console.log("true")
-            connection.query('SELECT * FROM delivery_man WHERE BINARY email ="' + user_email + '" AND password ="' + password + '"', (err, rows) => {
+            connection.query('SELECT * FROM delivery_man WHERE  email ="' + user_email + '" AND BINARY password ="' + password + '"', (err, rows) => {
                 if (err) {
                     console.log(err)
                     res.status(200).send({ "response": "login error", "status": false })
@@ -232,7 +232,7 @@ export function driver_forgate_password(req, res) {
     if (regex.test(req.body.email.trim()) && req.body.email != "") {
         const OTP = Math.floor(100000 + Math.random() * 900000);
 
-        connection.query("select * from delivery_man where BINARY email = '" + req.body.email.trim() + "'", (err, rows) => {
+        connection.query("select * from delivery_man where email = '" + req.body.email.trim() + "'", (err, rows) => {
             if (err) {
                 console.log(err)
                 res

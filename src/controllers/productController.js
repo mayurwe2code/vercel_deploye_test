@@ -279,7 +279,7 @@ export async function search_product(req, res) {
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
       var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending FROM product_view where vendor_id = "' + req.vendor_id + '" AND ' + is_featured + '  ';
     } else {
-      var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending FROM product_view where ' + is_featured + '  ';
+      var search_string = 'SELECT *, (SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending FROM product_view where ' + is_featured + 'verient_is_deleted ="0" AND   ';
     }
   }
 

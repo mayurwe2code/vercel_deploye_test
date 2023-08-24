@@ -131,7 +131,7 @@ export function product_image(req, res) {
       console.log(err)
       res.status(500).send({ "error": "server error" })
     } else {
-      console.log(rows)
+      // console.log(rows)
       res.status(200).send(rows)
     }
   })

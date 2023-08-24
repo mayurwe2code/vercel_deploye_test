@@ -11,7 +11,7 @@ export function vendor_signup(req, res) {
         let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z]{2,4})+$/;
         console.log("__" + u_email + "__")
         if (regex.test(u_email)) {
-            connection.query("SELECT * FROM vendor WHERE BINARY email = '" + u_email + "'",
+            connection.query("SELECT * FROM vendor WHERE email = '" + u_email + "'",
                 (err, rows) => {
                     if (err) {
                         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err);
@@ -92,7 +92,7 @@ export function vendor_otp_verify(req, res) {
     let user_otp = req.body.otp.trim()
     if (req.body.email != "" && req.body.otp != "") {
         // console.log('SELECT * FROM `user_auth_by_otp` WHERE email = "' + user_email + '" AND otp = "' + user_otp + '"')
-        connection.query('SELECT * FROM `user_auth_by_otp` WHERE BINARY email = "' + user_email + '" AND otp = "' + user_otp + '"', (err, rows, fields) => {
+        connection.query('SELECT * FROM `user_auth_by_otp` WHERE  email = "' + user_email + '" AND otp = "' + user_otp + '"', (err, rows, fields) => {
             if (err) {
                 console.log("err____________________267")
                 console.log(err)
@@ -109,7 +109,7 @@ export function vendor_otp_verify(req, res) {
                                     console.log(err)
 
                                     if (err.code == "ER_DUP_ENTRY") {
-                                        connection.query("SELECT * FROM vendor WHERE BINARY email = '" + user_email + "' ",
+                                        connection.query("SELECT * FROM vendor WHERE email = '" + user_email + "' ",
                                             (err, rows) => {
                                                 if (err) {
                                                     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "response": "something went wrong", "success": false });
@@ -144,6 +144,11 @@ export function vendor_otp_verify(req, res) {
                                             } else {
                                                 console.log("_______notification-send__94________")
                                             }
+                                        })
+
+                                        // DELETE FROM `user_auth_by_otp` WHERE `user_auth_by_otp`.`id` = 3
+                                        connection.query('DELETE FROM `user_auth_by_otp` WHERE `user_auth_by_otp`.`email` = "' + user_email + '"', (err, rows) => {
+
                                         })
                                         res.send({ "success": true, "response": "successfully created your account", "user_id": rows.insertId, "token": token, "redirect_url": "http://localhost:3000/" })
                                     })
@@ -181,7 +186,7 @@ export function vendor_login(req, res) {
     if (req.body.email != "" && req.body.password != "") {
         if (regex.test(user_email)) {
             console.log("true")
-            connection.query('SELECT * FROM vendor WHERE BINARY email ="' + user_email + '" AND password ="' + password + '"', (err, rows) => {
+            connection.query('SELECT * FROM vendor WHERE email ="' + user_email + '" AND BINARY password ="' + password + '"', (err, rows) => {
                 if (err) {
                     console.log(err)
                     res.status(200).send({ "response": "login error", "success": false })
