@@ -232,7 +232,7 @@ export function vendor_forgate_password(req, res) {
         const OTP = Math.floor(100000 + Math.random() * 900000);
 
 
-        connection.query("select * from vendor where BINARY email = '" + req.body.email.trim() + "'", (err, rows) => {
+        connection.query("select * from vendor where  email = '" + req.body.email.trim() + "'", (err, rows) => {
             if (err) {
                 console.log(err)
                 res

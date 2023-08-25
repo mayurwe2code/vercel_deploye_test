@@ -1,6 +1,7 @@
 import express from "express";
 import {
   add_order,
+  add_order_1,
   order_details,
   order_delete,
   order_list,
@@ -13,6 +14,7 @@ import { auth_user, fetch_user, admin_auth } from '../../middleware/auth.js'
 
 const orderRouter = express.Router();
 orderRouter.post("/add_order", auth_user, add_order);
+orderRouter.post("/add_order_1", auth_user, add_order_1);
 orderRouter.post("/order_list", fetch_user, order_list);
 orderRouter.post("/order_search", fetch_user, order_search);
 orderRouter.get("/order_details", fetch_user, order_details);
