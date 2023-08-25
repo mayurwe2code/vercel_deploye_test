@@ -118,7 +118,17 @@ export function cart_list_1(req, res) {
 
             } else {
               total_delivery_charge += 100
-              var obje = { owner_name: item["owner_name"], vendor_id: item["vendor_id"], "cart_products": [] }
+
+              var obje = { owner_name: item["owner_name"], vendor_id: item["vendor_id"], delivery_charges: 100 }
+
+
+              obje[`${item["vendor_id"]}_price_x_cart_qty_amount`] = 0;
+              obje[`${item["vendor_id"]}_mrp_x_cart_qty_amount`] = 0;
+              obje[`${item["vendor_id"]}_taxable_amount`] = 0;
+              obje[`${item["vendor_id"]}_gst_amount`] = 0;
+              obje[`${item["vendor_id"]}_discount_amount`] = 0;
+              obje[`${item["vendor_id"]}_product_qty_total`] = 0;
+              obje["cart_products"] = []
               rows.forEach((element, counts) => {
                 if (item["vendor_id"] === element["vendor_id"]) {
                   //new--------------------
@@ -138,6 +148,14 @@ export function cart_list_1(req, res) {
                   total_gst += gst_amount
                   total_discount += discount_amount
                   sub_total += price_x_cart_qty
+
+                  obje[`${item["vendor_id"]}_price_x_cart_qty_amount`] += price_x_cart_qty
+                  obje[`${item["vendor_id"]}_mrp_x_cart_qty_amount`] += mrp_x_cart_qty
+                  obje[`${item["vendor_id"]}_taxable_amount`] += gst_amount
+                  obje[`${item["vendor_id"]}_gst_amount`] += price_x_cart_qty - gst_amount
+                  obje[`${item["vendor_id"]}_discount_amount`] += discount_amount
+                  obje[`${item["vendor_id"]}_product_qty_total`] += element["cart_product_quantity"]
+
                   obje["cart_products"].push(element)
                 }
                 if (counts == rows.length - 1) {
@@ -148,7 +166,7 @@ export function cart_list_1(req, res) {
             }
             if (index == rows.length - 1) {
               console.log(result_res);
-              res.status(StatusCodes.OK).json({ status: true, response: result_res, "total_gst": sub_total - total_gst, "taxable_amount": total_gst, sub_total, total_discount, total_delivery_charge });
+              res.status(StatusCodes.OK).json({ status: true, response: result_res, "total_gst": sub_total - total_gst, "taxable_amount": total_gst, sub_total, total_discount, total_delivery_charge, total_product_count: rows.length });
             }
           });
         } else {
