@@ -391,22 +391,28 @@ export function user_login(req, res) {
           console.log(rows)
           if (rows != "") {
             if (rows[0].password === password) {
-              console.log("rows[0].user_id_______________324___")
-              console.log(rows[0].id)
-              console.log(process.env.USER_JWT_SECRET_KEY)
 
-              jwt.sign({ id: rows[0].id }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
-                //console.log(token);
-                if (err) {
-                  //console.log(err)
-                }
-                let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type, image } = rows[0]
-                if (rows[0].first_name != "" && rows[0].last_name != "" && rows[0].email != "" && rows[0].password != "" && rows[0].phone_no != "" && rows[0].pincode != "" && rows[0].city != "" && rows[0].address != "" && rows[0].alternate_address != "") {
-                  res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
-                } else {
-                  res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
-                }
-              })
+              if (rows[0].is_deleted == '0') {
+                console.log("rows[0].user_id_______________324___")
+                console.log(rows[0].id)
+                console.log(process.env.USER_JWT_SECRET_KEY)
+
+                jwt.sign({ id: rows[0].id }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
+                  //console.log(token);
+                  if (err) {
+                    //console.log(err)
+                  }
+                  let { id, first_name, last_name, email, phone_no, pincode, status, city, address, alternate_address, user_type, image } = rows[0]
+                  if (rows[0].first_name != "" && rows[0].last_name != "" && rows[0].email != "" && rows[0].password != "" && rows[0].phone_no != "" && rows[0].pincode != "" && rows[0].city != "" && rows[0].address != "" && rows[0].alternate_address != "") {
+                    res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
+                  } else {
+                    res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, status, user_type, image } })
+                  }
+                })
+
+              } else {
+                res.status(200).json({ "message": "your account is blocked", "status": false })
+              }
             } else {
               res.status(200).json({ "message": "Password is incorrect", "status": false })
             }

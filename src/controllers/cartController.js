@@ -166,7 +166,7 @@ export function cart_list_1(req, res) {
             }
             if (index == rows.length - 1) {
               console.log(result_res);
-              res.status(StatusCodes.OK).json({ status: true, response: result_res, "total_gst": sub_total - total_gst, "taxable_amount": total_gst, sub_total, total_discount, total_delivery_charge, total_product_count: rows.length });
+              res.status(StatusCodes.OK).json({ status: true, response: result_res, "total_gst": sub_total - total_gst, "taxable_amount": total_gst, sub_total, total_discount, total_delivery_charge, total_product_count: rows.length, sub_total_with_shipping_charges: sub_total + total_delivery_charge });
             }
           });
         } else {

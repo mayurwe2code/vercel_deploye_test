@@ -91,8 +91,8 @@ export function driver_otp_verify(req, res) {
     let user_email = req.body.email.trim()
     let user_otp = req.body.otp.trim()
     if (req.body.email != "" && req.body.otp != "") {
-        console.log('SELECT * FROM `user_auth_by_otp` WHERE email = "' + user_email + '" AND otp = "' + user_otp + '"')
-        connection.query('SELECT * FROM `user_auth_by_otp` WHERE email = "' + user_email + '" AND otp = "' + user_otp + '"', (err, rows, fields) => {
+        // console.log('SELECT * FROM `user_auth_by_otp` WHERE email = "' + user_email + '" AND otp = "' + user_otp + '"')
+        connection.query('SELECT * FROM `user_auth_by_otp` WHERE email = "' + user_email + '"', (err, rows, fields) => {
             if (err) {
                 console.log("err____________________267")
                 console.log(err)
@@ -101,7 +101,7 @@ export function driver_otp_verify(req, res) {
                 console.log("_rows_________________271")
                 console.log(rows)
                 if (rows != "") {
-                    if (user_email == rows[0].email && user_otp == rows[0].otp) {
+                    if (user_otp == rows[0].otp) {
 
                         connection.query("insert into delivery_man ( `email`,`password`) VALUES('" + user_email + "','" + rows[0].user_password + "') ",
                             (err, rows) => {
@@ -152,10 +152,10 @@ export function driver_otp_verify(req, res) {
 
 
                     } else {
-                        console.log("not match ________-278")
+                        res.status(200).send({ "response": "otp not matched", "status": false })
                     }
                 } else {
-                    res.status(200).send({ "response": "not matched, credential issue", "status": false })
+                    res.status(200).send({ "response": "email not matched", "status": false })
                 }
             }
         })
@@ -177,7 +177,7 @@ export function driver_login(req, res) {
     if (req.body.email != "" && req.body.password != "") {
         if (regex.test(user_email)) {
             console.log("true")
-            connection.query('SELECT * FROM delivery_man WHERE  email ="' + user_email + '" AND BINARY password ="' + password + '"', (err, rows) => {
+            connection.query('SELECT * FROM delivery_man WHERE  email ="' + user_email + '"', (err, rows) => {
                 if (err) {
                     console.log(err)
                     res.status(200).send({ "response": "login error", "status": false })
@@ -185,33 +185,36 @@ export function driver_login(req, res) {
                     console.log(rows)
                     if (rows != "") {
 
+                        if (rows[0]["password"] === password) {
+                            console.log("rows[0].user_id_______________324___")
+                            console.log(process.env.DRIVER_JWT_SECRET_KEY)
 
-                        console.log("rows[0].user_id_______________324___")
-                        console.log(process.env.DRIVER_JWT_SECRET_KEY)
+                            jwt.sign({ id: rows[0].driver_id }, process.env.DRIVER_JWT_SECRET_KEY, function (err, token) {
+                                //console.log(token);
+                                if (err) {
+                                    //console.log(err)
+                                }
+                                let check_if = []
+                                let { driver_id, driver_name, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, status, contect_no_is_verified, aadhar_no, licence_no, licence_issue_date, licence_validity_date, is_active, created_on, updated_on, current_latitude, current_longitude, fcm_token } = rows[0]
+                                console.log("---------------------chk-after-if------------------------")
 
-                        jwt.sign({ id: rows[0].driver_id }, process.env.DRIVER_JWT_SECRET_KEY, function (err, token) {
-                            //console.log(token);
-                            if (err) {
-                                //console.log(err)
-                            }
-                            let check_if = []
-                            let { driver_id, driver_name, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, status, contect_no_is_verified, aadhar_no, licence_no, licence_issue_date, licence_validity_date, is_active, created_on, updated_on, current_latitude, current_longitude, fcm_token } = rows[0]
-                            console.log("---------------------chk-after-if------------------------")
+                                check_if.push(driver_name, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, aadhar_no, licence_no, licence_issue_date, licence_validity_date)
 
-                            check_if.push(driver_name, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, aadhar_no, licence_no, licence_issue_date, licence_validity_date)
-
-                            if (!check_if.includes(null) && !check_if.includes("")) {
-                                console.log("---------------true-not-blank----------")
-                                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { driver_id, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, status, contect_no_is_verified, aadhar_no, licence_no, licence_issue_date, licence_validity_date, is_active, created_on, updated_on, current_latitude, current_longitude, fcm_token } })
-                            } else {
-                                console.log("---------------else-blank----------")
-                                res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { driver_id, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, status, contect_no_is_verified, aadhar_no, licence_no, licence_issue_date, licence_validity_date, is_active, created_on, updated_on, current_latitude, current_longitude, fcm_token } })
-                            }
+                                if (!check_if.includes(null) && !check_if.includes("")) {
+                                    console.log("---------------true-not-blank----------")
+                                    res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": true, "user_detaile": { driver_id, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, status, contect_no_is_verified, aadhar_no, licence_no, licence_issue_date, licence_validity_date, is_active, created_on, updated_on, current_latitude, current_longitude, fcm_token } })
+                                } else {
+                                    console.log("---------------else-blank----------")
+                                    res.send({ "status": true, "res_code": "001", "response": "successfully login", "token": token, "redirect_url": "http://localhost:3000/", "complete_profile": false, "user_detaile": { driver_id, driver_last_name, date_of_birth, current_address, gender, age, contect_no, email, password, status, contect_no_is_verified, aadhar_no, licence_no, licence_issue_date, licence_validity_date, is_active, created_on, updated_on, current_latitude, current_longitude, fcm_token } })
+                                }
 
 
-                        })
+                            })
+                        } else {
+                            res.status(200).send({ "status": false, "res_code": "004", "response": "password not match" })
+                        }
                     } else {
-                        res.status(200).send({ "status": false, "res_code": "003", "response": "creadintial not match" })
+                        res.status(200).send({ "status": false, "res_code": "003", "response": "email not match" })
                     }
                 }
             })
