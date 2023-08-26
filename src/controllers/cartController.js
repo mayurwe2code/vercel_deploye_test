@@ -118,10 +118,7 @@ export function cart_list_1(req, res) {
 
             } else {
               total_delivery_charge += 100
-
               var obje = { owner_name: item["owner_name"], vendor_id: item["vendor_id"], delivery_charges: 100 }
-
-
               obje[`${item["vendor_id"]}_price_x_cart_qty_amount`] = 0;
               obje[`${item["vendor_id"]}_mrp_x_cart_qty_amount`] = 0;
               obje[`${item["vendor_id"]}_taxable_amount`] = 0;

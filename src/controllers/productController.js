@@ -338,9 +338,13 @@ export async function search_product(req, res) {
 
             for (var k = 0; k < multi_val_ar.length; k++) {
               if (k == multi_val_ar.length - 1) {
-                search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) AND   `
+                if (multi_val_ar.length == 1) {
+                  search_string += `( `
+                }
+                search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) )  AND   `
+
               } else {
-                search_string += `FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) OR     `
+                search_string += `( FIND_IN_SET('${multi_val_ar[k]}', ${key_for_query}) OR     `
               }
               // search_string += ' ' + search_obj[i] + ' IN ' + '(' + id + ') AND   '
             };
