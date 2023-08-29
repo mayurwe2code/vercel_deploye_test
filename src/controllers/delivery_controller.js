@@ -528,7 +528,7 @@ export function register_your_vehicle(req, res) {
         srt_user = "INSERT INTO `vehicle_detaile`(`vehicle_add_by`,`company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES('admin','" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
 
     } else if (req.headers.driver_token != "" && req.headers.driver_token != undefined) {
-        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`vehicle_id` = '" + req.driver_id + "'", (err, rows) => { });
+        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "'", (err, rows) => { });
 
         srt_user = "INSERT INTO `vehicle_detaile`(`vehicle_add_by`,`driver_id`, `company_name`, `model`, `color`, `registration_no_of_vehicle`, `chassis_number`, `vehicle_owner_name`, `puc_expiration_date`, `insurance_expiration_date`, `registration_expiration_date`" + str_fields + ") VALUES( 'driver','" + req.driver_id + "', '" + company_name + "', '" + model + "', '" + color + "', '" + registration_no_of_vehicle + "', '" + chassis_number + "', '" + vehicle_owner_name + "','" + puc_expiration_date + "','" + insurance_expiration_date + "','" + registration_expiration_date + "'" + srt_values + ")"
 
@@ -756,7 +756,7 @@ export function delivery_verify_code_match(req, res) {
                 res.status(200).json({ message: "not match credintials", "status": false });
             }
 
-            connection.query("UPDATE `order` SET `status_order`='delivered'", (err, rows) => { console.log("---" + err) })
+            connection.query("UPDATE `order` SET `status_order`='delivered' AND order_id ='" + order_id + "'", (err, rows) => { console.log("---" + err) })
         }
     });
 }

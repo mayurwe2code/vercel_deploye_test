@@ -948,7 +948,7 @@ export async function vendor_order_search(req, res) {
   } else {
     search_string1 = 'SELECT * ,(select delivered_date from `order_delivery_details` where `order_view`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order_view` where vendor_id="' + req.vendor_id + '" AND '
   }
-
+  //SELECT * FROM `order_view` LEFT JOIN `delivery_man` ON `delivery_man`.`driver_id` = `order_view`.`driver_id`;
 
   console.log(search_obj)
   for (var i = 0; i <= search_obj.length - 1; i++) {

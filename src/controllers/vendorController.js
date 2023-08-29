@@ -834,7 +834,7 @@ export async function vendor_orders_status(req, res) {
         });
     };
     const queries = [
-        'SELECT COUNT(DISTINCT(order_id)) AS new_order FROM `order_view` WHERE vendor_id = ' + req.vendor_id + ' AND  status_order IN ("accepted_by_vendor","pending","shipped","approved","packed","Pickuped","ready_to_pickup") ',
+        'SELECT COUNT(DISTINCT(order_id)) AS new_order FROM `order_view` WHERE vendor_id = ' + req.vendor_id + ' AND  status_order IN ("pending") ',
 
         'SELECT COUNT(DISTINCT(order_id)) AS rejected_order FROM order_view WHERE vendor_id = ' + req.vendor_id + ' AND status_order IN ("rejected_by_vendor", "Rejected_by_customer", "Failed_Delivery_Attempts", "cancel")',
 

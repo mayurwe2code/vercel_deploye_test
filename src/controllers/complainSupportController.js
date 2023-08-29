@@ -66,18 +66,19 @@ export function complain_update(req, res) {
             console.log(err)
             res.status(200).send(err)
         } else {
-            rows.affectedRows >= 1 ? res.status(200).send({ "status": false, "response": "Succesfully Update Complaint" }) : res.status(200).send({ "status": true, "response": "Faild Complaint Update", "complain_status": complain_status })
+            rows.affectedRows >= 1 ? res.status(200).send({ "status": true, "response": "Succesfully Update Complaint" }) : res.status(200).send({ "status": false, "response": "Faild Complaint Update", "complain_status": complain_status })
         }
     })
 }
 
 export function complain_search(req, res) {
     //console.log("req.body")
-    let query_ = "SELECT * FROM `comaplains_support` WHERE "
+    // let query_ = "SELECT * FROM `comaplains_support` WHERE "
+    let query_ = ""
     if (req.headers.admin_token) {
         let req_obj = req.body;
         if (Object.values(req_obj).every(element => element === "")) {
-            query_ = "SELECT comaplains_support.*,`user`.`first_name` AS profile_first_name , `user`.`last_name` AS profile_last_name , `user`.`email` AS profile_email , `password`, `phone_no`, `pincode`, `city`, `address`, `alternate_address`, `image`, `token_for_notification`, `user_log`, `user_lat`, `alternetive_user_lat`, `alternetive_user_log` FROM `comaplains_support` LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` "
+            query_ = "SELECT comaplains_support.id,order_id,user_id,comaplains_support.first_name,comaplains_support.last_name,contect_no,comaplains_support.email,subject,description,asign_date,assigned_to,resolve_date,status_,resolve_description,is_active,comaplains_support.created_on,comaplains_support.updated_on,for_complain,user.first_name AS profile_first_name,user.last_name AS profile_last_name,user.email AS profile_email ,phone_no,pincode,city,address,alternate_address,is_deleted,image,token_for_notification,user_type,user_log,user_lat,alternetive_user_lat,alternetive_user_log,active_address FROM `comaplains_support` JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` "
         } else {
             for (let k in req_obj) {
                 if (k != "") {
@@ -99,9 +100,9 @@ export function complain_search(req, res) {
             let { status_ } = req.body;
             if (status_) {
                 // query_ = "SELECT * FROM `comaplains_support` WHERE `status_` = '" + status_ + "' AND `assigned_to` = '" + req.user_id + "'"
-                query_ = "SELECT * FROM `comaplains_support`  LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` WHERE  `comaplains_support`.`user_id` = '" + req.user_id + "' AND `status_` = '" + status_ + ""
+                query_ = "SELECT comaplains_support.id,order_id,user_id,comaplains_support.first_name,comaplains_support.last_name,contect_no,comaplains_support.email,subject,description,asign_date,assigned_to,resolve_date,status_,resolve_description,is_active,comaplains_support.created_on,comaplains_support.updated_on,for_complain,user.first_name AS profile_first_name,user.last_name AS profile_last_name,user.email AS profile_email ,phone_no,pincode,city,address,alternate_address,is_deleted,image,token_for_notification,user_type,user_log,user_lat,alternetive_user_lat,alternetive_user_log,active_address FROM `comaplains_support` JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` WHERE  `comaplains_support`.`user_id` = '" + req.user_id + "' AND `status_` = '" + status_ + " ORDER BY created_on DESC "
             } else {
-                query_ = "SELECT * FROM `comaplains_support`  LEFT JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` WHERE  `comaplains_support`.`user_id` = '" + req.user_id + "'"
+                query_ = "SELECT comaplains_support.id,order_id,user_id,comaplains_support.first_name,comaplains_support.last_name,contect_no,comaplains_support.email,subject,description,asign_date,assigned_to,resolve_date,status_,resolve_description,is_active,comaplains_support.created_on,comaplains_support.updated_on,for_complain,user.first_name AS profile_first_name,user.last_name AS profile_last_name,user.email AS profile_email ,phone_no,pincode,city,address,alternate_address,is_deleted,image,token_for_notification,user_type,user_log,user_lat,alternetive_user_lat,alternetive_user_log,active_address FROM `comaplains_support`  JOIN `user` ON `comaplains_support`.`user_id` = `user`.`id` WHERE  `comaplains_support`.`user_id` = '" + req.user_id + "' ORDER BY created_on DESC "
             }
 
         }
@@ -113,7 +114,7 @@ export function complain_search(req, res) {
             console.log(err)
             res.status(200).send({ err })
         } else {
-            console.log(rows)
+            // console.log(rows)
             rows.length != "" ? res.status(200).send({ status: true, "result": rows }) : res.status(200).send({ status: false, "response": "not Found" })
         }
     })
