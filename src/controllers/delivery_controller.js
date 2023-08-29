@@ -752,11 +752,12 @@ export function delivery_verify_code_match(req, res) {
                     console.log(err)
                 })
                 res.status(StatusCodes.OK).json({ message: "Confirmation  successfull", "status": true });
+                connection.query("UPDATE `order` SET `status_order`='delivered' WHERE order_id ='" + order_id + "'", (err, rows) => { console.log("---" + err) })
             } else {
                 res.status(200).json({ message: "not match credintials", "status": false });
             }
 
-            connection.query("UPDATE `order` SET `status_order`='delivered' AND order_id ='" + order_id + "'", (err, rows) => { console.log("---" + err) })
+
         }
     });
 }
@@ -793,6 +794,7 @@ export async function order_details_for_driver(req, res) {
     if (req.headers.delivery_admin_token) {
         qry_ = 'select * from `order` ,`order_delivery_details` where order_delivery_details.order_id = `order`.order_id AND order_delivery_details.order_id =  "' + id + '" '
     }
+    // SELECT * FROM `delivery_man` WHERE driver_id = SELECT driver_id FROM `order_delivery_details` WHERE order_id = 
 
     connection.query(qry_,
         (err, rows) => {
