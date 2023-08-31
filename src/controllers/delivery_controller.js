@@ -786,6 +786,7 @@ export function driver_add_by_admin(req, res) {
 export async function order_details_for_driver(req, res) {
     const id = req.query.id;
     let resp_obj = {}
+
     // select order_id,user_id,vendor_id,total_order_product_quantity,total_amount  ,total_gst,total_cgst,total_sgst,total_discount,shipping_charges,payment_mode,payment_ref_id,order_date,delivery_date,discount_coupon ,discount_coupon_value from `order` where order_id ="398080" AND user_id ="35" GROUP BY order_id
     var qry_ = "";
     if (req.headers.driver_token) {
@@ -794,7 +795,6 @@ export async function order_details_for_driver(req, res) {
     if (req.headers.delivery_admin_token) {
         qry_ = 'select * from `order` ,`order_delivery_details` where order_delivery_details.order_id = `order`.order_id AND order_delivery_details.order_id =  "' + id + '" '
     }
-    // SELECT * FROM `delivery_man` WHERE driver_id = SELECT driver_id FROM `order_delivery_details` WHERE order_id = 
 
     connection.query(qry_,
         (err, rows) => {

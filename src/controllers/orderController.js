@@ -524,6 +524,11 @@ export async function order_details(req, res) {
   let resp_obj = {}
   let query_ = ''
   let chek_token = true;
+  let driver_detaile;
+  connection.query("SELECT * FROM `delivery_man` WHERE driver_id = (SELECT driver_id FROM `order_delivery_details` WHERE order_id = " + id + ")",
+    (err, rows_) => {
+      driver_detaile = rows_
+    })
   if ("admin_token" in req.headers) {
     chek_token = false;
     query_ += 'SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE order_id ="' + id + '" '
@@ -557,6 +562,7 @@ export async function order_details(req, res) {
               } else {
                 resp_obj["success"] = true
                 resp_obj["order_product_detaile"] = rows
+                resp_obj["driver_detaile"] = driver_detaile
                 // res.status(StatusCodes.OK).json(resp_obj);        
                 // if (chek_token) {
                 connection.query("select * from user where id= '" + req.user_id + "'", (err, rows) => {
@@ -948,7 +954,7 @@ export async function vendor_order_search(req, res) {
   } else {
     search_string1 = 'SELECT * ,(select delivered_date from `order_delivery_details` where `order_view`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order_view` where vendor_id="' + req.vendor_id + '" AND '
   }
-  //SELECT * FROM `order_view` LEFT JOIN `delivery_man` ON `delivery_man`.`driver_id` = `order_view`.`driver_id`;
+
 
   console.log(search_obj)
   for (var i = 0; i <= search_obj.length - 1; i++) {
