@@ -787,7 +787,7 @@ export async function order_search(req, res) {
   var limit = skip + "," + numPerPage;
 
   connection.query(
-    "SELECT count(*) as numRows FROM product",
+    "SELECT count(*) as numRows FROM order_view",
     (err, results) => {
       if (err) {
       } else {

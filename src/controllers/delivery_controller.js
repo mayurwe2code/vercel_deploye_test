@@ -589,8 +589,8 @@ export function order_asign_by_delivery_admin(req, res) {
 
             if (rows != "") {
                 console.log("--ok--------------vehicle_detaile====ok=====")
-                console.log(rows[0]["vehicle_id"])
-                connection.query("UPDATE `order_delivery_details` SET `driver_id`='" + driver_id + "', `vehicle_id`='" + rows[0]["vehicle_id"] + "',`order_asign_by`='" + req.created_by_id + "',`last_modification_by`='delivery_admin',`last_modification_by_id`='" + req.created_by_id + "' WHERE order_id = " + order_id + "", (err, rows) => {
+                console.log("UPDATE `order_delivery_details` SET `driver_id`='" + driver_id + "', `vehicle_id`='" + rows[0]["vehicle_id"] + "',`order_asign_by`='" + req.created_by_id + "',`last_modification_by`='delivery_admin',`last_modification_by_id`='" + req.created_by_id + "', `order_asign_date` = NOW() WHERE order_id = " + order_id + "")
+                connection.query("UPDATE `order_delivery_details` SET `driver_id`='" + driver_id + "', `vehicle_id`='" + rows[0]["vehicle_id"] + "',`order_asign_by`='" + req.created_by_id + "',`last_modification_by`='delivery_admin',`last_modification_by_id`='" + req.created_by_id + "', `order_asign_date` = NOW() WHERE order_id = " + order_id + "", (err, rows) => {
                     if (err) {
                         console.log(err)
                         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
@@ -609,9 +609,15 @@ export function order_asign_by_delivery_admin(req, res) {
 export function get_delivery_detaile_list(req, res) {
     let filter = "SELECT orders_details_id,payment,order_status,payment_method,order_delivery_details.created_on AS order_asign_date, order_delivery_details.driver_id,driver_name,driver_last_name,date_of_birth,contect_no , order_delivery_details.order_id, order_date, product_id,shipping_charges, order_delivery_details.delivery_date,delivery_lat,delivery_log, user_name, address, `order`.email AS user_email,`order`.status_order AS status_order, pin_code, city, user_image, phone_no, total_order_product_quantity, order_delivery_details.vehicle_id,registration_no_of_vehicle,status_comment FROM `order_delivery_details` LEFT JOIN delivery_man ON order_delivery_details.driver_id = delivery_man.driver_id LEFT JOIN `order` ON order_delivery_details.order_id = `order`.order_id LEFT JOIN `vehicle_detaile` ON vehicle_detaile.vehicle_id = order_delivery_details.vehicle_id where"
     let req_obj = req.body
-
-    if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
-        filter += " order_delivery_details.delivery_date between '" + req.body.date_from + " 00:00:00' AND '" + req.body.date_to + " 23:59:59' AND  "
+    if (req.headers.admin_token) {
+        if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
+            filter += " order_delivery_details.created_on between '" + req.body.date_from + " 00:00:00' AND '" + req.body.date_to + " 23:59:59' AND  "
+        }
+    }
+    if (req.headers.driver_token) {
+        if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
+            filter += " order_delivery_details.order_asign_date between '" + req.body.date_from + " 00:00:00' AND '" + req.body.date_to + " 23:59:59' AND  "
+        }
     }
 
     for (let k in req_obj) {
@@ -713,12 +719,14 @@ export function change_order_detaile_status(req, res) {
     let query_ = ""
     if (req.headers.admin_token != "" && req.headers.admin_token != undefined && req.headers.admin_token != null) {
         query_ = "UPDATE `order_delivery_details` SET `order_status`='" + order_status + "', `last_modification_by`='admin', `last_modification_by_id`='" + req.admin_id + "'"
+        query_ += " WHERE order_id='" + order_id + "'"
     }
     if (req.headers.driver_token != "" && req.headers.driver_token != undefined && req.headers.driver_token != null) {
         query_ = "UPDATE `order_delivery_details` SET `order_status`='" + req.body.order_status + "', `last_modification_by`='delivery_man', `last_modification_by_id`='" + req.driver_id + "',`status_comment`='" + req.body.status_comment + "'"
+        query_ += " WHERE order_id ='" + order_id + "' AND driver_id = " + req.driver_id + ""
     }
-    console.log(query_ + " WHERE order_id='" + order_id + "' AND driver_id IS NULL")
-    connection.query(query_ + " WHERE order_id='" + order_id + "' AND driver_id IS NULL", (err, rows) => {
+    console.log(query_)
+    connection.query(query_, (err, rows) => {
         if (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
@@ -852,7 +860,7 @@ export function driver_list(req, res) {
 export function vehicle_list(req, res) {
     let { search } = req.body
     if (req.headers.driver_token) {
-        var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = '" + req.driver_id + "' AND is_active = '1' AND  "
+        var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = '" + req.driver_id + "' AND  "
     }
     if (req.headers.admin_token) {
         var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE"

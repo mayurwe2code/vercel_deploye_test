@@ -515,7 +515,7 @@ export async function search_vendor_product(req, res) {
         if (i >= 6) {
             if (i == 6) {
                 if (req.body[search_obj[i]] != "") {
-                    search_string += `(name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category_name LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `
+                    search_string += `(name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR (SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `
                     // OR category_name LIKE "%${req.body[search_obj[i]]}%" 
 
                 }

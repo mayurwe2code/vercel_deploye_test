@@ -3,12 +3,17 @@ export function add_complain(req, res) {
     console.log("add_complain----------------------")
     var { order_id, first_name, last_name, contect_no, subject, email, description } = req.body
     //return false
+    const inputDateTime = new Date();
+    const offsetMinutes = inputDateTime.getTimezoneOffset();
+    inputDateTime.setMinutes(inputDateTime.getMinutes() - offsetMinutes);
 
+    const formattedDateTime = inputDateTime.toISOString().slice(0, 19).replace('T', ' ');
+    console.log(formattedDateTime);
     if (order_id) {
         connection.query("SELECT * FROM `order` WHERE order_id = '" + order_id + "'  ", async (error, rows, fields) => {
             if (rows != "") {
                 var vendor_id = rows[0]["vendor_id"]
-                connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`asign_date`,`assigned_to`,`for_complain`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "','NOW()','" + vendor_id + "','order_related')", async (error, rows, fields) => {
+                connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`asign_date`,`assigned_to`,`for_complain`, `created_on`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "','" + formattedDateTime + "','" + vendor_id + "','order_related','" + formattedDateTime + "')", async (error, rows, fields) => {
                     if (error) {
                         //console.log("error"+err)
                         res.status(200).send({ "status": false, error })
@@ -21,7 +26,7 @@ export function add_complain(req, res) {
             }
         })
     } else {
-        connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`for_complain`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "','other')", async (error, rows, fields) => {
+        connection.query("INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`for_complain`,`created_on`) VALUES ('" + order_id + "','" + req.user_id + "','" + first_name + "','" + last_name + "','" + contect_no + "','" + email + "','" + subject + "','" + description + "','other','" + formattedDateTime + "')", async (error, rows, fields) => {
             if (error) {
                 //console.log("error"+err)
                 res.status(200).send({ "status": false, error })
