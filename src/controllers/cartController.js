@@ -116,6 +116,7 @@ export function cart_list_1(req, res) {
           rows.forEach((item, index) => {
             if (vendor_id_chk.includes(item["vendor_id"])) {
 
+
             } else {
               total_delivery_charge += 100
               var obje = { owner_name: item["owner_name"], vendor_id: item["vendor_id"], delivery_charges: 100 }
