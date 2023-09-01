@@ -607,7 +607,7 @@ export function order_asign_by_delivery_admin(req, res) {
 }
 
 export function get_delivery_detaile_list(req, res) {
-    let filter = "SELECT orders_details_id,payment,order_status,payment_method,order_delivery_details.created_on AS order_asign_date, order_delivery_details.driver_id,driver_name,driver_last_name,date_of_birth,contect_no , order_delivery_details.order_id, order_date, product_id,shipping_charges, order_delivery_details.delivery_date,delivery_lat,delivery_log, user_name, address, `order`.email AS user_email,`order`.status_order AS status_order, pin_code, city, user_image, phone_no, total_order_product_quantity, order_delivery_details.vehicle_id,registration_no_of_vehicle,status_comment FROM `order_delivery_details` LEFT JOIN delivery_man ON order_delivery_details.driver_id = delivery_man.driver_id LEFT JOIN `order` ON order_delivery_details.order_id = `order`.order_id LEFT JOIN `vehicle_detaile` ON vehicle_detaile.vehicle_id = order_delivery_details.vehicle_id where"
+    let filter = "SELECT orders_details_id,payment,order_status,payment_method,order_delivery_details.created_on ,order_asign_date, order_delivery_details.driver_id,driver_name,driver_last_name,date_of_birth,contect_no , order_delivery_details.order_id, order_date, product_id,shipping_charges, order_delivery_details.delivery_date,delivery_lat,delivery_log, user_name, address, `order`.email AS user_email,`order`.status_order AS status_order, pin_code, city, user_image, phone_no, total_order_product_quantity, order_delivery_details.vehicle_id,registration_no_of_vehicle,status_comment FROM `order_delivery_details` LEFT JOIN delivery_man ON order_delivery_details.driver_id = delivery_man.driver_id LEFT JOIN `order` ON order_delivery_details.order_id = `order`.order_id LEFT JOIN `vehicle_detaile` ON vehicle_detaile.vehicle_id = order_delivery_details.vehicle_id where"
     let req_obj = req.body
     if (req.headers.admin_token) {
         if (req.body.date_from != "" && req.body.date_from != undefined && req.body.date_to != "" && req.body.date_to != undefined) {
@@ -636,7 +636,7 @@ export function get_delivery_detaile_list(req, res) {
     console.log("filter==============================================");
 
     console.log(filter + "GROUP BY order_delivery_details.order_id")
-    connection.query(filter + "GROUP BY order_delivery_details.order_id", (err, rows) => {
+    connection.query(filter + "GROUP BY order_delivery_details.order_id ORDER BY order_delivery_details.created_on DESC", (err, rows) => {
         if (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });

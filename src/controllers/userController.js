@@ -463,81 +463,84 @@ export function change_user_password(req, res) {
 
 
 export function user_forgate_password(req, res) {
+
   let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z]{2,4})+$/;
-
-
   if (regex.test(req.body.email.trim()) && req.body.email != "") {
-    const OTP = Math.floor(100000 + Math.random() * 900000);
-
-    connection.query("select * from user where email = '" + req.body.email.trim() + "'", (err, rows) => {
-      if (err) {
-        console.log(err)
-        res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ "response": "something went wrong", "status": false });
-      } else {
-        if (rows != "") {
-
-          connection.query('INSERT INTO `user_auth_by_otp` (`email`, `otp`) VALUES ("' + req.body.email.trim() + '","' + OTP + '")', (err, rows, fields) => {
-            if (err) {
-              if (err.code == "ER_DUP_ENTRY") {
-                res.status(200).send({ "status": "200", "response": "email already exist, check your mail or try after sometime", "status": false })
-              } else {
-                res.status(200).send({ "error": "find error ", "status": false })
-              }
-            } else {
-              if (rows != '') {
-                const mail_configs = {
-                  from: 'rahul.verma.we2code@gmail.com',
-                  to: req.body.email,
-                  subject: 'Nursery_live one time password',
-                  text: "use otp within 60 sec.",
-                  html: "<h1>your one time password " + OTP + " <h1/>"
-                }
-                nodemailer.createTransport({
-                  service: 'gmail',
-                  auth: {
-                    user: "rahul.verma.we2code@gmail.com",
-                    pass: "sfbmekwihdamgxia",
-                  }
-                })
-                  .sendMail(mail_configs, (err) => {
-                    if (err) {
-                      res.status(200).send({ "response": "not send email service error", "status": false })
-                      return //console.log({ "email_error": err });
-                    } else {
-                      res.status(200).send({ "response": "send otp on your mail", "otp": OTP, "status": true, "expire_time": 180 })
-                      return { "send_mail_status": "send successfully", "expire_time": 180 };
-                    }
-                  })
-                setTimeout(function () {
-                  connection.query('DELETE FROM `user_auth_by_otp` WHERE `id` = "' + rows.insertId + '"', (err, rows, fields) => {
-                    if (err) {
-                      console.log("err____________________232")
-                      console.log(err)
-                    } else {
-                      console.log("delete__________________234")
-                      console.log(rows)
-                    }
-                  })
-                }, 60000 * 3)
-              } else {
-                console.log("Not insert in otp in database")
-              }
-
-            }
-          })
 
 
-        } else {
+    // DELETE FROM `user_auth_by_otp` WHERE `user_auth_by_otp`.`id` = 32
+    connection.query("DELETE FROM `user_auth_by_otp` WHERE email = '" + req.body.email.trim() + "'", (err, rows) => {
+
+      const OTP = Math.floor(100000 + Math.random() * 900000);
+
+      connection.query("select * from user where email = '" + req.body.email.trim() + "'", (err, rows) => {
+        if (err) {
+          console.log(err)
           res
-            .status(200)
-            .json({ "response": " eamil not exist", "status": false });
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ "response": "something went wrong", "status": false });
+        } else {
+          if (rows != "") {
+            connection.query('INSERT INTO `user_auth_by_otp` (`email`, `otp`) VALUES ("' + req.body.email.trim() + '","' + OTP + '")', (err, rows, fields) => {
+              if (err) {
+                if (err.code == "ER_DUP_ENTRY") {
+                  res.status(200).send({ "status": "200", "response": "email already exist, check your mail or try after sometime", "status": false })
+                } else {
+                  res.status(200).send({ "error": "find error ", "status": false })
+                }
+              } else {
+                if (rows != '') {
+                  const mail_configs = {
+                    from: 'rahul.verma.we2code@gmail.com',
+                    to: req.body.email,
+                    subject: 'Nursery_live one time password',
+                    text: "use otp within 60 sec.",
+                    html: "<h1>your one time password " + OTP + " <h1/>"
+                  }
+                  nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                      user: "rahul.verma.we2code@gmail.com",
+                      pass: "sfbmekwihdamgxia",
+                    }
+                  })
+                    .sendMail(mail_configs, (err) => {
+                      if (err) {
+                        res.status(200).send({ "response": "not send email service error", "status": false })
+                        return //console.log({ "email_error": err });
+                      } else {
+                        res.status(200).send({ "response": "send otp on your mail", "otp": OTP, "status": true, "expire_time": 180 })
+                        return { "send_mail_status": "send successfully", "expire_time": 180 };
+                      }
+                    })
+                  setTimeout(function () {
+                    connection.query('DELETE FROM `user_auth_by_otp` WHERE `id` = "' + rows.insertId + '"', (err, rows, fields) => {
+                      if (err) {
+                        console.log("err____________________232")
+                        console.log(err)
+                      } else {
+                        console.log("delete__________________234")
+                        console.log(rows)
+                      }
+                    })
+                  }, 60000 * 3)
+                } else {
+                  console.log("Not insert in otp in database")
+                }
+
+              }
+            })
+
+
+          } else {
+            res
+              .status(200)
+              .json({ "response": " eamil not exist", "status": false });
+          }
         }
-      }
+      })
+
     })
-
-
   } else {
     res.status(200).send({ "response": "cheack eamil foramate", "status": false })
   }

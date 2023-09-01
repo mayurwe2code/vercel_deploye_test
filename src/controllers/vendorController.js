@@ -617,7 +617,7 @@ export async function search_vendor_product(req, res) {
                         if (err) {
                             console.log("err___________________194")
                             console.log(err)
-                            res.status(200).send({ "response": "find error" });
+                            res.status(200).send({ status: false, "response": "find error" });
                         } else {
                             var formate_data = [];
                             var data1 = JSON.parse(JSON.stringify(results));
@@ -626,6 +626,7 @@ export async function search_vendor_product(req, res) {
                             // console.log(data1)
                             if (req.body.is_verient) {
                                 var responsePayload = {
+                                    status: true,
                                     results: results,
                                 };
                                 if (page < numPages) {
@@ -679,6 +680,7 @@ export async function search_vendor_product(req, res) {
                                         if (data1.length - 1 == index) {
                                             // console.log(formate_data)
                                             var responsePayload = {
+                                                status: true,
                                                 results: formate_data,
                                             };
                                             if (page < numPages) {
@@ -702,6 +704,7 @@ export async function search_vendor_product(req, res) {
                                     });
                                 } else {
                                     var responsePayload = {
+                                        status: true,
                                         results: results,
                                     };
                                     if (page < numPages) {
@@ -714,6 +717,7 @@ export async function search_vendor_product(req, res) {
                                         };
                                     } else
                                         responsePayload.pagination = {
+
                                             err:
                                                 "queried page " +
                                                 page +
