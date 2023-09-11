@@ -234,7 +234,7 @@ export async function add_order(req, res) {
             for (var k in order_no_obj) {
               order_ar.push(order_no_obj[k])
             }
-            connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + req.user_id + '","user","successfully placed order,order_no=","unread"),("001","admin","recived order (order_no. =) by ' + first_name + ', user_id ' + req.user_id + '","unread")', (err, rows) => {
+            connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + req.user_id + '","user","successfully placed order,order_no=","unread"),("001","admin","recived order (order_no. = ' + order_ar + ') by ' + first_name + ', user_id ' + req.user_id + '","unread")', (err, rows) => {
               if (err) {
                 //console.log({ "notification": err })
               } else {
