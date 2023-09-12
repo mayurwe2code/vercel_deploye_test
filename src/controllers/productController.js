@@ -61,7 +61,7 @@ export async function update_Product(req, res) {
   if (req_obj.id !== undefined && req_obj.id !== "") {
     for (k in req_obj) {
 
-      if (!["updated_on", "id", "vendor_id", "all_images_url", "cover_image", "created_on", "created_by", "is_active", "status", "is_deleted", "product_verient_id", "product_id", "verient_name", "quantity", "unit", "product_stock_quantity", "price", "mrp", "gst", "sgst", "cgst", "verient_is_deleted", "verient_status", "discount", "verient_description", "verient_is_active", "verient_created_on", "verient_updated_on", "product_height", "product_width", "product_Weight"].includes(k)) {
+      if (!["updated_on", "id", "vendor_id", "all_images_url", "cover_image", "created_on", "created_by", "is_active", "status", "is_deleted", "product_verient_id", "product_id", "verient_name", "quantity", "unit", "product_stock_quantity", "price", "mrp", "gst", "sgst", "cgst", "verient_is_deleted", "verient_status", "discount", "verient_description", "verient_is_active", "verient_created_on", "verient_updated_on", "product_height", "product_width", "product_Weight", "category_name"].includes(k)) {
         if (req_obj[k] != null && req_obj[k] != "null") {
           updat_str += ` ${k} = "${req_obj[k]}", `
           console.log(k)
@@ -264,8 +264,6 @@ export async function search_product(req, res) {
   // var query_string = "select * from product  where ";
   let search_obj = Object.keys(req.body)
   console.log(req.user_id)
-
-
   var today = new Date();
   var sevenDaysAgo = new Date(today);
   var to_date = today.toISOString().slice(0, 19).replace("T", " ");
@@ -288,13 +286,19 @@ export async function search_product(req, res) {
   if (price_from != "" && price_to != "") {
     search_string += '(`price` BETWEEN "' + price_from + '" AND "' + price_to + '") AND   '
   }
+  if (price_from == "" && price_to != "") {
+    search_string += '(`price` BETWEEN "' + 0 + '" AND "' + price_to + '") AND   '
+  }
+  if (price_from != "" && price_to == "") {
+    search_string += '`price` >= ' + price_from + ' AND   '
+  }
 
   for (var i = 0; i <= search_obj.length - 1; i++) {
 
     if (i >= 6) {
       if (i == 6) {
         if (req.body[search_obj[i]] != "") {
-          search_string += `(name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR category_name LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `
+          search_string += `(name LIKE "${req.body[search_obj[i]]}%" OR verient_name LIKE "${req.body[search_obj[i]]}%" OR category_name LIKE "${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `
         }
       } else if (i == 7) {
 

@@ -496,18 +496,28 @@ export async function search_vendor_product(req, res) {
     let search_obj = Object.keys(req.body)
     if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
 
-        var search_string = 'SELECT id,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) )AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" GROUP BY product_images.product_verient_id) AS cover_image,(SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id) AS avgRatings FROM product ' + string + ' product_verient ON product.id = product_verient.product_id WHERE product.vendor_id = "' + req.vendor_id + '" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0 ) AND is_deleted = 0  AND ';
+        var search_string = 'SELECT id,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) )AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" GROUP BY product_images.product_verient_id) AS cover_image,(SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id) AS avgRatings,(select COUNT(*) from `review` where (`review`.`product_id` = `product`.`id`)) AS `count_avgRatings` FROM product ' + string + ' product_verient ON product.id = product_verient.product_id WHERE product.vendor_id = "' + req.vendor_id + '" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0 ) AND is_deleted = 0  AND ';
 
         // product.vendor_id = "17" AND (product_verient.verient_is_deleted IS NULL OR product_verient.verient_is_deleted = 0) AND is_deleted = 0
 
         // GROUP BY product.id ORDER BY product.created_on DESC LIMIT 0, 100;
     } else {
 
-        var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image, (select round(avg(`review`.`review_rating`),1) from `review` where (`review`.`product_id` = `product`.`id`)) AS `avgRatings` FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ';
+        var search_string = 'SELECT id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image, (select round(avg(`review`.`review_rating`),1) from `review` where (`review`.`product_id` = `product`.`id`)) AS `avgRatings`, (select COUNT(*) from `review` where (`review`.`product_id` = `product`.`id`)) AS `count_avgRatings`) FROM product ' + string + ' product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ';
     }
+
+    // if (price_from != "" && price_to != "") {
+    //     search_string += '(`price` BETWEEN "' + price_from + '" AND "' + price_to + '") AND   '
+    // }
 
     if (price_from != "" && price_to != "") {
         search_string += '(`price` BETWEEN "' + price_from + '" AND "' + price_to + '") AND   '
+    }
+    if (price_from == "" && price_to != "") {
+        search_string += '(`price` BETWEEN "' + 0 + '" AND "' + price_to + '") AND   '
+    }
+    if (price_from != "" && price_to == "") {
+        search_string += '`price` >= ' + price_from + ' AND   '
     }
 
     for (var i = 0; i <= search_obj.length - 1; i++) {
@@ -515,9 +525,8 @@ export async function search_vendor_product(req, res) {
         if (i >= 6) {
             if (i == 6) {
                 if (req.body[search_obj[i]] != "") {
-                    search_string += `(name LIKE "%${req.body[search_obj[i]]}%" OR verient_name LIKE "%${req.body[search_obj[i]]}%" OR (SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) LIKE "%${req.body[search_obj[i]]}%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `
+                    search_string += `(name LIKE "${req.body[search_obj[i]]}%" OR verient_name LIKE "${req.body[search_obj[i]]}%" OR (SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) LIKE "${req.body[search_obj[i]]}%" OR seo_tag LIKE "${req.body[search_obj[i]]}%") AND   `
                     // OR category_name LIKE "%${req.body[search_obj[i]]}%" 
-
                 }
             } else {
                 if (search_obj[i] == "is_verient") {

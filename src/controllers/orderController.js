@@ -233,14 +233,15 @@ export async function add_order(req, res) {
             var order_ar = []
             for (var k in order_no_obj) {
               order_ar.push(order_no_obj[k])
+              connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`,`notification_type`,`notification_type_id`) VALUES ("' + req.user_id + '","user","Thank you for your order! Your order ' + order_no_obj[k] + ' has been received and is being processed","unread","order","' + order_no_obj[k] + '"),("' + k + '","vendor","order recived ' + order_no_obj[k] + ' by ' + first_name + ' - user_id ' + req.user_id + '","unread","order","' + order_no_obj[k] + '")', (err, rows) => {
+                if (err) {
+                  //console.log({ "notification": err })
+                } else {
+                  console.log("_______notification-send__94________")
+                }
+              })
             }
-            connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + req.user_id + '","user","successfully placed order,order_no=","unread"),("001","admin","recived order (order_no. = ' + order_ar + ') by ' + first_name + ', user_id ' + req.user_id + '","unread")', (err, rows) => {
-              if (err) {
-                //console.log({ "notification": err })
-              } else {
-                console.log("_______notification-send__94________")
-              }
-            })
+
             const mail_configs = {
               from: 'rahul.verma.we2code@gmail.com',
               to: email,
@@ -309,12 +310,18 @@ export async function add_order_1(req, res) {
   const formattedDateTime = futureDate.toISOString().slice(0, 19).replace('T', ' ');
   let order_placed = []
   let order_array = req.body["order"];
-  let { first_name, last_name, email, phone_no, image, pincode, city, address, user_log, user_lat } = req.body["delivery_address"];
+  let { first_name, last_name, email, phone_no, image, pincode, city, address, user_log, user_lat, replace_address } = req.body["delivery_address"];
 
-  connection.query("UPDATE `user` SET `pincode`='" + pincode + "',`city`='" + city + "',`address`='" + address + "',`user_log`='" + user_log + "',`user_lat`='" + user_lat + "' WHERE id='" + req.user_id + "'",
-    (err, result) => {
+  if (replace_address) {
+    connection.query("UPDATE `user` SET `pincode`='" + pincode + "',`city`='" + city + "',`address`='" + address + "',`user_log`='" + user_log + "',`user_lat`='" + user_lat + "' WHERE id='" + req.user_id + "'",
+      (err, result) => {
+        if (err) {
+          console.log("err update address")
+          console.log(err)
+        }
+      })
+  }
 
-    })
   var fcm_tokens = [];
   let response_send = [];
   let all_orders_total = 0, all_orders_total_gst = 0, all_orders_total_sgst = 0, all_orders_total_cgst = 0, all_orders_total_discount = 0, admin_commission_amount = 0, Price_after_removing_admin_commission = 0;
@@ -418,13 +425,44 @@ export async function add_order_1(req, res) {
                                   if (err) {
                                     if (order_array.length - 1 == count) {
                                       console.log("order ready ya aaaa")
-                                      res.json({ "status": true, response: "placed order successfull", order_placed })
+                                      res.json({ "status": true, response: "Thank you for your order! Your order has been received and is being processed", order_placed })
                                     }
                                   } else {
                                     order_placed.push(orderno)
+                                    connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`,`notification_title`,`notification_type`,`notification_type_id`) VALUES ("' + req.user_id + '","user","Thank you for your order! Your order ' + orderno + ' has been received and is being processed","unread","order placed successfully","order","' + orderno + '"),("' + vendor_id + '","vendor","order recived ' + orderno + ' by ' + first_name + ' - user_id ' + req.user_id + '","unread","new order recived","order","' + orderno + '")', (err, rows) => {
+                                      if (err) {
+                                        //console.log({ "notification": err })
+                                      } else {
+                                        console.log("_______notification-send__94________")
+                                      }
+                                    })
+                                    const mail_configs = {
+                                      from: 'rahul.verma.we2code@gmail.com',
+                                      to: email,
+                                      subject: 'order placed successfull',
+                                      text: "order placed successfull",
+                                      html: "<h1>Thank you for your order! Your order " + orderno + " has been received and is being processed <h1/> <br> <h3> order_id - " + orderno + " </h3> <br> <h3> delivery_verification_otp - " + verify_code + " </h3> "
+                                    }
+                                    nodemailer.createTransport({
+                                      service: 'gmail',
+                                      auth: {
+                                        user: "rahul.verma.we2code@gmail.com",
+                                        pass: "sfbmekwihdamgxia",
+                                      }
+                                    })
+                                      .sendMail(mail_configs, (err) => {
+                                        if (err) {
+                                          console.log(err)
+                                          return //console.log({ "email_error": err });
+                                        } else {
+                                          return { "send_mail_status": "send successfully" };
+                                        }
+                                      })
+
                                     if (order_array.length - 1 == count) {
                                       console.log("order ready ya aaaa")
-                                      res.json({ "status": true, response: "placed order successfull", order_placed })
+
+                                      res.json({ "status": true, response: "Thank you for your order! Your order has been received and is being processed", order_placed })
                                     }
                                     if (results != "") {
 
@@ -449,34 +487,35 @@ export async function add_order_1(req, res) {
                                   }
 
                                   if (order_array.length - 1 == count) {
-                                    connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + req.user_id + '","user","successfully placed order,order_no=","unread"),("001","admin","recived order (order_no. =) by ' + first_name + ', user_id ' + req.user_id + '","unread")', (err, rows) => {
-                                      if (err) {
-                                        //console.log({ "notification": err })
-                                      } else {
-                                        console.log("_______notification-send__94________")
-                                      }
-                                    })
-                                    const mail_configs = {
-                                      from: 'rahul.verma.we2code@gmail.com',
-                                      to: email,
-                                      subject: 'order status ',
-                                      text: "order added successfully",
-                                      html: "<h1>order added successfully<h1/>"
-                                    }
-                                    nodemailer.createTransport({
-                                      service: 'gmail',
-                                      auth: {
-                                        user: "rahul.verma.we2code@gmail.com",
-                                        pass: "sfbmekwihdamgxia",
-                                      }
-                                    })
-                                      .sendMail(mail_configs, (err) => {
-                                        if (err) {
-                                          return //console.log({ "email_error": err });
-                                        } else {
-                                          return { "send_mail_status": "send successfully" };
-                                        }
-                                      })
+                                    // connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + req.user_id + '","user","successfully placed order,order_no=","unread"),("001","admin","recived order (order_no. =) by ' + first_name + ', user_id ' + req.user_id + '","unread")', (err, rows) => {
+                                    //   if (err) {
+                                    //     //console.log({ "notification": err })
+                                    //   } else {
+                                    //     console.log("_______notification-send__94________")
+                                    //   }
+                                    // })
+
+                                    // const mail_configs = {
+                                    //   from: 'rahul.verma.we2code@gmail.com',
+                                    //   to: email,
+                                    //   subject: 'order status ',
+                                    //   text: "order added successfully",
+                                    //   html: "<h1>order added successfully<h1/>"
+                                    // }
+                                    // nodemailer.createTransport({
+                                    //   service: 'gmail',
+                                    //   auth: {
+                                    //     user: "rahul.verma.we2code@gmail.com",
+                                    //     pass: "sfbmekwihdamgxia",
+                                    //   }
+                                    // })
+                                    //   .sendMail(mail_configs, (err) => {
+                                    //     if (err) {
+                                    //       return //console.log({ "email_error": err });
+                                    //     } else {
+                                    //       return { "send_mail_status": "send successfully" };
+                                    //     }
+                                    //   })
                                   }
 
                                 }
@@ -762,7 +801,7 @@ export async function order_search(req, res) {
   for (var i = 0; i <= search_obj.length - 1; i++) {
     if (i == 0) {
       if (req.body[search_obj[i]] != "") {
-        search_string += ` name LIKE "%${req.body[search_obj[i]]}%" AND `
+        search_string += ` name LIKE "${req.body[search_obj[i]]}%" AND `
       }
     } else {
 

@@ -237,6 +237,8 @@ export async function cart_delete(req, res) {
   const { product_id, product_verient_id } = req.body
   console.log("cart---delete--function------------")
   console.log("delete from cart where product_id ='" + product_id + "' AND product_verient_id='" + product_verient_id + "' AND user_id='" + req.user_id + "'")
+
+
   connection.query("delete from cart where product_id ='" + product_id + "' AND product_verient_id='" + product_verient_id + "' AND user_id='" + req.user_id + "'", (err, rows) => {
     if (err) {
       console.log(err)

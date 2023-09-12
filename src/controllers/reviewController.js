@@ -53,7 +53,7 @@ export function review_list(req, res) {
     var { product_name, status, product_id } = req.body;
     if (product_name != '' || status != '') {
 
-        var stringsearch = 'SELECT * FROM `review` WHERE '
+        var stringsearch = 'SELECT review.*,user.image FROM `review`,user WHERE review.user_id = user.id '
         var catobj = req.body;
         //console.log(catobj)
         var objvalue = Object.values(catobj)
@@ -91,7 +91,7 @@ export function review_list(req, res) {
             }
         })
     } else if (product_id) {
-        connection.query('SELECT * FROM `review` WHERE product_id = "' + product_id + '"  ORDER BY id DESC', (err, rows, fields) => {
+        connection.query('SELECT review.*,user.image FROM `review`,`user` WHERE  review.user_id = user.id AND product_id = "' + product_id + '"  ORDER BY id DESC', (err, rows, fields) => {
             if (err) {
                 //console.log("/review_error"+err)
                 res.status(200).send(err)
@@ -100,7 +100,7 @@ export function review_list(req, res) {
             }
         })
     } else {
-        connection.query('SELECT * FROM `review` WHERE 1 ORDER BY id DESC', (err, rows, fields) => {
+        connection.query('SELECT review.*,user.image FROM `review`,`user` WHERE review.user_id = user.id ORDER BY id DESC', (err, rows, fields) => {
             if (err) {
                 //console.log("/review_error"+err)
                 res.status(200).send(err)
