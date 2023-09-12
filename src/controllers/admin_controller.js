@@ -44,14 +44,16 @@ async function admin_login(req, res) {
                         if (err) {
                             //console.log(err)                             
                         }
-                        res.send([results, { "true": true, token }])
+                        res.send([results, { "status": true, "true": true, token }])
                     })
                 } else {
                     res.send("password not matched")
+                    // res.send({"status": false ,msg:"password not matched"})
                 }
 
             } else {
                 res.send("email not found")
+                // res.send({"status": true,msg:"email not found"})
             }
 
         }

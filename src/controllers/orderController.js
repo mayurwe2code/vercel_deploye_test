@@ -413,7 +413,7 @@ export async function add_order_1(req, res) {
                                 "','" +
                                 all_orders_total_sgst +
                                 "','" +
-                                all_orders_total_discount +
+                                total_discount +
                                 "','" +
                                 total_delivery_charge +
                                 "','" +
@@ -1078,4 +1078,31 @@ export async function vendor_order_search(req, res) {
     }
   );
   // }
+}
+
+export function cancel_order(req, res) {
+  let order_id = req.body.order_id
+  console.log("cancel-------------test")
+  connection.query("UPDATE `order` SET `status_order` = 'Rejected_by_customer' WHERE `order_id` = '" + order_id + "' AND user_id = '" + req.user_id + "'  AND ((status_order != 'Pickuped') AND (status_order != 'Delivered') AND (status_order != 'Failed_Delivery_Attempts'));", (err, rows, fields) => {
+    if (err) {
+      console.log(err)
+      res.status(200).json({ "response": "find some error opration failed", "status": false });
+    } else {
+      // 'pending','approved','Pickuped','Delivered','Rejected_by_customer','Failed_Delivery_Attempts','ready_to_pickup','accepted_by_vendor','rejected_by_vendor','ready_to_packing'
+
+      if (rows.affectedRows >= 1) {
+        connection.query("UPDATE `order_delivery_details` SET `order_status` = 'Rejected_by_customer' WHERE `order_id` = '" + order_id + "'", (err, rows, fields) => {
+          if (err) {
+            console.log(err)
+            // res.status(200).json({ "response": "find some error opration failed", "status": false });
+            res.status(200).json({ "response": "order cancel successfull", "status": true });
+          } else {
+            res.status(200).json({ "response": "order cancel successfull", "status": true });
+          }
+        })
+      } else {
+        res.status(200).json({ "response": "unable to change order status", "status": false });
+      }
+    }
+  })
 }
