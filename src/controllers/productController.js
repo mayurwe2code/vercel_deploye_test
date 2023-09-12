@@ -122,7 +122,7 @@ export async function update_Product_verient(req, res) {
   var k = ""
   if (req_obj.product_verient_id !== undefined && req_obj.product_verient_id !== "") {
     for (k in req_obj) {
-      if (!["care_and_Instructions", "benefits", "all_images_url", "cover_image", "verient_created_on", "verient_updated_on", "product_verient_id", "product_id", "verient_is_active", "verient_status", "verient_is_deleted", "id", "vendor_id", "name", "seo_tag", "brand", "category", "is_deleted", "status", "review", "rating", "description", "is_active", "created_by", "created_by_id", "created_on", "updated_on", "count_avgRatings", "category_name"].includes(k)) {
+      if (!["care_and_Instructions", "benefits", "all_images_url", "cover_image", "verient_created_on", "verient_updated_on", "product_verient_id", "product_id", "verient_is_active", "verient_status", "verient_is_deleted", "id", "vendor_id", "name", "seo_tag", "brand", "category", "is_deleted", "status", "review", "rating", "description", "is_active", "created_by", "created_by_id", "created_on", "updated_on", "count_avgRatings", "category_name", "is_fetured"].includes(k)) {
         if (req_obj[k] != null && req_obj[k] != "null") {
           updat_str += ` ${k} = "${req_obj[k]}", `
           console.log(k)

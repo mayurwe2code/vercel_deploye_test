@@ -959,7 +959,7 @@ export function order_status_update(req, res) {
                 }
               });
             } else {
-              res.status(200).json({ "response": "status updated successfully", "res_db": row, "status": true });
+              res.status(200).json({ "response": "status updated successfully", "res_db": [], "status": true });
               // res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
             }
 

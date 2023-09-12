@@ -385,24 +385,34 @@ export async function admin_add_vendor(req, res) {
     let srt_user = ""
     // console.log(req.file)
     // console.log(req.file.filename)
-    if (req.file == undefined || req.file == '') {
-        var image = "no image"
-        srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`availability`, `created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + availability + '","admin","' + req.created_by_id + '")'
-    } else {
-        var image = req.protocol + "://" + req.headers.host + "/vendor_shop_img/" + req.file.filename;
-        //console.log(image)
-        srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`shop_logo`,`availability`,`created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + image + '","' + availability + '","admin","' + req.created_by_id + '")'
-    }
-    console.log(srt_user)
-    connection.query(srt_user, (err, rows) => {
-        if (err) {
-            console.log(err)
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "success": false });
+    if (email != "") {
+        if (req.file == undefined || req.file == '') {
+            var image = "no image"
+            srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`availability`, `created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + availability + '","admin","' + req.created_by_id + '")'
         } else {
-            res.status(StatusCodes.OK).json({ message: "add vendor successfully", "success": true });
+            var image = req.protocol + "://" + req.headers.host + "/vendor_shop_img/" + req.file.filename;
+            //console.log(image)
+            srt_user = 'INSERT INTO `vendor` (`owner_name`,`shop_name`,`email`,`mobile`,`shop_address`,`gstn`,`geolocation`,`shop_logo`,`availability`,`created_by`,`created_by_id`) VALUES ("' + owner_name + '","' + shop_name + '","' + email + '","' + mobile + '","' + shop_address + '","' + gstn + '","' + geolocation + '","' + image + '","' + availability + '","admin","' + req.created_by_id + '")'
         }
+        console.log(srt_user)
+        connection.query(srt_user, (err, rows) => {
+            if (err) {
+                console.log(err)
+                if (err.code == 'ER_DUP_ENTRY') {
+                    res.status(200).json({ message: "mail already exist", "success": false });
+                } else {
+                    res.status(200).json({ message: "something went wrong", "success": false });
+                }
+
+            } else {
+                res.status(StatusCodes.OK).json({ message: "add vendor successfully", "success": true });
+            }
+        }
+        );
+    } else {
+        res.status(200).json({ message: "Email is required", "success": false });
+
     }
-    );
 }
 
 export function vendor_list(req, res) {

@@ -99,7 +99,7 @@ export function category_list(req, res) {
 
 
     console.log(query_)
-    connection.query(query_, (err, rows, fields) => {
+    connection.query(query_ + " ORDER BY created_on DESC", (err, rows, fields) => {
         if (err) {
             console.log("/category_error" + err)
             res.status(500).send({ "status": false, "response": "find some error" })
