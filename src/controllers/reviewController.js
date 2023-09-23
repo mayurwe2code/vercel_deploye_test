@@ -48,66 +48,34 @@ export function review_approved(req, res) {
     }
 }
 
-export function review_list(req, res) {
-    //console.log("req.body")
-    var { product_name, status, product_id } = req.body;
-    if (product_name != '' || status != '') {
-
-        var stringsearch = 'SELECT review.*,user.image FROM `review`,user WHERE review.user_id = user.id '
-        var catobj = req.body;
-        //console.log(catobj)
-        var objvalue = Object.values(catobj)
-        var objkey = Object.keys(catobj)
-        for (let m = 0; m < objkey.length; m++) {
-            if (objvalue[m] != '') {
-                if (m == 0) {
-                    stringsearch += "`" + objkey[m] + "` LIKE '%" + objvalue[m] + "%' "
-                } else {
-                    if (objvalue[0] == '') {
-                        stringsearch += "`" + objkey[m] + "` LIKE '%" + objvalue[m] + "%' AND "
-                    } else {
-                        stringsearch += " AND `" + objkey[m] + "` LIKE '%" + objvalue[m] + "%'"
-                    }
-                }
-            }
-        }
-        //console.log(stringsearch)
-        var lastCharOfHello = stringsearch.slice(-4);
-        //console.log("________"+lastCharOfHello+"_______")
-        if (lastCharOfHello == "AND ") {
-            var id = stringsearch.substring(stringsearch.lastIndexOf(' AND') + 1, stringsearch.indexOf("  "));
-            stringsearch = id;
-        } else {
-
-            //console.log("no avia")
-        }
-
-        connection.query('' + stringsearch + ' ORDER BY id DESC', (err, rows, fields) => {
-            if (err) {
-                //console.log("/review_error"+err)
-                res.status(200).send(err)
-            } else {
-                res.status(200).send(rows)
-            }
-        })
-    } else if (product_id) {
-        connection.query('SELECT review.*,user.image FROM `review`,`user` WHERE  review.user_id = user.id AND product_id = "' + product_id + '"  ORDER BY id DESC', (err, rows, fields) => {
-            if (err) {
-                //console.log("/review_error"+err)
-                res.status(200).send(err)
-            } else {
-                res.status(200).send(rows)
-            }
-        })
-    } else {
-        connection.query('SELECT review.*,user.image FROM `review`,`user` WHERE review.user_id = user.id ORDER BY id DESC', (err, rows, fields) => {
-            if (err) {
-                //console.log("/review_error"+err)
-                res.status(200).send(err)
-            } else {
-                res.status(200).send(rows)
-            }
-        })
+export async function review_list(req, res) {
+    let req_body = req.body
+    let len_obj = Object.keys(req_body).length
+async function query_maker (){
+    let query_ ="SELECT review.*,user.image FROM `review`,`user` WHERE review.user_id = user.id AND  "
+let i = 1;
+for(let k in req_body){
+    if(k != "product_name" && req_body[k] != ""){
+        query_+=`${k} = '${req_body[k]}' AND  `
     }
-
+    if(k === "product_name" && req_body[k] != "" ){
+        query_+=`(product_name LIKE '%${req_body[k]}%' OR user_name LIKE '%${req_body[k]}%') AND  ` 
+    }
+    if(len_obj === i){
+        query_ =  query_.substring(0,query_.length-5)
+    }
+    i++
+}
+return query_
+}
+let query = await query_maker()
+console.log(query+" ORDER BY created_on DESC--------------")
+connection.query(query+" ORDER BY created_on DESC", (err, rows, fields) => {
+    if (err) {
+        console.log(err)
+        res.status(200).send(err)
+    } else {
+        res.status(200).send(rows)
+    }
+})
 }

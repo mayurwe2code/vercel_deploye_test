@@ -24,7 +24,7 @@ export function add_remove_to_wishlist(req, res) {
                         (err, rows) => {
                             if (err) {
                             } else {
-                                res.status(200).json({ "success": true, "response": "already add in wishlist remove product to wishlist" });
+                                res.status(200).json({ "success": true, "response": "remove product to wishlist" });
                             }
                         })
                 }
@@ -40,8 +40,8 @@ export function wishlist(req, res) {
     let to_date = today.toISOString().slice(0, 19).replace("T", " ");
     sevenDaysAgo.setDate(today.getDate() - 30);
     let from_date = sevenDaysAgo.toISOString().slice(0, 19).replace("T", " ");
-
-    connection.query('SELECT wishlist.id AS wishlist_id,wishlist.created_on AS wishlist_created_on, product_view.*,(SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view , wishlist where wishlist.product_verient_id=product_view.product_verient_id AND verient_is_deleted ="0" ORDER BY wishlist.created_on DESC',
+    console.log('SELECT wishlist.id AS wishlist_id,wishlist.created_on AS wishlist_created_on, product_view.*,(SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view , wishlist where wishlist.product_verient_id=product_view.product_verient_id AND verient_is_deleted ="0" ORDER BY wishlist.created_on DESC')
+    connection.query('SELECT wishlist.id AS wishlist_id,wishlist.created_on AS wishlist_created_on, product_view.*,(SELECT IF(COUNT(`order`.product_id)>10,"YES","NO") From `order` WHERE product_view.product_id=`order`.product_id AND (`order`.created_on BETWEEN "' + from_date + '" AND "' + to_date + '")) AS is_trending ,(SELECT cart_product_quantity FROM cart WHERE cart.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") AS cart_count FROM product_view , wishlist where wishlist.product_verient_id=product_view.product_verient_id AND verient_is_deleted ="0" AND (SELECT id FROM wishlist WHERE wishlist.product_verient_id = product_view.product_verient_id AND user_id = "' + req.user_id + '") IS NOT NULL ORDER BY wishlist.created_on DESC',
         (err, rows) => {
             if (err) {
                 console.log(err)
