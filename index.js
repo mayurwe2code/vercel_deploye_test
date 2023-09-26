@@ -86,7 +86,7 @@ app.get("/version", (req, res) => {
   // connection.end()
   // connection
   res.send({
-    "latest_update": dat, "latest_commit": "check port- 443  -  server good 26/09/2023"
+    "latest_update": dat, "latest_commit": "check port- 9999  -  server-good 26/09/2023"
   })
 
 })
@@ -202,7 +202,7 @@ app.get('/auth/logout', (req, res) => {
 
 function startServer() {
   connection
-  app.listen(443, () => {
+  app.listen(9999, () => {
     console.log(`server is running at ${process.env.SERVERPORT}`);
   });
 }
