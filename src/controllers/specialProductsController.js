@@ -161,3 +161,31 @@ export function add_fetured_product(req, res) {
   })
 }
 
+export function update_fetured_product(req,res) {
+
+  // (select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where ((`fetured_product_table`.`product_id` = `product_verient`.`product_id`) and (curdate() >= `fetured_product_table`.`start_date`) and (curdate() <= `fetured_product_table`.`end_date`))) AS `is_fetured_on`
+  
+  // (select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where (`fetured_product_table`.`product_id` = `product_verient`.`product_id`)) AS `is_fetured`
+
+  let req_body = req.body
+  let qry_ = "UPDATE `fetured_product_table` SET `updated_on`= NOW() "
+ for(let k in req_body){
+ if( ["start_date","is_deleted","end_date","status"].includes(k) && req_body[k]){
+  qry_+= ` , ${k} = ${req_body[k]} `
+ }
+ }
+  // UPDATE `fetured_product_table` SET `status`='[value-4]',`start_date`='[value-5]',`end_date`='[value-6]',`is_deleted`='[value-7]' WHERE 1
+
+  connection.query(qry_+" product_id = '"+req.body.id+"'" , (err, rows, fields) => {
+    if (err) {
+      res.status(200).send({"status":false, "message":"find some error"})
+    } else {
+      if (rows.affectedRows) {
+        res.status(200).send({"status":true, "message":"successfully updated"})
+      } else {
+        res.status(200).send({"status":false, "message":"update failed"})
+      }
+
+    }
+  })
+}

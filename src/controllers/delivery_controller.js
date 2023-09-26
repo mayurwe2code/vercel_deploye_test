@@ -380,7 +380,7 @@ export async function driver_details(req, res) {
 //     });
 // }
 export async function only_driver_list(req, res) {
-    let query_ = "select delivery_man.*, vehicle_id,vehicle_add_by,company_name,model,color,registration_no_of_vehicle,chassis_number,vehicle_owner_name,make_of_vehicle,vehicle_registerd_by,puc_expiration_date,insurance_expiration_date,registration_expiration_date,registration,puc_certificate,insurance, vehicle_detaile.is_active AS vehicle_is_active from delivery_man LEFT JOIN vehicle_detaile ON vehicle_detaile.driver_id = delivery_man.driver_id where vehicle_detaile.is_active = '1' AND  "
+    let query_ = "select delivery_man.*, vehicle_id,vehicle_add_by,company_name,model,color,registration_no_of_vehicle,chassis_number,vehicle_owner_name,make_of_vehicle,vehicle_registerd_by,puc_expiration_date,insurance_expiration_date,registration_expiration_date,registration,puc_certificate,insurance, vehicle_detaile.is_active AS vehicle_is_active from delivery_man LEFT JOIN vehicle_detaile ON vehicle_detaile.driver_id = delivery_man.driver_id where"
 
     if (req.body.search) {
         query_ += ` driver_name LIKE '%${req.body.search}%' OR driver_last_name LIKE '%${req.body.search}%' AND  `
@@ -391,10 +391,9 @@ export async function only_driver_list(req, res) {
         }
     }
 
-
     query_ = query_.substring(0, query_.length - 5)
     console.log("ck------||" + query_)
-    connection.query(query_, (err, rows) => {
+    connection.query(query_ +"ORDER BY delivery_man.created_on DESC", (err, rows) => {
         if (err) {
             console.log(err)
             res
@@ -495,11 +494,13 @@ export function chouse_driver_for_delivery(req, res) {
     let { order_id, delivery_lat, delivery_log, nearest_of_delivery_pin } = req.body
     let query_ = ""
     if (nearest_of_delivery_pin != "" && nearest_of_delivery_pin != undefined && nearest_of_delivery_pin != null) {
-        query_ += "SELECT *, ( 3959 * acos( cos( radians(" + delivery_lat + ") ) * cos( radians( driver_lat ) ) * cos( radians( driver_log ) - radians(" + delivery_log + ") ) + sin( radians(" + delivery_lat + ") ) * sin( radians( driver_lat ) ) ) ) AS distance FROM driver_working_area  LEFT JOIN delivery_man ON driver_working_area.driver_id = delivery_man.driver_id  HAVING distance < " + nearest_of_delivery_pin + " "
+        query_ += "SELECT *, ( 3959 * acos( cos( radians(" + delivery_lat + ") ) * cos( radians( driver_lat ) ) * cos( radians( driver_log ) - radians(" + delivery_log + ") ) + sin( radians(" + delivery_lat + ") ) * sin( radians( driver_lat ) ) ) ) AS distance FROM driver_working_area  LEFT JOIN delivery_man ON driver_working_area.driver_id = delivery_man.driver_id AND vehicle_detaile.is_active = '1' AND delivery_man.is_active = '1' HAVING distance < " + nearest_of_delivery_pin + " "
     } else {
         //if you want only show this driver , when selected working area
         // query_ += "SELECT * FROM driver_working_area  LEFT JOIN delivery_man ON driver_working_area.driver_id = delivery_man.driver_id "
-        query_ += "SELECT delivery_man.*,vehicle_detaile.model FROM delivery_man,vehicle_detaile where delivery_man.driver_id = vehicle_detaile.driver_id GROUP BY delivery_man.driver_id "
+        // query_ += "SELECT delivery_man.*,vehicle_detaile.model FROM delivery_man,vehicle_detaile where delivery_man.driver_id = vehicle_detaile.driver_id GROUP BY delivery_man.driver_id "
+        query_ += "SELECT delivery_man.*,vehicle_detaile.model, vehicle_detaile.is_active AS vehicle_is_active FROM delivery_man,vehicle_detaile where delivery_man.driver_id = vehicle_detaile.driver_id AND vehicle_detaile.is_active = '1' AND delivery_man.is_active = '1' GROUP BY delivery_man.driver_id;"
+        
     }
     console.log(query_)
     connection.query(query_, (err, rows) => {
@@ -784,7 +785,14 @@ export function driver_add_by_admin(req, res) {
     connection.query("INSERT INTO `delivery_man`(`driver_name`, `driver_last_name`, `date_of_birth`, `current_address`, `gender`, `age`, `contect_no`, `email`, `password`,`aadhar_no`, `licence_no`, `licence_issue_date`, `licence_validity_date`" + str_fields + ") VALUES ( '" + driver_name + "', '" + driver_last_name + "', '" + date_of_birth + "', '" + current_address + "', '" + gender + "', '" + age + "', '" + contect_no + "', '" + email + "', '" + password + "', '" + aadhar_no + "', '" + licence_no + "', '" + licence_issue_date + "', '" + licence_validity_date + "' " + srt_values + ")", (err, rows) => {
         if (err) {
             console.log(err)
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+            
+if(err.code == "ER_DUP_ENTRY"){
+    res.status(200).json({ message: "account already exists", "status": false });
+}else{
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+
+}
+            
         } else {
             res.status(StatusCodes.OK).json(rows);
         }
@@ -859,12 +867,15 @@ export function driver_list(req, res) {
 }
 export function vehicle_list(req, res) {
     let { search } = req.body
+    let query_ =""
     if (req.headers.driver_token) {
-        var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = '" + req.driver_id + "' AND  "
-    }
+         query_ += "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = '" + req.driver_id + "' AND  "
+    }else{
+
     if (req.headers.admin_token) {
-        var query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE"
+         query_ += "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE"
     }
+}
     // let query_ = "SELECT *,(SELECT driver_name FROM `delivery_man` WHERE delivery_man.driver_id = vehicle_detaile.driver_id) AS driver_name FROM `vehicle_detaile` WHERE driver_id = "+req.driver_id+" is_active = '1' AND  "
     if (search) {
         //vehicle_owner_name,chassis_number,registration_no_of_vehicle,model,company_name
@@ -876,7 +887,7 @@ export function vehicle_list(req, res) {
         }
     }
     query_ = query_.substring(0, query_.length - 5)
-    console.log(query_)
+    console.log("--------11----------"+query_)
     connection.query(query_, (err, rows) => {
         if (err) {
             console.log(err)
@@ -918,46 +929,125 @@ export function update_your_vehicle(req, res) {
     );
 }
 
+// export function change_vehicle_feild(req, res) {
+//     let srt_user = "UPDATE `vehicle_detaile` SET"
+//     console.log("UPDATE `vehicle_detaile` SET")
+//     console.log(req.body)
+//     if (req.headers.driver_token && req.driver_id) {
+//         connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
+//         connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
+//         req.body.driver_id = req.driver_id
+//     }
+
+//     for (let k in req.body) {
+//         console.log("__" + req.body[k] + "___")
+//         srt_user += `  ${k}="${req.body[k]}",`
+//     }
+
+
+//     srt_user = srt_user.substring(0, srt_user.length - 1)
+//     console.log(srt_user)
+//     if (req.headers.admin_token && req.body.driver_id) {
+//         connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
+//         connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
+
+//         srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'admin' `
+//     }
+//     if (req.headers.driver_token && req.body.driver_id) {
+//         srt_user += ` where vehicle_detaile.driver_id = '${req.body.driver_id}' AND vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
+//     }
+//     console.log(srt_user)
+
+//     connection.query(srt_user, (err, rows) => {
+//         if (err) {
+//             console.log(err)
+//             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+//         } else {
+//             if (rows.affectedRows >= 1) { res.status(StatusCodes.OK).json({ message: "vehicle feild updated successfull", "status": true }); } else {
+//                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+//             }
+
+//         }
+//     }
+//     );
+// }
+
 export function change_vehicle_feild(req, res) {
     let srt_user = "UPDATE `vehicle_detaile` SET"
-    console.log("UPDATE `vehicle_detaile` SET")
-    console.log(req.body)
-    if (req.headers.driver_token && req.driver_id) {
-        connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
-        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
-        req.body.driver_id = req.driver_id
-    }
+    let { status, vehicle_id, is_active } = req.body
 
-    for (let k in req.body) {
-        console.log("__" + req.body[k] + "___")
-        srt_user += `  ${k}="${req.body[k]}",`
-    }
+    if (status) {
+        if (status == "deleted" || status == "block" || status == "pendding") {
+            // srt_user += " `status` = '" + status + "' , `is_active` = '0' "
+            connection.query("UPDATE `vehicle_detaile` SET `status` = '', `is_active` = '0' WHERE `vehicle_detaile`.`vehicle_id` = '" + vehicle_id + "'", (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.status(200).json({ message: "find some error", "status": false });
 
-
-    srt_user = srt_user.substring(0, srt_user.length - 1)
-    console.log(srt_user)
-    if (req.headers.admin_token && req.body.driver_id) {
-        connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
-        connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
-
-        srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'admin' `
-    }
-    if (req.headers.driver_token && req.body.driver_id) {
-        srt_user += ` where vehicle_detaile.driver_id = '${req.body.driver_id}' AND vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
-    }
-    console.log(srt_user)
-
-    connection.query(srt_user, (err, rows) => {
-        if (err) {
-            console.log(err)
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+                } else {
+                    res.status(200).json({ message: "vehicle feild updated successfull", "status": true });
+                }
+            });
+        } else if (status == "active") {
+            // srt_user += " `status` = '" + status + "' , `is_active` = '1' "
+            connection.query("UPDATE `vehicle_detaile` SET `status` = '', `is_active` = '1' WHERE `vehicle_detaile`.`vehicle_id` = '" + vehicle_id + "'", (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.status(200).json({ message: "find some error", "status": false });
+                } else {
+                    res.status(200).json({ message: "vehicle feild updated successfull", "status": true });
+                }
+            });
         } else {
-            if (rows.affectedRows >= 1) { res.status(StatusCodes.OK).json({ message: "vehicle feild updated successfull", "status": true }); } else {
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
-            }
-
+            res.status(200).json({ message: "please send valid status", "status": false });
         }
-    }
-    );
-}
 
+    } else {
+
+        console.log("UPDATE `vehicle_detaile` SET")
+        console.log(req.body)
+        if (req.headers.driver_token && req.driver_id) {
+            connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
+            connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
+            req.body.driver_id = req.driver_id
+        }
+
+        for (let k in req.body) {
+            console.log("__" + req.body[k] + "___")
+            // if (k != "vehicle_id") {
+            srt_user += `  ${k}="${req.body[k]}",`
+            // }
+        }
+
+
+        srt_user = srt_user.substring(0, srt_user.length - 1)
+        console.log(srt_user)
+        if (req.headers.admin_token && req.body.driver_id) {
+            connection.query("UPDATE `vehicle_detaile` SET `driver_id` = '', `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'admin'", (err, rows) => { });
+            connection.query("UPDATE `vehicle_detaile` SET `is_active` = '0' WHERE `vehicle_detaile`.`driver_id` = '" + req.body.driver_id + "' AND 	vehicle_add_by = 'driver'", (err, rows) => { });
+
+            srt_user += ` where vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'admin' `
+        }
+        if (req.headers.driver_token && req.body.driver_id) {
+            srt_user += ` where vehicle_detaile.driver_id = '${req.body.driver_id}' AND vehicle_id = '${req.body.vehicle_id}' AND vehicle_add_by = 'driver' `
+        }
+        console.log(srt_user)
+
+        connection.query(srt_user, (err, rows) => {
+            if (err) {
+                console.log(err)
+                res.status(200).json({ message: "something went wrong", "status": false });
+                // if(rows.code == "ER_DUP_ENTRY"){
+                //     srt_user.replace()
+                // }
+            } else {
+                if (rows.affectedRows >= 1) { res.status(StatusCodes.OK).json({ message: "vehicle feild updated successfull", "status": true }); } else {
+                    res.status(200).json({ message: "something went wrong", "status": false });
+                }
+
+            }
+        }
+        );
+
+    }
+}

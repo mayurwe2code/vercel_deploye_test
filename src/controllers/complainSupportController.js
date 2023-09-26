@@ -121,7 +121,7 @@ export function complain_search(req, res) {
             res.status(200).send({ err })
         } else {
             // console.log(rows)
-            rows.length != "" ? res.status(200).send({ status: true, "result": rows }) : res.status(200).send({ status: false, "response": "not Found" })
+            rows.length != "" ? res.status(200).send({ status: true, "result": rows }) : res.status(200).send({ status: true, "response": "not Found","result": rows })
         }
     })
 }

@@ -872,7 +872,6 @@ export async function order_search(req, res) {
   );
   // }
 }
-
 export function order_status_update(req, res) {
   console.log("order_status_update-----------------")
   console.log(req.body)
@@ -882,9 +881,13 @@ export function order_status_update(req, res) {
   let query_ = ""
   if (status_order == "approved") {
     query_ += "UPDATE `order` SET `status_order` = 'approved', `verify_by_vendor` = 'accepted' WHERE `order_id` = '" + order_id + "'"
-  } else {
-    query_ += "UPDATE `order` SET `status_order` = '" + status_order + "', `verify_by_vendor` = 'pending' WHERE `order_id` = '" + order_id + "'"
+  }else if(  status_order == "rejected"){
+    query_ += "UPDATE `order` SET `status_order` = 'rejected_by_vendor', `verify_by_vendor` = 'rejected' WHERE `order_id` = '" + order_id + "'"
+  }else {
+    // query_ += "UPDATE `order` SET `status_order` = '" + status_order + "', `verify_by_vendor` = 'pending' WHERE `order_id` = '" + order_id + "'"
+    query_ =""
   }
+  //rejected_by_vendor
   // if (order_verify == "rejected") {
   //     query_ += "UPDATE `order` SET `status_order` = 'rejected_by_vendor', `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'"
   // }
@@ -897,7 +900,7 @@ export function order_status_update(req, res) {
       res.status(200).json({ "response": "status update opration failed", "status": false });
       // res.status(200).send({ "status": false, "response": "find some error" })
     } else {
-      if (rows.changedRows >= 1) {
+      if (rows.changedRows >= 1 &&  status_order == "approved") {
         //  res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
         console.log(rows)
 
@@ -967,13 +970,118 @@ export function order_status_update(req, res) {
         })
 
       } else {
-        res.status(200).json({ "response": "status update opration failed", "status": false });
+        if(status_order == "rejected"){
+          res.status(200).json({ "response": "status updated successfully", "status": true });
+        }else{
+        res.status(200).json({ "response": "status update opration failed", "status": false });    
+        }
         // res.status(200).send({ "status": false, "response": "find some error" })
       }
     }
   })
 
 }
+// export function order_status_update(req, res) {
+//   console.log("order_status_update-----------------")
+//   console.log(req.body)
+//   let { status_order, order_id } = req.body
+
+//   console.log("check order_verify_by_admineee" + req.vendor_id)
+//   let query_ = ""
+//   if (status_order == "approved") {
+//     query_ += "UPDATE `order` SET `status_order` = 'approved', `verify_by_vendor` = 'accepted' WHERE `order_id` = '" + order_id + "'"
+//   } else {
+//     query_ += "UPDATE `order` SET `status_order` = '" + status_order + "', `verify_by_vendor` = 'pending' WHERE `order_id` = '" + order_id + "'"
+//   }
+//   // if (order_verify == "rejected") {
+//   //     query_ += "UPDATE `order` SET `status_order` = 'rejected_by_vendor', `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'"
+//   // }
+//   // if (order_verify == "pending") {
+//   //     query_ += "UPDATE `order` SET `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'"
+//   // }
+//   connection.query(query_, (err, rows, fields) => {
+//     if (err) {
+//       console.log(err)
+//       res.status(200).json({ "response": "status update opration failed", "status": false });
+//       // res.status(200).send({ "status": false, "response": "find some error" })
+//     } else {
+//       if (rows.changedRows >= 1) {
+//         //  res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
+//         console.log(rows)
+
+//         connection.query("SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE `order_id` = '" + order_id + "'", (err, rows, fields) => {
+//           if (err) {
+//             console.log(err)
+//             // res.status(200).send({ "status": false, "response": "find some error" })
+//           } else {
+//             // rows,
+//             console.log(rows[0])
+//             let { order_id, product_id, user_id, vendor_id, total_order_product_quantity, total_amount, total_gst, total_cgst, total_sgst, total_discount, shipping_charges, invoice_id, payment_mode, payment_ref_id, order_date, delivery_date, invoice_date, discount_coupon, discount_coupon_value, created_on, updated_on, status_order, delivery_lat, delivery_log, user_name, address, email, pin_code, city, user_image, phone_no, delivery_verify_code, verify_by_vendor, only_this_order_product_total, only_this_order_product_quantity, only_this_product_gst, only_this_product_cgst, only_this_product_sgst } = rows[0]
+//             // console.log({ order_id, payment, payment_method, order_delivery_confirm_code })
+//             const dateObject = new Date(delivery_date);
+//             const formattedDate = dateObject.toISOString().slice(0, 19).replace('T', ' ');
+//             connection.query('INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' + user_id + '","user","order your order current staus is ' + status_order + '","unread"),("001","admin","successfully changed user (user_id ' + user_id + ') order status","unread")', (err, rows) => {
+//               if (err) {
+//                 //console.log({ "notification": err })
+//               } else {
+//                 console.log("_______notification-send__94________")
+//               }
+//             })
+//             const mail_configs = {
+//               from: 'rahul.verma.we2code@gmail.com',
+//               to: email,
+//               subject: 'order status change',
+//               text: "order your order current staus is " + status_order + "",
+//               html: "<h1> your order current staus is " + status_order + "<h1/>"
+//             }
+//             nodemailer.createTransport({
+//               service: 'gmail',
+//               auth: {
+//                 user: "rahul.verma.we2code@gmail.com",
+//                 pass: "sfbmekwihdamgxia",
+//               }
+//             })
+//               .sendMail(mail_configs, (err) => {
+//                 if (err) {
+//                   return //console.log({ "email_error": err });
+//                 } else {
+//                   return { "send_mail_status": "send successfully" };
+//                 }
+//               })
+
+//             if (status_order == "approved") {
+//               connection.query("INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`,`delivery_date`) VALUES ('" + order_id + "','vendor','" + only_this_order_product_total + "', '" + payment_mode + "', '" + delivery_verify_code + "' ,'" + req.vendor_id + "','" + formattedDate + "')", (err, result) => {
+//                 if (err) {
+//                   console.log(err)
+//                   if (err.code == "ER_DUP_ENTRY") {
+//                     res.status(200).json({ "response": "already exist for delivery", "status": false });
+//                   } else {
+//                     res.status(200).json({ "response": "when asgin for delivery admin find some error", "status": false });
+//                     // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+//                   }
+
+//                 } else {
+//                   // res.status(StatusCodes.OK).json(rows);
+//                   res.status(200).json({ "response": "status updated successfully", "res_db": result, "status": true });
+//                   // res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
+//                 }
+//               });
+//             } else {
+//               res.status(200).json({ "response": "status updated successfully", "res_db": [], "status": true });
+//               // res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
+//             }
+
+//           }
+//         })
+
+//       } else {
+//         res.status(200).json({ "response": "status update opration failed", "status": false });
+//         // res.status(200).send({ "status": false, "response": "find some error" })
+//       }
+//     }
+//   })
+
+// }
 
 
 export async function vendor_order_search(req, res) {
