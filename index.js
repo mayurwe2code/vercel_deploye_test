@@ -86,7 +86,7 @@ app.get("/version", (req, res) => {
   // connection.end()
   // connection
   res.send({
-    "latest_update": dat, "latest_commit": "check port  443  -  server good 26/09/2023"
+    "latest_update": dat, "latest_commit": "check port- 443  -  server good 26/09/2023"
   })
 
 })
