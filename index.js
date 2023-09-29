@@ -24,6 +24,7 @@ import specialProductsRouter from "./src/routers/specialProductsRouter.js";
 import coupanRouter from './src/routers/coupan_router.js'
 import wishlistRouter from './src/routers/wishlist_router.js'
 import reportRouter from './src/routers/report_router.js'
+import payment_route from './src/routers/paymentRouter.js'
 import mongoose from 'mongoose';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport'
@@ -79,7 +80,7 @@ connection.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROU
 // });
 
 
-app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter, specialProductsRouter, wishlistRouter, reportRouter, coupanRouter);
+app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, product_images_router, filter_list_router, vendor_router, delivery_router, adminRouter, blog, transactionRouter, complainSupportRouter, reviewRouter, categoryRouter, vendorAreaRouter, specialProductsRouter, wishlistRouter, reportRouter, coupanRouter,payment_route);
 
 app.get("/version", (req, res) => {
   let dat = new Date()
