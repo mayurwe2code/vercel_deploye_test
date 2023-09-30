@@ -1,4 +1,3 @@
-
 // import fetch from 'node-fetch';
 // var notification = {
 //     "title": "ttttestttttttt",
@@ -15,10 +14,6 @@
 //     // console.log(res.data)
 //     console.log("notification send successfully")
 // }).catch((err) => { console.log(err) })
-
-
-
-
 
 // import FCM from 'fcm-node';
 // var FCM = require('fcm-node');
@@ -50,34 +45,67 @@
 
 // });
 
-
-
 // successfully working  -------------------------------------------------------------------------
-var FCM = require('fcm-node');
-var serverKey = 'AAAABsq8jZc:APA91bG99gTYMmsMI_vlIJhjAxU6ta8j24v4dg-tInV4dKDUXqBzx3ORj_n0aI5k7opUvuyKI0nGhulfolpJgSFf2d5rnMfrN5CGA2fkpbCqTIlaidCChdDa5Gs7ymScojbL5pC93B54';
-var fcm = new FCM(serverKey);
+// var FCM = require("fcm-node");
+// var serverKey =
+//   "AAAAWM6767Q:APA91bFq0e3LuukAOH4vsnPrQoEx-j45muw4pP0w0eEXuMv669RVyowpV4Y7FLwcnCjiO4s8UHk-BbOpukEVkHSeNf3aEDpYaerQl74gage2KHzoxDIhuNPdByXXynTjHUNYPsHfiAM5";
+// var fcm = new FCM(serverKey);
 
-var message = {
-    to: "e42h1iTmRwGlyuwn9nGqu4:APA91bF4jLBFEK1TNgItzgtK3JrteZmNxr6YIiDeQphlWboVbUGNE-C_sCXq89GxkjFwd-IoM0l7Nt_3FMQPbtGgS3q5mQcx1AWxnruu_I9jGSIL2l1E_maSZ58OJSCWT9ZnnnYfxpgs",
+// var message = {
+//   to: "cWa9StADS3qR1G4t67qdQY:APA91bFSfJ5allKzJ1iwVRybYFwRFU3-cSASpIM-mRlbqp2GIAhum5PQQmHJbpU52JEZG_w0keSAKYSI3Ku1QV-E-zpeQ2WSzDYTMqNGR5rwal-C50s8BT-ISiYddCB8YZ8kT4zAYI9r",
+//   notification: {
+//     title: "NotifcatioTestAPP",
+//     body: '{"Message from node js app"}',
+//   },
+
+//   data: {
+//     //you can send only notification or only data(or include both)
+//     title: "ok cdfsdsdfsd",
+//     body: '{"name" : "okg ooggle ogrlrl","product_id" : "123","final_price" : "0.00035"}',
+//   },
+// };
+
+// fcm.send(message, function (err, response) {
+//   if (err) {
+//     console.log("Something has gone wrong!" + err);
+//     console.log("Respponse:! " + response);
+//   } else {
+//     // showToast("Successfully sent with response");
+//     console.log("Successfully sent with response: ", response);
+//   }
+// });
+
+//-----------------------------------------------------------------
+//----------------------es6----------------------------------------
+import FCM from "fcm-node";
+const serverKey =
+  "AAAAWM6767Q:APA91bFq0e3LuukAOH4vsnPrQoEx-j45muw4pP0w0eEXuMv669RVyowpV4Y7FLwcnCjiO4s8UHk-BbOpukEVkHSeNf3aEDpYaerQl74gage2KHzoxDIhuNPdByXXynTjHUNYPsHfiAM5";
+const fcm = new FCM(serverKey);
+
+export const sendNotification = (notfData) => {
+  let message = {
+    to: notfData["userDeviceToken"],
     notification: {
-        title: 'NotifcatioTestAPP',
-        body: '{"Message from node js app"}',
+      title: notfData["notfTitle"],
+      body: notfData["notfMsg"],
     },
+    data: notfData["customData"],
+  };
 
-    data: { //you can send only notification or only data(or include both)
-        title: 'ok cdfsdsdfsd',
-        body: '{"name" : "okg ooggle ogrlrl","product_id" : "123","final_price" : "0.00035"}'
-    }
-
-};
-
-fcm.send(message, function (err, response) {
+  fcm.send(message, (err, response) => {
     if (err) {
-        console.log("Something has gone wrong!" + err);
-        console.log("Respponse:! " + response);
+      console.log(`Something has gone wrong! ${err}`);
+      console.log(`Response: ${response}`);
     } else {
-        // showToast("Successfully sent with response");
-        console.log("Successfully sent with response: ", response);
+      console.log("Successfully sent with response: ", response);
     }
-
-});
+  });
+};
+var notfData = {
+  userDeviceToken:
+    "cWa9StADS3qR1G4t67qdQY:APA91bFSfJ5allKzJ1iwVRybYFwRFU3-cSASpIM-mRlbqp2GIAhum5PQQmHJbpU52JEZG_w0keSAKYSI3Ku1QV-E-zpeQ2WSzDYTMqNGR5rwal-C50s8BT-ISiYddCB8YZ8kT4zAYI9r",
+  notfTitle: "tst hello notf",
+  notfMsg: "hello msg",
+  customData: { teest: "123123123" },
+};
+sendNotification(notfData);
