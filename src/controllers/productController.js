@@ -27,11 +27,11 @@ export async function addproduct(req, res) {
         '","' +
         category +
         '","' +
-        description +
+        description.replace(/['"]/g, "\\$&") +
         '","' +
-        care_and_Instructions +
+        care_and_Instructions.replace(/['"]/g, "\\$&") +
         '","' +
-        benefits +
+        benefits.replace(/['"]/g, "\\$&") +
         '","' +
         req.created_by +
         '","' +
@@ -48,11 +48,11 @@ export async function addproduct(req, res) {
         '","' +
         category +
         '","' +
-        description +
+        description.replace(/['"]/g, "\\$&") +
         '","' +
-        care_and_Instructions +
+        care_and_Instructions.replace(/['"]/g, "\\$&") +
         '","' +
-        benefits +
+        benefits.replace(/['"]/g, "\\$&") +
         '","' +
         req.created_by +
         '","' +
@@ -67,13 +67,11 @@ export async function addproduct(req, res) {
         } else {
           console.log("chk------------------70");
           console.log(result);
-          res
-            .status(StatusCodes.OK)
-            .json({
-              response: "add successfull",
-              message: result,
-              status: true,
-            });
+          res.status(StatusCodes.OK).json({
+            response: "add successfull",
+            message: result,
+            status: true,
+          });
         }
       }
     );
@@ -173,13 +171,11 @@ export async function update_Product(req, res) {
           console.log(err);
         } else {
           result.affectedRows == "1"
-            ? res
-                .status(200)
-                .json({
-                  response: result,
-                  message: "update successfull",
-                  status: true,
-                })
+            ? res.status(200).json({
+                response: result,
+                message: "update successfull",
+                status: true,
+              })
             : res
                 .status(500)
                 .send({ response: "error - opration failed", status: false });
@@ -204,13 +200,11 @@ export async function update_Product(req, res) {
           console.log(err);
         } else {
           result.affectedRows == "1"
-            ? res
-                .status(200)
-                .json({
-                  response: result,
-                  message: "update successfull",
-                  status: true,
-                })
+            ? res.status(200).json({
+                response: result,
+                message: "update successfull",
+                status: true,
+              })
             : res
                 .status(500)
                 .send({ response: "error - opration failed", status: false });
@@ -296,13 +290,11 @@ export async function update_Product_verient(req, res) {
             .send({ response: "error - opration failed", status: false });
         } else {
           result.affectedRows == "1"
-            ? res
-                .status(200)
-                .json({
-                  response: result,
-                  message: "update successfull",
-                  status: true,
-                })
+            ? res.status(200).json({
+                response: result,
+                message: "update successfull",
+                status: true,
+              })
             : res
                 .status(500)
                 .send({ response: "error - opration failed", status: false });
@@ -327,13 +319,11 @@ export async function update_Product_verient(req, res) {
             .send({ response: "error - opration failed", status: false });
         } else {
           result.affectedRows == "1"
-            ? res
-                .status(200)
-                .json({
-                  response: result,
-                  message: "update successfull",
-                  status: true,
-                })
+            ? res.status(200).json({
+                response: result,
+                message: "update successfull",
+                status: true,
+              })
             : res
                 .status(500)
                 .send({ response: "error - opration failed", status: false });
@@ -796,7 +786,7 @@ export function add_product_verient(req, res) {
                   '","' +
                   discount +
                   '","' +
-                  verient_description +
+                  verient_description.replace(/['"]/g, "\\$&") +
                   '","' +
                   product_height +
                   '","' +
@@ -813,13 +803,11 @@ export function add_product_verient(req, res) {
                   } else {
                     console.log("chk------------------70");
                     console.log(result);
-                    res
-                      .status(StatusCodes.OK)
-                      .json({
-                        response: "add successfull",
-                        message: result,
-                        status: true,
-                      });
+                    res.status(StatusCodes.OK).json({
+                      response: "add successfull",
+                      message: result,
+                      status: true,
+                    });
                   }
                 }
               );

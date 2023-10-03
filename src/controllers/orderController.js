@@ -1507,7 +1507,7 @@ export function order_status_update(req, res) {
     // query_ += "UPDATE `order` SET `status_order` = '" + status_order + "', `verify_by_vendor` = 'pending' WHERE `order_id` = '" + order_id + "'"
     query_ = "";
   }
-  let orderclone;
+  // let orderclone;
   connection.query(query_, (err, rows, fields) => {
     if (err) {
       console.log(err);
@@ -1516,210 +1516,197 @@ export function order_status_update(req, res) {
         .json({ response: "status update opration failed", status: false });
       // res.status(200).send({ "status": false, "response": "find some error" })
     } else {
-      connection.query(
-        "SELECT *,(select delivered_date from `order_delivery_details` where `order`.order_id = `order_delivery_details`.order_id) AS delivered_date FROM `order` WHERE `order_id` = '" +
-          order_id +
-          "'",
-        (err, rows, fields) => {
-          if (err) {
-            console.log(err);
-            // res.status(200).send({ "status": false, "response": "find some error" })
-          } else {
-            // rows,
-            console.log(rows[0]);
-            let { delivery_date } = rows[0];
-            orderclone = Object.assign({}, rows[0]);
-            // console.log({ order_id, payment, payment_method, order_delivery_confirm_code })
-            const dateObject = new Date(delivery_date);
-            const formattedDate = dateObject
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " ");
-          }
-        }
-      );
-
-      let {
-        order_id,
-        product_id,
-        user_id,
-        vendor_id,
-        total_order_product_quantity,
-        total_amount,
-        total_gst,
-        total_cgst,
-        total_sgst,
-        total_discount,
-        shipping_charges,
-        invoice_id,
-        payment_mode,
-        payment_ref_id,
-        order_date,
-        delivery_date,
-        invoice_date,
-        discount_coupon,
-        discount_coupon_value,
-        created_on,
-        updated_on,
-        status_order,
-        delivery_lat,
-        delivery_log,
-        user_name,
-        address,
-        email,
-        pin_code,
-        city,
-        user_image,
-        phone_no,
-        delivery_verify_code,
-        verify_by_vendor,
-        only_this_order_product_total,
-        only_this_order_product_quantity,
-        only_this_product_gst,
-        only_this_product_cgst,
-        only_this_product_sgst,
-      } = orderclone;
-
       if (rows.changedRows >= 1 && status_order == "approved") {
-        //  res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
-        console.log(rows);
-
-        const mail_configs = {
-          from: "rahul.verma.we2code@gmail.com",
-          to: email,
-          subject: "order status change",
-          text: "order your order current staus is " + status_order + "",
-          html: "<h1> your order current staus is " + status_order + "<h1/>",
-        };
-        nodemailer
-          .createTransport({
-            service: "gmail",
-            auth: {
-              user: "rahul.verma.we2code@gmail.com",
-              pass: "sfbmekwihdamgxia",
-            },
-          })
-          .sendMail(mail_configs, (err) => {
+        connection.query(
+          "SELECT * FROM `order` WHERE `order_id` = '" + order_id + "'",
+          (err, rows, fields) => {
             if (err) {
-              return; //console.log({ "email_error": err });
+              console.log(err);
+              // res.status(200).send({ "status": false, "response": "find some error" })
             } else {
-              return { send_mail_status: "send successfully" };
-            }
-          });
+              // rows,
+              console.log(rows[0]);
+              let { delivery_date } = rows[0];
+              // orderclone = Object.assign({}, rows[0]);
+              // console.log({ order_id, payment, payment_method, order_delivery_confirm_code })
+              const dateObject = new Date(delivery_date);
+              const formattedDate = dateObject
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " ");
 
-        if (status_order == "approved") {
-          connection.query(
-            "INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`,`delivery_date`) VALUES ('" +
-              order_id +
-              "','vendor','" +
-              only_this_order_product_total +
-              "', '" +
-              payment_mode +
-              "', '" +
-              delivery_verify_code +
-              "' ,'" +
-              req.vendor_id +
-              "','" +
-              formattedDate +
-              "')",
-            (err, result) => {
-              if (err) {
-                console.log(err);
-                if (err.code == "ER_DUP_ENTRY") {
-                  res.status(200).json({
-                    response: "already exist for delivery",
-                    status: false,
-                  });
-                } else {
-                  let notfDataForDB = {
-                    actor_id: user_id,
-                    actor_type: "user",
-                    message:
-                      "Updates about your order order no :- " +
-                      order_id +
-                      " order-status:- " +
-                      status_order +
-                      "",
-                    status: "unread",
-                    notification_title: "india ki nursery",
-                    notification_type: "order",
-                    notification_type_id: order_id,
-                  };
-                  setNotification(notfDataForDB);
+              let {
+                user_id,
+                payment_mode,
+                status_order,
+                email,
+                delivery_verify_code,
+                only_this_order_product_total,
+              } = rows[0];
 
-                  connection.query(
-                    "SELECT * FROM user WHERE id = " + user_id + "",
-                    (err, rows) => {
-                      let { token_for_notification } = rows[0];
-                      var notfData = {
-                        userDeviceToken: token_for_notification,
-                        notfTitle: "india ki nursery",
-                        notfMsg:
+              // if (rows.changedRows >= 1 && status_order == "approved") {
+              //  res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
+              console.log(rows);
+
+              const mail_configs = {
+                from: "rahul.verma.we2code@gmail.com",
+                to: email,
+                subject: "order status change",
+                text: "order your order current staus is " + status_order + "",
+                html:
+                  "<h1> your order current staus is " + status_order + "<h1/>",
+              };
+              nodemailer
+                .createTransport({
+                  service: "gmail",
+                  auth: {
+                    user: "rahul.verma.we2code@gmail.com",
+                    pass: "sfbmekwihdamgxia",
+                  },
+                })
+                .sendMail(mail_configs, (err) => {
+                  if (err) {
+                    return; //console.log({ "email_error": err });
+                  } else {
+                    return { send_mail_status: "send successfully" };
+                  }
+                });
+
+              if (status_order == "approved") {
+                connection.query(
+                  "INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`,`delivery_date`) VALUES ('" +
+                    order_id +
+                    "','vendor','" +
+                    only_this_order_product_total +
+                    "', '" +
+                    payment_mode +
+                    "', '" +
+                    delivery_verify_code +
+                    "' ,'" +
+                    req.vendor_id +
+                    "','" +
+                    formattedDate +
+                    "')",
+                  (err, result) => {
+                    if (err) {
+                      console.log(err);
+                      if (err.code == "ER_DUP_ENTRY") {
+                        res.status(200).json({
+                          response: "already exist for delivery",
+                          status: false,
+                        });
+                      } else {
+                        let notfDataForDB = {
+                          actor_id: user_id,
+                          actor_type: "user",
+                          message:
+                            "Updates about your order order no :- " +
+                            order_id +
+                            " order-status:- " +
+                            status_order +
+                            "",
+                          status: "unread",
+                          notification_title: "india ki nursery",
+                          notification_type: "order",
+                          notification_type_id: order_id,
+                        };
+                        setNotification(notfDataForDB);
+
+                        connection.query(
+                          "SELECT * FROM user WHERE id = " + user_id + "",
+                          (err, rows) => {
+                            let { token_for_notification } = rows[0];
+                            var notfData = {
+                              userDeviceToken: token_for_notification,
+                              notfTitle: "india ki nursery",
+                              notfMsg:
+                                "Updates about your order order no :- " +
+                                order_id +
+                                " order-status:- " +
+                                status_order +
+                                "",
+                              customData: {
+                                teest: "123123123",
+                              },
+                            };
+                            sendNotification(notfData);
+                          }
+                        );
+                        res.status(200).json({
+                          response:
+                            "when asgin for delivery admin find some error",
+                          status: false,
+                        });
+                        // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+                      }
+                    } else {
+                      // res.status(StatusCodes.OK).json(rows);
+
+                      res.status(200).json({
+                        response: "status updated successfully",
+                        res_db: result,
+                        status: true,
+                      });
+                      // res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
+                    }
+                  }
+                );
+              } else {
+                connection.query(
+                  "SELECT * FROM `order` WHERE `order_id` = '" + order_id + "'",
+                  (err, rows, fields) => {
+                    if (err) {
+                      console.log(err);
+                      // res.status(200).send({ "status": false, "response": "find some error" })
+                    } else {
+                      console.log(rows[0]);
+                      let { user_id } = rows[0];
+
+                      let notfDataForDB = {
+                        actor_id: user_id,
+                        actor_type: "user",
+                        message:
                           "Updates about your order order no :- " +
                           order_id +
-                          " order-status:- " +
-                          status_order +
                           "",
-                        customData: {
-                          teest: "123123123",
-                        },
+                        status: "unread",
+                        notification_title: "india ki nursery",
+                        notification_type: "order",
+                        notification_type_id: order_id,
                       };
-                      sendNotification(notfData);
-                    }
-                  );
-                  res.status(200).json({
-                    response: "when asgin for delivery admin find some error",
-                    status: false,
-                  });
-                  // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
-                }
-              } else {
-                // res.status(StatusCodes.OK).json(rows);
+                      setNotification(notfDataForDB);
 
+                      connection.query(
+                        "SELECT * FROM user WHERE id = " + user_id + "",
+                        (err, rows) => {
+                          let { token_for_notification } = rows[0];
+                          var notfData = {
+                            userDeviceToken: token_for_notification,
+                            notfTitle: "india ki nursery",
+                            notfMsg:
+                              "Updates about your order order no :- " +
+                              order_id +
+                              "",
+                            customData: {
+                              teest: "123123123",
+                            },
+                          };
+                          sendNotification(notfData);
+                        }
+                      );
+                    }
+                  }
+                );
                 res.status(200).json({
                   response: "status updated successfully",
-                  res_db: result,
+                  res_db: [],
                   status: true,
                 });
                 // res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
               }
             }
-          );
-        } else {
-          let notfDataForDB = {
-            actor_id: user_id,
-            actor_type: "user",
-            message: "Updates about your order order no :- " + order_id + "",
-            status: "unread",
-            notification_title: "india ki nursery",
-            notification_type: "order",
-            notification_type_id: order_id,
-          };
-          setNotification(notfDataForDB);
-
-          connection.query(
-            "SELECT * FROM user WHERE id = " + user_id + "",
-            (err, rows) => {
-              let { token_for_notification } = rows[0];
-              var notfData = {
-                userDeviceToken: token_for_notification,
-                notfTitle: "india ki nursery",
-                notfMsg:
-                  "Updates about your order order no :- " + order_id + "",
-                customData: {
-                  teest: "123123123",
-                },
-              };
-              sendNotification(notfData);
-            }
-          );
-          res.status(200).json({
-            response: "status updated successfully",
-            res_db: [],
-            status: true,
-          });
-          // res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" })
-        }
+          }
+        );
       } else {
         if (status_order == "rejected") {
           let notfDataForDB = {

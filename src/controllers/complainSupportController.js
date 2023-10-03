@@ -1,4 +1,8 @@
 import connection from "../../Db.js";
+import {
+  sendNotification,
+  setNotification,
+} from "../common/push_notification.js";
 export function add_complain(req, res) {
   console.log("add_complain----------------------");
   var {
@@ -24,42 +28,53 @@ export function add_complain(req, res) {
     connection.query(
       "SELECT * FROM `order` WHERE order_id = '" + order_id + "'  ",
       async (error, rows, fields) => {
+        console.log(error);
         if (rows != "") {
-          var vendor_id = rows[0]["vendor_id"];
+          var { vendor_id, user_id } = rows[0];
+
           connection.query(
-            "INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`asign_date`,`assigned_to`,`for_complain`, `created_on`) VALUES ('" +
-              order_id +
-              "','" +
-              req.user_id +
-              "','" +
-              first_name +
-              "','" +
-              last_name +
-              "','" +
-              contect_no +
-              "','" +
-              email +
-              "','" +
-              subject +
-              "','" +
-              description +
-              "','" +
-              formattedDateTime +
-              "','" +
-              vendor_id +
-              "','order_related','" +
-              formattedDateTime +
-              "')",
-            async (error, rows, fields) => {
-              if (error) {
-                //console.log("error"+err)
-                res.status(200).send({ status: false, error });
-              } else {
-                //console.log("_____")
-                res
-                  .status(201)
-                  .send({ status: true, Message: "Complaint Added" });
-              }
+            "SELECT * FROM `user` WHERE id = '" + user_id + "'  ",
+            async (error, useData, fields) => {
+              console.log(error);
+
+              connection.query(
+                "INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`asign_date`,`assigned_to`,`for_complain`, `created_on`) VALUES ('" +
+                  order_id +
+                  "','" +
+                  req.user_id +
+                  "','" +
+                  useData[0]["first_name"] +
+                  "','" +
+                  useData[0]["last_name"] +
+                  "','" +
+                  useData[0]["phone_no"] +
+                  "','" +
+                  useData[0]["email"] +
+                  "','" +
+                  subject +
+                  "','" +
+                  description
+                  ? description.replace(/['"]/g, "\\$&")
+                  : "" +
+                      "','" +
+                      formattedDateTime +
+                      "','" +
+                      vendor_id +
+                      "','order_related','" +
+                      formattedDateTime +
+                      "')",
+                async (error, rows, fields) => {
+                  if (error) {
+                    console.log(error);
+                    res.status(200).send({ status: false, error });
+                  } else {
+                    //console.log("_____")
+                    res
+                      .status(201)
+                      .send({ status: true, Message: "Complaint Added" });
+                  }
+                }
+              );
             }
           );
         }
@@ -67,7 +82,7 @@ export function add_complain(req, res) {
     );
   } else {
     connection.query(
-      "INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`for_complain`,`created_on`) VALUES ('" +
+      "INSERT INTO `comaplains_support`(`order_id`, user_id, `first_name`, `last_name` , `contect_no`, `email`, `subject`,`description`,`for_complain`,`created_on`,`status_`) VALUES ('" +
         order_id +
         "','" +
         req.user_id +
@@ -82,13 +97,13 @@ export function add_complain(req, res) {
         "','" +
         subject +
         "','" +
-        description +
+        description.replace(/['"]/g, "\\$&") +
         "','other','" +
         formattedDateTime +
-        "')",
+        "','pending')",
       async (error, rows, fields) => {
         if (error) {
-          //console.log("error"+err)
+          console.log(error);
           res.status(200).send({ status: false, error });
         } else {
           //console.log("_____")
@@ -101,7 +116,8 @@ export function add_complain(req, res) {
 
 export function complain_update(req, res) {
   //console.log("req.body")
-  let complain_status = "";
+  let { id } = req.body;
+  let complain_status = "pending";
 
   let query_ = "";
   let newdate = new Date();
@@ -112,7 +128,7 @@ export function complain_update(req, res) {
     "-" +
     newdate.getDate();
   if (req.headers.admin_token) {
-    let { id, assigned_to, status } = req.body;
+    let { assigned_to, status } = req.body;
     if (assigned_to) {
       complain_status = status;
       query_ =
@@ -141,7 +157,7 @@ export function complain_update(req, res) {
         "";
     }
   } else if (req.headers.vendor_token) {
-    let { id, status, resolve_description } = req.body;
+    let { status, resolve_description } = req.body;
     complain_status = status;
     query_ =
       "UPDATE `comaplains_support` SET `resolve_date`='" +
@@ -149,7 +165,7 @@ export function complain_update(req, res) {
       "',`status_`='" +
       status +
       "',`resolve_description`='" +
-      resolve_description +
+      resolve_description.replace(/['"]/g, "\\$&") +
       "',`updated_on`='" +
       complaint_newdate +
       "' WHERE `id`= " +
@@ -198,7 +214,7 @@ export function complain_update(req, res) {
               "",
             status: "unread",
             notification_title: "india ki nursery",
-            notification_type: "complaint_support",
+            notification_type: "complain",
             notification_type_id: id,
           };
           setNotification(notfDataForDB);
