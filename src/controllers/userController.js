@@ -160,7 +160,7 @@ export async function update_user(req, res) {
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "something went wrong", status: false });
     } else {
-      let notfData = {
+     try{ let notfData = {
         userDeviceToken: rows[0]["token_for_notification"],
         notfTitle: "India Ki Nursery",
         notfMsg: "updated user successfully",
@@ -168,6 +168,8 @@ export async function update_user(req, res) {
       };
       if (rows[0]["token_for_notification"] != "") {
         sendNotification(notfData);
+      }}catch(e){
+        console.log(e)
       }
       res
         .status(StatusCodes.OK)

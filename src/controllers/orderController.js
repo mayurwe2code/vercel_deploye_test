@@ -583,6 +583,9 @@ export async function add_order(req, res) {
 }
 
 export async function add_order_1(req, res) {
+  const orders_group_id =
+    Date.now().toString(36) + Math.random().toString(36).replace(".", "");
+  let payment_method = req.body["payment_method"];
   const currentDate = new Date();
   const futureDate = new Date(currentDate);
   futureDate.setDate(currentDate.getDate() + 7);
@@ -783,9 +786,8 @@ export async function add_order_1(req, res) {
                                   Price_after_removing_admin_commission =
                                     coupan_discount_price -
                                     admin_commission_amount;
-
-                                  connection.query(
-                                    "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`,`delivery_date`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`, `only_this_order_product_total`, `only_this_order_product_quantity`, `only_this_product_gst`, `only_this_product_cgst`, `only_this_product_sgst`,`admin_commission_parcent`,`Price_after_removing_admin_commission`,`admin_commission_amount`) VALUES ('" +
+                                  console.log(
+                                    "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`,`delivery_date`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`, `only_this_order_product_total`, `only_this_order_product_quantity`, `only_this_product_gst`, `only_this_product_cgst`, `only_this_product_sgst`,`admin_commission_parcent`,`Price_after_removing_admin_commission`,`admin_commission_amount`,`payment_status`,`orders_group_id`) VALUES ('" +
                                       orderno +
                                       "','" +
                                       element["product_id"] +
@@ -809,7 +811,9 @@ export async function add_order_1(req, res) {
                                       total_delivery_charge +
                                       "','" +
                                       orderno +
-                                      "','cod','121212','" +
+                                      "','" +
+                                      payment_method +
+                                      "','121212','" +
                                       formattedDateTime +
                                       "','" +
                                       coupan_code +
@@ -851,12 +855,90 @@ export async function add_order_1(req, res) {
                                       Price_after_removing_admin_commission +
                                       "','" +
                                       admin_commission_amount +
+                                      "','pending','" +
+                                      orders_group_id +
+                                      "')"
+                                  );
+                                  connection.query(
+                                    "insert into `order` ( `order_id`, `product_id`,`user_id`, vendor_id, `total_order_product_quantity`,`total_amount`,`total_gst`,`total_cgst`, `total_sgst`,`total_discount`, `shipping_charges`,`invoice_id`, `payment_mode`,`payment_ref_id`,`delivery_date`, `discount_coupon`,`discount_coupon_value`,`delivery_lat`,`delivery_log`, `user_name`, `address`, `email`, `pin_code`, `city`, `user_image`, `phone_no`,`delivery_verify_code`, `only_this_order_product_total`, `only_this_order_product_quantity`, `only_this_product_gst`, `only_this_product_cgst`, `only_this_product_sgst`,`admin_commission_parcent`,`Price_after_removing_admin_commission`,`admin_commission_amount`,`payment_status`,`orders_group_id`) VALUES ('" +
+                                      orderno +
+                                      "','" +
+                                      element["product_id"] +
+                                      "','" +
+                                      req.user_id +
+                                      "', '" +
+                                      vendor_id +
+                                      "', '" +
+                                      results["length"] +
+                                      "','" +
+                                      all_orders_total +
+                                      "','" +
+                                      all_orders_total_gst +
+                                      "','" +
+                                      all_orders_total_cgst +
+                                      "','" +
+                                      all_orders_total_sgst +
+                                      "','" +
+                                      total_discount +
+                                      "','" +
+                                      total_delivery_charge +
+                                      "','" +
+                                      orderno +
+                                      "','" +
+                                      payment_method +
+                                      "','121212','" +
+                                      formattedDateTime +
+                                      "','" +
+                                      coupan_code +
+                                      "','" +
+                                      coupan_discount +
+                                      "'," +
+                                      user_lat +
+                                      "," +
+                                      user_log +
+                                      ", '" +
+                                      first_name +
+                                      "', '" +
+                                      address +
+                                      "', '" +
+                                      email +
+                                      "', " +
+                                      pincode +
+                                      ", '" +
+                                      city +
+                                      "', '" +
+                                      image +
+                                      "','" +
+                                      phone_no +
+                                      "' ,'" +
+                                      verify_code +
+                                      "','" +
+                                      coupan_discount_price +
+                                      "','" +
+                                      order_product_count +
+                                      "','" +
+                                      total_gst +
+                                      "','" +
+                                      total_cgst +
+                                      "','" +
+                                      total_sgst +
+                                      "','" +
+                                      element["admin_commission"] +
+                                      "','" +
+                                      Price_after_removing_admin_commission +
+                                      "','" +
+                                      admin_commission_amount +
+                                      "','pending','" +
+                                      orders_group_id +
                                       "')",
                                     (err, rows) => {
                                       if (err) {
+                                        console.log(err);
                                         if (order_array.length - 1 == count) {
                                           console.log("order ready ya aaaa");
                                           res.json({
+                                            orders_group_id,
+                                            payment_method,
                                             status: true,
                                             response:
                                               "Thank you for your order! Your order has been received and is being processed",
@@ -864,6 +946,7 @@ export async function add_order_1(req, res) {
                                           });
                                         }
                                       } else {
+                                        // cosnole.log(rows);
                                         order_placed.push(orderno);
 
                                         let notfDataForDB = {
@@ -923,57 +1006,6 @@ export async function add_order_1(req, res) {
                                         };
                                         setNotification(notfDataForDB1);
 
-                                        // connection.query(
-                                        //   "SELECT * FROM vendor WHERE vendor_id = " +
-                                        //   vendor_id +
-                                        //     "",
-                                        //   (err, rows) => {
-                                        //     let { token_for_notification } =
-                                        //       rows[0];
-                                        //     var notfData = {
-                                        //       userDeviceToken:
-                                        //         token_for_notification,
-                                        //       notfTitle: "india ki nursery",
-                                        //       notfMsg:
-                                        //         "Thank you for your order! Your order " +
-                                        //         orderno +
-                                        //         " has been received and is being processed",
-                                        //       customData: {
-                                        //         teest: "123123123",
-                                        //       },
-                                        //     };
-                                        //     sendNotification(notfData);
-                                        //   }
-                                        // );
-
-                                        // connection.query(
-                                        //   'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`,`notification_title`,`notification_type`,`notification_type_id`) VALUES ("' +
-                                        //     req.user_id +
-                                        //     '","user","Thank you for your order! Your order ' +
-                                        //     orderno +
-                                        //     ' has been received and is being processed","unread","order placed successfully","order","' +
-                                        //     orderno +
-                                        //     '"),("' +
-                                        //     vendor_id +
-                                        //     '","vendor","order recived ' +
-                                        //     orderno +
-                                        //     " by " +
-                                        //     first_name +
-                                        //     " - user_id " +
-                                        //     req.user_id +
-                                        //     '","unread","new order recived","order","' +
-                                        //     orderno +
-                                        //     '")',
-                                        //   (err, rows) => {
-                                        //     if (err) {
-                                        //       //console.log({ "notification": err })
-                                        //     } else {
-                                        //       console.log(
-                                        //         "_______notification-send__94________"
-                                        //       );
-                                        //     }
-                                        //   }
-                                        // );
                                         const mail_configs = {
                                           from: "rahul.verma.we2code@gmail.com",
                                           to: email,
@@ -1013,6 +1045,8 @@ export async function add_order_1(req, res) {
 
                                           res.json({
                                             status: true,
+                                            orders_group_id,
+                                            payment_method,
                                             response:
                                               "Thank you for your order! Your order has been received and is being processed",
                                             order_placed,
