@@ -52,10 +52,7 @@ export function add_complain(req, res) {
                   useData[0]["email"] +
                   "','" +
                   subject +
-                  "','" +
-                  description
-                  ? description.replace(/['"]/g, "\\$&")
-                  : "" +
+                  "','" + description.replace(/['"]/g, "\\$&")+
                       "','" +
                       formattedDateTime +
                       "','" +

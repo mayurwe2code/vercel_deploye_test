@@ -826,8 +826,8 @@ export function vendor_list(req, res) {
   let m = 0;
   for (let k in req_obj) {
     if (req_obj[k] != "") {
-      if ("search" == k) {
-        search_query += `owner_name LIKE "%${req_obj[k]}%" OR  shop_name LIKE "%${req_obj[k]}%" AND  `;
+      if ("search" == k || "owner_name" == k || "shop_name" == k ) {
+        search_query += `(owner_name LIKE "%${req_obj[k]}%" OR  shop_name LIKE "%${req_obj[k]}%") AND  `;
       } else {
         search_query += `${k} = "${req_obj[k]}" AND  `;
       }
@@ -837,8 +837,9 @@ export function vendor_list(req, res) {
     }
     m++;
   }
+  console.log("---------search_query--------");
   console.log(search_query);
-  connection.query(search_query, (err, rows) => {
+  connection.query(search_query +" ORDER BY created_on DESC", (err, rows) => {
     if (err) {
       console.log(err);
       res
@@ -1662,14 +1663,18 @@ export async function vendor_update_delivery_boy_pickuped_order(req, res) {
   let { order_id, pickuped, ready_to_pickup } = req.body;
 
   async function db_update(query_1, query_2) {
+    console.log({"k":query_1, "m":query_2})
     connection.query(query_1, (err, results) => {
+    console.log("connection.query-------1")
       if (err) {
-        console.log("err___________________");
+        console.log("err_____1______________");
         console.log(err);
         res.status(200).send({ status: false, response: "find error" });
       } else {
         if (results["affectedRows"] >= 1) {
           connection.query(query_2, (err, rows) => {
+    console.log("connection.query-------2")
+            console.log(err)
             console.log(rows);
           });
           res
@@ -1679,7 +1684,7 @@ export async function vendor_update_delivery_boy_pickuped_order(req, res) {
               response: "order status updated successfull",
             });
         } else {
-          res.status(200).send({ status: false, response: "find error" });
+          res.status(200).send({ status: false, response: "Maybe driver not assigned or order for pickup not received" });
         }
       }
     });

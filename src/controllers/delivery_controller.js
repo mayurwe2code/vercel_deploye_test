@@ -1387,6 +1387,13 @@ export function delivery_verify_code_match(req, res) {
               console.log(err);
             }
           );
+          // UPDATE `order` SET `payment_status`='success' WHERE  order_id = "+order_id+""
+
+          connection.query("UPDATE `order` SET `payment_status`='success' WHERE  order_id = "+order_id+"",(err,rows)=>{
+console.log("order Ststus Change")
+console.log(rows)
+          })
+
           res
             .status(StatusCodes.OK)
             .json({ message: "Confirmation  successfull", status: true });

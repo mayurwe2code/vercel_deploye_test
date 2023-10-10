@@ -421,25 +421,33 @@ export async function delete_product(req, res) {
 export async function delete_restore_product_verient(req, res) {
   let { is_deleted, product_verient_id } = req.body;
   let dlt_verient_query = "";
+  
   if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
-    dlt_verient_query +=
-      "UPDATE `product_verient` SET `verient_is_deleted` = " +
-      is_deleted +
-      " WHERE `product_verient`.`product_verient_id` = " +
-      product_verient_id +
-      "";
+    dlt_verient_query += "DELETE FROM `product_verient` WHERE `product_verient`.`product_verient_id` = " +
+    product_verient_id + ""
+ //------------------old--code--funtionality-----------------------
+    // dlt_verient_query +=
+    //   "UPDATE `product_verient` SET `verient_is_deleted` = " +
+    //   is_deleted +
+    //   " WHERE `product_verient`.`product_verient_id` = " +
+    //   product_verient_id +
+    //   "";
   } else if (
     req.headers.vendor_token != "" &&
     req.headers.vendor_token != undefined
   ) {
-    dlt_verient_query +=
-      "UPDATE `product_verient` SET `verient_is_deleted` = " +
-      is_deleted +
-      " WHERE `product_verient`.`product_verient_id` = " +
-      product_verient_id +
-      " AND `product_verient`.`vendor_id` = " +
-      req.vendor_id +
-      "";
+    dlt_verient_query += "DELETE FROM `product_verient` WHERE `product_verient`.`product_verient_id` = " +product_verient_id +
+    " AND `product_verient`.`vendor_id` = " + req.vendor_id + ""
+    
+    //------------------old--code--funtionality-----------------------
+    // dlt_verient_query +=
+    //   "UPDATE `product_verient` SET `verient_is_deleted` = " +
+    //   is_deleted +
+    //   " WHERE `product_verient`.`product_verient_id` = " +
+    //   product_verient_id +
+    //   " AND `product_verient`.`vendor_id` = " +
+    //   req.vendor_id +
+    //   "";
   } else {
     dlt_verient_query = "";
   }
@@ -672,7 +680,7 @@ export async function search_product(req, res) {
         connection.query(
           new_qry_.replace("*", "count(*) AS `count_rows` "),
           (err, results) => {
-            console.log("results---------------------------------------");
+            console.log("er-----"+err);
             console.log(results);
             try {
               count_rows = results[0]["count_rows"];
