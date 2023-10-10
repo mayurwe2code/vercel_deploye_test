@@ -150,7 +150,7 @@ export async function update_Product(req, res) {
         ].includes(k)
       ) {
         if (req_obj[k] != null && req_obj[k] != "null") {
-          updat_str += ` ${k} = "${req_obj[k]}", `;
+          updat_str += ` ${k} = "${req_obj[k].replace(/['"]/g, "\\$&")}", `;
           console.log(k);
         }
       }
