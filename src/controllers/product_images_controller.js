@@ -23,7 +23,6 @@ export function add_product_image(req, res) {
         (err, rows, fields) => {}
       );
     }
-
     try {
       // var base64Data = imgBase64.replace("data:image/png;base64,", "");
       var name_str = "" + item["product_image_name"] + "_" + img_num + "";

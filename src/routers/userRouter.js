@@ -50,7 +50,6 @@ const userRouter = express.Router();
 userRouter.post("/add_user", add_user);
 userRouter.get("/all_user", getalluser);
 userRouter.get("/user_search", user_search);
-
 userRouter.post("/user_signup", user_signup);
 userRouter.post("/user_otp_verify", user_otp_verify);
 userRouter.post("/user_login", user_login);
