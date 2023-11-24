@@ -27,11 +27,11 @@ export async function addproduct(req, res) {
         '","' +
         category +
         '","' +
-        description.replace(/['"]/g, "\\$&") +
+        description+
         '","' +
-        care_and_Instructions.replace(/['"]/g, "\\$&") +
+        care_and_Instructions +
         '","' +
-        benefits.replace(/['"]/g, "\\$&") +
+        benefits +
         '","' +
         req.created_by +
         '","' +
@@ -48,11 +48,11 @@ export async function addproduct(req, res) {
         '","' +
         category +
         '","' +
-        description.replace(/['"]/g, "\\$&") +
+        description +
         '","' +
-        care_and_Instructions.replace(/['"]/g, "\\$&") +
+        care_and_Instructions +
         '","' +
-        benefits.replace(/['"]/g, "\\$&") +
+        benefits+
         '","' +
         req.created_by +
         '","' +
@@ -150,7 +150,7 @@ export async function update_Product(req, res) {
         ].includes(k)
       ) {
         if (req_obj[k] != null && req_obj[k] != "null") {
-          updat_str += ` ${k} = "${req_obj[k].replace(/['"]/g, "\\$&")}", `;
+          updat_str += ` ${k} = "${req_obj[k]}", `;
           console.log(k);
         }
       }
@@ -794,7 +794,7 @@ export function add_product_verient(req, res) {
                   '","' +
                   discount +
                   '","' +
-                  verient_description.replace(/['"]/g, "\\$&") +
+                  verient_description+
                   '","' +
                   product_height +
                   '","' +
