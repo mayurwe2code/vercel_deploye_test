@@ -160,7 +160,7 @@ function admin_forgot_password(req, res) {
           //console.log("________________email")
           //console.log(edata)
           const mail_configs = {
-            from: "rahul.verma.we2code@gmail.com",
+            from: "mayur.we2code@gmail.com",
             to: edata,
             subject: "nursery_live",
             text: "your old password " + old_fr_psw,
@@ -170,8 +170,8 @@ function admin_forgot_password(req, res) {
             .createTransport({
               service: "gmail",
               auth: {
-                user: "rahul.verma.we2code@gmail.com",
-                pass: "sfbmekwihdamgxia",
+                user: "mayur.we2code@gmail.com",
+                pass: "tozuskyqbgojopbs",
               },
             })
             .sendMail(mail_configs, (err) => {
@@ -544,7 +544,7 @@ function delivery_admin_forgot_password(req, res) {
           //console.log("________________email")
           //console.log(edata)
           const mail_configs = {
-            from: "rahul.verma.we2code@gmail.com",
+            from: "mayur.we2code@gmail.com",
             to: edata,
             subject: "nursery_live",
             text: "your old password " + old_fr_psw,
@@ -554,8 +554,8 @@ function delivery_admin_forgot_password(req, res) {
             .createTransport({
               service: "gmail",
               auth: {
-                user: "rahul.verma.we2code@gmail.com",
-                pass: "sfbmekwihdamgxia",
+                user: "mayur.we2code@gmail.com",
+                pass: "tozuskyqbgojopbs",
               },
             })
             .sendMail(mail_configs, (err) => {

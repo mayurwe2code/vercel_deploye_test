@@ -517,7 +517,7 @@ export async function add_order(req, res) {
             }
 
             const mail_configs = {
-              from: "rahul.verma.we2code@gmail.com",
+              from: "mayur.we2code@gmail.com",
               to: email,
               subject: "order status ",
               text: "order added successfully",
@@ -527,8 +527,8 @@ export async function add_order(req, res) {
               .createTransport({
                 service: "gmail",
                 auth: {
-                  user: "rahul.verma.we2code@gmail.com",
-                  pass: "sfbmekwihdamgxia",
+                  user: "mayur.we2code@gmail.com",
+                  pass: "tozuskyqbgojopbs",
                 },
               })
               .sendMail(mail_configs, (err) => {
@@ -1007,7 +1007,7 @@ export async function add_order_1(req, res) {
                                         setNotification(notfDataForDB1);
 
                                         const mail_configs = {
-                                          from: "rahul.verma.we2code@gmail.com",
+                                          from: "mayur.we2code@gmail.com",
                                           to: email,
                                           subject: "order placed successfull",
                                           text: "order placed successfull",
@@ -1024,8 +1024,8 @@ export async function add_order_1(req, res) {
                                           .createTransport({
                                             service: "gmail",
                                             auth: {
-                                              user: "rahul.verma.we2code@gmail.com",
-                                              pass: "sfbmekwihdamgxia",
+                                              user: "mayur.we2code@gmail.com",
+                                              pass: "tozuskyqbgojopbs",
                                             },
                                           })
                                           .sendMail(mail_configs, (err) => {
@@ -1583,7 +1583,7 @@ export function order_status_update(req, res) {
               console.log(rows);
 
               const mail_configs = {
-                from: "rahul.verma.we2code@gmail.com",
+                from: "mayur.we2code@gmail.com",
                 to: email,
                 subject: "order status change",
                 text: "order your order current staus is " + status_order + "",
@@ -1594,8 +1594,8 @@ export function order_status_update(req, res) {
                 .createTransport({
                   service: "gmail",
                   auth: {
-                    user: "rahul.verma.we2code@gmail.com",
-                    pass: "sfbmekwihdamgxia",
+                    user: "mayur.we2code@gmail.com",
+                    pass: "tozuskyqbgojopbs",
                   },
                 })
                 .sendMail(mail_configs, (err) => {
