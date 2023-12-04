@@ -158,6 +158,7 @@ export function check_vendor_service_avaibility(req, res) {
           res.status(200).send({
             status: false,
             service_available: [],
+            service_not_available: vendor_id,
             response: "area_id not matched",
           });
         }
