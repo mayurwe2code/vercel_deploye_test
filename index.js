@@ -76,16 +76,7 @@ connection.query(
   }
 );
 
-// console.log(pin_data)
-// pin_data.forEach(element => {
-//   connection.query('INSERT INTO `vendor_service_area`(`pin`, `city`, `area_name`) VALUES ("' + element["pin"] + '","indore","' + element["name"] + '")', (err, rows) => {
-//     if (err) {
-//       console.log("error--------=======" + err)
-//     } else {
-//       console.log("--ok---------------====ok=====")
-//     }
-//   });
-// });
+
 
 app.use(
   productRouter,
@@ -118,7 +109,7 @@ app.get("/version", (req, res) => {
   res.send({
     latest_update: dat,
     latest_commit: "check port- 9999  -  server-good 26/09/2023",
-    data:"https://script.google.com/macros/s/AKfycbzgdO-CBEkm-Rhg4KL5tZu5-R8KDwxHj8by03d754efDS5AneTfshknCFTLxV6fQDw9/exec"
+    data: "https://script.google.com/macros/s/AKfycbzgdO-CBEkm-Rhg4KL5tZu5-R8KDwxHj8by03d754efDS5AneTfshknCFTLxV6fQDw9/exec"
   });
 });
 
@@ -172,12 +163,12 @@ app.get("/log", ensureAuth, async (req, res) => {
   var { firstName, lastName, email } = req.user;
   connection.query(
     "INSERT INTO `user`( `first_name`, `last_name`, `email`) VALUES ('" +
-      firstName +
-      "','" +
-      lastName +
-      "','" +
-      email +
-      "')",
+    firstName +
+    "','" +
+    lastName +
+    "','" +
+    email +
+    "')",
     async (err, rows, fields) => {
       if (err) {
         //console.log("error"+err)
@@ -211,10 +202,10 @@ app.get("/log", ensureAuth, async (req, res) => {
 
               connection.query(
                 'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' +
-                  rows.insertId +
-                  '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
-                  rows.insertId +
-                  ')","unread")',
+                rows.insertId +
+                '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
+                rows.insertId +
+                ')","unread")',
                 (err, rows) => {
                   if (err) {
                     //console.log({ "notification": err })

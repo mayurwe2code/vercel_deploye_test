@@ -1,12 +1,12 @@
 // import all the things we need  
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import mongoose  from 'mongoose'
-import User from'./models/User.js'
+import mongoose from 'mongoose'
+import User from './models/User.js'
 export default function (passport) {
   passport.use(
     new GoogleStrategy(
       {
-        clientID:'390849855878-a9ba6f6fu36pk48s6serjkq0ej2sqbfv.apps.googleusercontent.com',
+        clientID: '390849855878-a9ba6f6fu36pk48s6serjkq0ej2sqbfv.apps.googleusercontent.com',
         clientSecret: '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',
         callbackURL: '/auth/google/callback',
       },
@@ -26,8 +26,8 @@ export default function (passport) {
         try {
           //find the user in our database 
           let user = await User.findOne({ googleId: profile.id })
-console.log("user-----------28")
-console.log(user)
+          console.log("user-----------28")
+          console.log(user)
           if (user) {
             //If user present in our database.
             done(null, user)
@@ -49,13 +49,13 @@ console.log(user)
   })
 
   // used to deserialize the user
-  passport.deserializeUser(async(id, done) => {
+  passport.deserializeUser(async (id, done) => {
     console.log("_____________id_________")
     console.log(id)
-   var rstt =  await User.findById(id)
-   console.log("_____________55_________")
-   console.log(rstt)
-   var err = ''
-    done(err,rstt)
-})
+    var rstt = await User.findById(id)
+    console.log("_____________55_________")
+    console.log(rstt)
+    var err = ''
+    done(err, rstt)
+  })
 }

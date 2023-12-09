@@ -28,20 +28,20 @@ export const setNotification = (notfDataForDB) => {
   // let notfDataForDB = notfData["setNotfOnDB"];
   connection.query(
     'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`,`notification_title`,`notification_type`,`notification_type_id`) VALUES ("' +
-      notfDataForDB["actor_id"] +
-      '","' +
-      notfDataForDB["actor_type"] +
-      '","' +
-      notfDataForDB["message"] +
-      '","' +
-      notfDataForDB["status"] +
-      '","' +
-      notfDataForDB["notification_title"] +
-      '","' +
-      notfDataForDB["notification_type"] +
-      '","' +
-      notfDataForDB["notification_type_id"] +
-      '")',
+    notfDataForDB["actor_id"] +
+    '","' +
+    notfDataForDB["actor_type"] +
+    '","' +
+    notfDataForDB["message"] +
+    '","' +
+    notfDataForDB["status"] +
+    '","' +
+    notfDataForDB["notification_title"] +
+    '","' +
+    notfDataForDB["notification_type"] +
+    '","' +
+    notfDataForDB["notification_type_id"] +
+    '")',
     (err, rows) => {
       if (err) {
         console.log({ notification: err });

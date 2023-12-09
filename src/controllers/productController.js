@@ -1,5 +1,6 @@
 import connection from "../../Db.js";
 import { StatusCodes } from "http-status-codes";
+import xlsx from 'xlsx';
 
 export async function addproduct(req, res) {
   var {
@@ -19,45 +20,45 @@ export async function addproduct(req, res) {
   if (req.vendor_id != "" && req.vendor_id != undefined) {
     console.log(
       'INSERT INTO `product` (`vendor_id`,`name`,`seo_tag`,`category`,`description`,`care_and_Instructions`,`benefits`,`created_by`, `created_by_id`) values ("' +
-        req.vendor_id +
-        '","' +
-        name +
-        '","' +
-        seo_tag +
-        '","' +
-        category +
-        '","' +
-        description+
-        '","' +
-        care_and_Instructions +
-        '","' +
-        benefits +
-        '","' +
-        req.created_by +
-        '","' +
-        req.created_by_id +
-        '")'
+      req.vendor_id +
+      '","' +
+      name +
+      '","' +
+      seo_tag +
+      '","' +
+      category +
+      '","' +
+      description +
+      '","' +
+      care_and_Instructions +
+      '","' +
+      benefits +
+      '","' +
+      req.created_by +
+      '","' +
+      req.created_by_id +
+      '")'
     );
     connection.query(
       'INSERT INTO `product` (`vendor_id`,`name`,`seo_tag`,`category`,`description`,`care_and_Instructions`,`benefits`,`created_by`, `created_by_id`) values ("' +
-        req.vendor_id +
-        '","' +
-        name +
-        '","' +
-        seo_tag +
-        '","' +
-        category +
-        '","' +
-        description +
-        '","' +
-        care_and_Instructions +
-        '","' +
-        benefits+
-        '","' +
-        req.created_by +
-        '","' +
-        req.created_by_id +
-        '")',
+      req.vendor_id +
+      '","' +
+      name +
+      '","' +
+      seo_tag +
+      '","' +
+      category +
+      '","' +
+      description +
+      '","' +
+      care_and_Instructions +
+      '","' +
+      benefits +
+      '","' +
+      req.created_by +
+      '","' +
+      req.created_by_id +
+      '")',
       (err, result) => {
         if (err) {
           console.log(err);
@@ -172,13 +173,13 @@ export async function update_Product(req, res) {
         } else {
           result.affectedRows == "1"
             ? res.status(200).json({
-                response: result,
-                message: "update successfull",
-                status: true,
-              })
+              response: result,
+              message: "update successfull",
+              status: true,
+            })
             : res
-                .status(500)
-                .send({ response: "error - opration failed", status: false });
+              .status(500)
+              .send({ response: "error - opration failed", status: false });
         }
       });
     } else if (req.headers.vendor_token) {
@@ -201,13 +202,13 @@ export async function update_Product(req, res) {
         } else {
           result.affectedRows == "1"
             ? res.status(200).json({
-                response: result,
-                message: "update successfull",
-                status: true,
-              })
+              response: result,
+              message: "update successfull",
+              status: true,
+            })
             : res
-                .status(500)
-                .send({ response: "error - opration failed", status: false });
+              .status(500)
+              .send({ response: "error - opration failed", status: false });
         }
       });
     } else {
@@ -291,13 +292,13 @@ export async function update_Product_verient(req, res) {
         } else {
           result.affectedRows == "1"
             ? res.status(200).json({
-                response: result,
-                message: "update successfull",
-                status: true,
-              })
+              response: result,
+              message: "update successfull",
+              status: true,
+            })
             : res
-                .status(500)
-                .send({ response: "error - opration failed", status: false });
+              .status(500)
+              .send({ response: "error - opration failed", status: false });
         }
       });
     } else if (req.headers.vendor_token) {
@@ -320,13 +321,13 @@ export async function update_Product_verient(req, res) {
         } else {
           result.affectedRows == "1"
             ? res.status(200).json({
-                response: result,
-                message: "update successfull",
-                status: true,
-              })
+              response: result,
+              message: "update successfull",
+              status: true,
+            })
             : res
-                .status(500)
-                .send({ response: "error - opration failed", status: false });
+              .status(500)
+              .send({ response: "error - opration failed", status: false });
         }
       });
     } else {
@@ -421,11 +422,11 @@ export async function delete_product(req, res) {
 export async function delete_restore_product_verient(req, res) {
   let { is_deleted, product_verient_id } = req.body;
   let dlt_verient_query = "";
-  
+
   if (req.headers.admin_token != "" && req.headers.admin_token != undefined) {
     dlt_verient_query += "DELETE FROM `product_verient` WHERE `product_verient`.`product_verient_id` = " +
-    product_verient_id + ""
- //------------------old--code--funtionality-----------------------
+      product_verient_id + ""
+    //------------------old--code--funtionality-----------------------
     // dlt_verient_query +=
     //   "UPDATE `product_verient` SET `verient_is_deleted` = " +
     //   is_deleted +
@@ -436,9 +437,9 @@ export async function delete_restore_product_verient(req, res) {
     req.headers.vendor_token != "" &&
     req.headers.vendor_token != undefined
   ) {
-    dlt_verient_query += "DELETE FROM `product_verient` WHERE `product_verient`.`product_verient_id` = " +product_verient_id +
-    " AND `product_verient`.`vendor_id` = " + req.vendor_id + ""
-    
+    dlt_verient_query += "DELETE FROM `product_verient` WHERE `product_verient`.`product_verient_id` = " + product_verient_id +
+      " AND `product_verient`.`vendor_id` = " + req.vendor_id + ""
+
     //------------------old--code--funtionality-----------------------
     // dlt_verient_query +=
     //   "UPDATE `product_verient` SET `verient_is_deleted` = " +
@@ -556,19 +557,15 @@ export async function search_product(req, res) {
     if (i >= 6) {
       if (i == 6) {
         if (req.body[search_obj[i]] != "") {
-          search_string += `(name LIKE "${
-            req.body[search_obj[i]]
-          }%" OR verient_name LIKE "${
-            req.body[search_obj[i]]
-          }%" OR category_name LIKE "${
-            req.body[search_obj[i]]
-          }%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `;
+          search_string += `(name LIKE "${req.body[search_obj[i]]
+            }%" OR verient_name LIKE "${req.body[search_obj[i]]
+            }%" OR category_name LIKE "${req.body[search_obj[i]]
+            }%" OR seo_tag LIKE "%${req.body[search_obj[i]]}%") AND   `;
         }
       } else if (i == 7) {
         if (req.body[search_obj[i]] != "") {
-          search_string_asc_desc1 = `${group_by} ORDER BY ${
-            req.body[search_obj[i]]
-          } `;
+          search_string_asc_desc1 = `${group_by} ORDER BY ${req.body[search_obj[i]]
+            } `;
         }
       } else {
         // if (req.body[search_obj[i]] != "") {
@@ -680,7 +677,7 @@ export async function search_product(req, res) {
         connection.query(
           new_qry_.replace("*", "count(*) AS `count_rows` "),
           (err, results) => {
-            console.log("er-----"+err);
+            console.log("er-----" + err);
             console.log(results);
             try {
               count_rows = results[0]["count_rows"];
@@ -749,10 +746,10 @@ export function add_product_verient(req, res) {
 
   connection.query(
     "SELECT * FROM `product` WHERE id=" +
-      product_id +
-      " AND vendor_id = " +
-      req.vendor_id +
-      "",
+    product_id +
+    " AND vendor_id = " +
+    req.vendor_id +
+    "",
     (err, results) => {
       if (err) {
         console.log(err);
@@ -770,38 +767,38 @@ export function add_product_verient(req, res) {
             if (req.vendor_id != "" && req.vendor_id != undefined) {
               connection.query(
                 ' INSERT INTO `product_verient` (`product_id`,`vendor_id`, `verient_name`,`quantity`,`unit`,`product_stock_quantity`,`price`,`mrp`,`gst`,`sgst`,`cgst`,`discount`,`verient_description`,`product_height`,`product_width`,`product_Weight`) values ("' +
-                  product_id +
-                  '","' +
-                  req.vendor_id +
-                  '","' +
-                  verient_name +
-                  '","' +
-                  quantity +
-                  '","' +
-                  unit +
-                  '","' +
-                  product_stock_quantity +
-                  '","' +
-                  price +
-                  '","' +
-                  mrp +
-                  '","' +
-                  gst +
-                  '","' +
-                  sgst +
-                  '","' +
-                  cgst +
-                  '","' +
-                  discount +
-                  '","' +
-                  verient_description+
-                  '","' +
-                  product_height +
-                  '","' +
-                  product_width +
-                  '","' +
-                  product_Weight +
-                  '") ',
+                product_id +
+                '","' +
+                req.vendor_id +
+                '","' +
+                verient_name +
+                '","' +
+                quantity +
+                '","' +
+                unit +
+                '","' +
+                product_stock_quantity +
+                '","' +
+                price +
+                '","' +
+                mrp +
+                '","' +
+                gst +
+                '","' +
+                sgst +
+                '","' +
+                cgst +
+                '","' +
+                discount +
+                '","' +
+                verient_description +
+                '","' +
+                product_height +
+                '","' +
+                product_width +
+                '","' +
+                product_Weight +
+                '") ',
                 (err, result) => {
                   if (err) {
                     console.log(err);
@@ -837,4 +834,102 @@ export function add_product_verient(req, res) {
       }
     }
   );
+}
+
+const queryListen = async (query = "") => {
+  return new Promise((resolve, reject) => {
+    connection.query(query, (error, result) => {
+      if (error) {
+        console.error(error);
+        reject(error);
+      } else {
+        console.log(result);
+        resolve(result);
+      }
+    });
+  });
+};
+
+
+
+export async function upload_bulk_product(req, res) {
+  let ar_for_valid = Array();
+  let obj_for_find_product = Object();
+  let res_str_1 = "";
+  let res_str_0 = "";
+  let i = 1;
+  if (!req.file) {
+    return res.status(400).json({ status: false, error: 'No files were uploaded.' });
+  }
+
+  const jsonData = await new Promise((resolve, reject) => {
+    const userFile = req.file;
+    // Convert XLS file data to JSON
+    const workbook = xlsx.read(userFile.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    resolve(xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]))
+  });
+  // console.log(jsonData);
+  for (let row of jsonData) {
+    let { product_id, product_verient_id, product_code, vendor_id, name, seo_tag, brand, category, status, description, care_and_Instructions, benefits, verient_name, quantity, unit, product_stock_quantity, price, mrp, gst, sgst, cgst, discount, verient_description, product_height, product_width, product_Weight } = row;
+    name = name.replace(/[^a-zA-Z0-9 ]/g, "");
+    description = description.replace(/[^a-zA-Z0-9 ]/g, "");
+    verient_name = verient_name.replace(/[^a-zA-Z0-9 ]/g, "");
+    care_and_Instructions = care_and_Instructions.replace(/[^a-zA-Z0-9 ]/g, "");
+    benefits = benefits.replace(/[^a-zA-Z0-9 ]/g, "");
+    verient_description = verient_description.replace(/[^a-zA-Z0-9 ]/g, "");
+
+    // if(product_code && vendor_id){
+
+    // }else if(product_id && vendor_id){
+
+    // }else{
+    //   // res.status(400).send({ status: false,message:"inceficient data"})
+    // }
+
+    if (ar_for_valid.includes(product_code)) {
+      try {
+        let product_code_nm = `product_code_${product_code}`
+        let pro_id = obj_for_find_product[product_code_nm]
+        let result = await queryListen(`INSERT INTO product_verient (product_id,vendor_id, verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,discount,verient_description,product_height,product_width,product_Weight) values ("${pro_id}","${vendor_id}","${verient_name}","${quantity}","${unit}","${product_stock_quantity}","${price}","${mrp}","${gst}","${sgst}","${cgst}","${discount}","${verient_description}","${product_height}","${product_width}","${product_Weight}")`)
+        '") '
+        if (result["insertId"]) {
+          res_str_1 += `product ${product_code_nm} verient verient_name:-${verient_name} added successfully,`;
+        } else {
+          res_str_0 += `product ${product_code_nm} verient verient_name:-${verient_name} not added find some error,`;
+        }
+      } catch (error) {
+        res_str_0 += `product verient verient_name:-${verient_name} not added find some error,`;
+      }
+
+    } else {
+      let result_1 = await queryListen(`INSERT INTO product (vendor_id,name,seo_tag,brand,category,description,care_and_Instructions,benefits,created_by, created_by_id) values ("${vendor_id}","${name}","${seo_tag}","${brand}","${category}","${description}","${care_and_Instructions}","${benefits}","${"vendor"}","${vendor_id}")`)
+      // console.log(result_1["insertId"]);
+      if (result_1["insertId"]) {
+        ar_for_valid.push(product_code);
+        let product_code_nm = `product_code_${product_code}`;
+        obj_for_find_product[product_code_nm] = result_1["insertId"];
+        res_str_1 += `${product_code_nm} product_name:-${name} added successfully, `;
+        try {
+          let result = await queryListen(`INSERT INTO product_verient (product_id,vendor_id, verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,discount,verient_description,product_height,product_width,product_Weight) values ("${obj_for_find_product[product_code_nm]}","${vendor_id}","${verient_name}","${quantity}","${unit}","${product_stock_quantity}","${price}","${mrp}","${gst}","${sgst}","${cgst}","${discount}","${verient_description}","${product_height}","${product_width}","${product_Weight}")`)
+
+          if (result["insertId"]) {
+            res_str_1 += `"${product_code_nm} verient_name:-${verient_name} added successfully, `;
+          } else {
+            res_str_0 += `${product_code_nm} verient_name:-${verient_name} not added find some error, `;
+          }
+        } catch (error) {
+          res_str_0 += `product verient verient_name:-${verient_name} not added find some error,`;
+        }
+      } else {
+        res_str_0 += `product_code:- ${product_code} product_name:-${name} not added find error, `;
+      }
+    }
+    console.log(i + "==" + jsonData.length)
+    if (i === jsonData.length) {
+      res.status(200).send({ status: true, "who_successfully_inserted": res_str_1, "who_not_inserted": res_str_0 })
+    }
+    i++
+  }
+
 }
