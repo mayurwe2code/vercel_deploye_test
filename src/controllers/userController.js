@@ -22,26 +22,26 @@ export async function add_user(req, res) {
 
   connection.query(
     "insert into user  ( `first_name`, `last_name`, `email`,`password`,`phone_no`,`pincode`,`city`,`address`,`alternate_address`,`is_deleted`) VALUES('" +
-      first_name +
-      "', '" +
-      last_name +
-      "', '" +
-      email +
-      "','" +
-      password +
-      "', '" +
-      phone_no +
-      "', '" +
-      pincode +
-      "', '" +
-      city +
-      "', '" +
-      address +
-      "','" +
-      alternate_address +
-      "', '" +
-      is_deleted +
-      "') ",
+    first_name +
+    "', '" +
+    last_name +
+    "', '" +
+    email +
+    "','" +
+    password +
+    "', '" +
+    phone_no +
+    "', '" +
+    pincode +
+    "', '" +
+    city +
+    "', '" +
+    address +
+    "','" +
+    alternate_address +
+    "', '" +
+    is_deleted +
+    "') ",
     (err, rows) => {
       if (err) {
         res
@@ -160,15 +160,17 @@ export async function update_user(req, res) {
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "something went wrong", status: false });
     } else {
-     try{ let notfData = {
-        userDeviceToken: rows[0]["token_for_notification"],
-        notfTitle: "India Ki Nursery",
-        notfMsg: "updated user successfully",
-        customData: { data: "no" },
-      };
-      if (rows[0]["token_for_notification"] != "") {
-        sendNotification(notfData);
-      }}catch(e){
+      try {
+        let notfData = {
+          userDeviceToken: rows[0]["token_for_notification"],
+          notfTitle: "India Ki Nursery",
+          notfMsg: "updated user successfully",
+          customData: { data: "no" },
+        };
+        if (rows[0]["token_for_notification"] != "") {
+          sendNotification(notfData);
+        }
+      } catch (e) {
         console.log(e)
       }
       res
@@ -184,10 +186,10 @@ export async function delete_restore_user(req, res) {
   if (user_id != "" && is_delete != "") {
     connection.query(
       "update user  set `is_deleted`='" +
-        is_delete +
-        "' where id ='" +
-        user_id +
-        "'",
+      is_delete +
+      "' where id ='" +
+      user_id +
+      "'",
       (err, rows) => {
         if (err) {
           res
@@ -281,12 +283,12 @@ export function user_signup(req, res) {
 
                   connection.query(
                     'INSERT INTO `user_auth_by_otp` (`email`, `otp`, `user_password`) VALUES ("' +
-                      u_email +
-                      '","' +
-                      OTP +
-                      '","' +
-                      u_password +
-                      '")',
+                    u_email +
+                    '","' +
+                    OTP +
+                    '","' +
+                    u_password +
+                    '")',
                     (err, rows, fields) => {
                       if (err) {
                         if (err.code == "ER_DUP_ENTRY") {
@@ -349,8 +351,8 @@ export function user_signup(req, res) {
                           setTimeout(function () {
                             connection.query(
                               'DELETE FROM `user_auth_by_otp` WHERE `id` = "' +
-                                rows.insertId +
-                                '"',
+                              rows.insertId +
+                              '"',
                               (err, rows, fields) => {
                                 if (err) {
                                   console.log("err____________________232");
@@ -413,10 +415,10 @@ export function user_otp_verify(req, res) {
             if (user_otp == rows[0].otp) {
               connection.query(
                 "insert into user  ( `email`,`password`) VALUES('" +
-                  user_email +
-                  "','" +
-                  rows[0].user_password +
-                  "') ",
+                user_email +
+                "','" +
+                rows[0].user_password +
+                "') ",
                 (err, rows) => {
                   if (err) {
                     console.log(err);
@@ -424,8 +426,8 @@ export function user_otp_verify(req, res) {
                     if (err.code == "ER_DUP_ENTRY") {
                       connection.query(
                         "SELECT * FROM user WHERE email = '" +
-                          user_email +
-                          "' ",
+                        user_email +
+                        "' ",
                         (err, rows) => {
                           if (err) {
                             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -444,9 +446,9 @@ export function user_otp_verify(req, res) {
                                 function (err, token) {
                                   connection.query(
                                     "DELETE FROM user_auth_by_otp WHERE  email = '" +
-                                      user_email +
-                                      "'",
-                                    (err, rows) => {}
+                                    user_email +
+                                    "'",
+                                    (err, rows) => { }
                                   );
 
                                   res.status(200).json({
@@ -482,16 +484,16 @@ export function user_otp_verify(req, res) {
                         }
                         connection.query(
                           "DELETE FROM user_auth_by_otp WHERE email = '" +
-                            user_email +
-                            "'",
-                          (err, rows) => {}
+                          user_email +
+                          "'",
+                          (err, rows) => { }
                         );
                         connection.query(
                           'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' +
-                            rows.insertId +
-                            '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
-                            rows.insertId +
-                            ')","unread")',
+                          rows.insertId +
+                          '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
+                          rows.insertId +
+                          ')","unread")',
                           (err, rows) => {
                             if (err) {
                               //console.log({ "notification": err })
@@ -698,12 +700,12 @@ export function change_user_password(req, res) {
     if (old_password != "" && new_password != "" && email != "") {
       connection.query(
         "update user  set `password`='" +
-          new_password.trim() +
-          "' where  email ='" +
-          email.trim() +
-          "' AND BINARY password = '" +
-          old_password.trim() +
-          "'",
+        new_password.trim() +
+        "' where  email ='" +
+        email.trim() +
+        "' AND BINARY password = '" +
+        old_password.trim() +
+        "'",
         (err, rows) => {
           if (err) {
             console.log(err);
@@ -741,8 +743,8 @@ export function user_forgate_password(req, res) {
     // DELETE FROM `user_auth_by_otp` WHERE `user_auth_by_otp`.`id` = 32
     connection.query(
       "DELETE FROM `user_auth_by_otp` WHERE email = '" +
-        req.body.email.trim() +
-        "'",
+      req.body.email.trim() +
+      "'",
       (err, rows) => {
         const OTP = Math.floor(100000 + Math.random() * 900000);
 
@@ -758,10 +760,10 @@ export function user_forgate_password(req, res) {
               if (rows != "") {
                 connection.query(
                   'INSERT INTO `user_auth_by_otp` (`email`, `otp`) VALUES ("' +
-                    req.body.email.trim() +
-                    '","' +
-                    OTP +
-                    '")',
+                  req.body.email.trim() +
+                  '","' +
+                  OTP +
+                  '")',
                   (err, rows, fields) => {
                     if (err) {
                       if (err.code == "ER_DUP_ENTRY") {
@@ -816,8 +818,8 @@ export function user_forgate_password(req, res) {
                         setTimeout(function () {
                           connection.query(
                             'DELETE FROM `user_auth_by_otp` WHERE `id` = "' +
-                              rows.insertId +
-                              '"',
+                            rows.insertId +
+                            '"',
                             (err, rows, fields) => {
                               if (err) {
                                 console.log("err____________________232");
@@ -875,10 +877,10 @@ export function user_forgate_password_update(req, res) {
   console.log(psw);
   connection.query(
     "update user  set `password`= '" +
-      psw +
-      "' where id ='" +
-      req.user_id +
-      "'",
+    psw +
+    "' where id ='" +
+    req.user_id +
+    "'",
     (err, rows) => {
       if (err) {
         console.log(err);
@@ -933,10 +935,10 @@ export function set_notification_token(req, res) {
   console.log(not_token);
   connection.query(
     "update user  set `token_for_notification`= '" +
-      not_token +
-      "' where id ='" +
-      req.user_id +
-      "'",
+    not_token +
+    "' where id ='" +
+    req.user_id +
+    "'",
     (err, rows) => {
       if (err) {
         console.log(err);
@@ -1129,10 +1131,10 @@ export function social_login(req, res) {
               }
               connection.query(
                 'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' +
-                  rows.insertId +
-                  '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
-                  rows.insertId +
-                  ')","unread")',
+                rows.insertId +
+                '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
+                rows.insertId +
+                ')","unread")',
                 (err, rows) => {
                   if (err) {
                     //console.log({ "notification": err })
@@ -1159,4 +1161,173 @@ export function social_login(req, res) {
       .status(StatusCodes.OK)
       .json({ message: "please fill all inputs", status: false });
   }
+}
+const queryListen = async (query = "") => {
+  return new Promise((resolve, reject) => {
+    connection.query(query, (error, result) => {
+      if (error) {
+        console.error(error);
+        reject(error);
+      } else {
+        console.log(result);
+        resolve(result);
+      }
+    });
+  });
+};
+
+export async function sign_with_social(req, res) {
+  let { first_name, last_name, social_type, email, picture } = req.body
+  if (social_type === "google_signin") {
+    let result = await queryListen(`SELECT * FROM \`user\` WHERE email = '${email}'`)
+
+    if (result.length) {
+
+      if (result[0].is_deleted == "0") {
+        console.log(result[0].id);
+        console.log(process.env.USER_JWT_SECRET_KEY);
+
+        jwt.sign(
+          { id: result[0].id },
+          process.env.USER_JWT_SECRET_KEY,
+          function (err, token) {
+            //console.log(token);
+            if (err) {
+              //console.log(err)
+            }
+            let {
+              id,
+              first_name,
+              last_name,
+              email,
+              phone_no,
+              pincode,
+              status,
+              city,
+              address,
+              alternate_address,
+              user_type,
+              image,
+            } = result[0];
+            if (
+              result[0].first_name != "" &&
+              result[0].last_name != "" &&
+              result[0].email != "" &&
+              result[0].password != "" &&
+              result[0].phone_no != "" &&
+              result[0].pincode != "" &&
+              result[0].city != "" &&
+              result[0].address != "" &&
+              result[0].alternate_address != ""
+            ) {
+              res.send({
+                status: true,
+                res_code: "001",
+                response: "successfully login",
+                token: token,
+                redirect_url: "http://localhost:3000/",
+                complete_profile: true,
+                user_detaile: {
+                  id,
+                  first_name,
+                  last_name,
+                  email,
+                  phone_no,
+                  pincode,
+                  city,
+                  address,
+                  alternate_address,
+                  status,
+                  user_type,
+                  image,
+                },
+              });
+            } else {
+              res.send({
+                status: true,
+                res_code: "001",
+                response: "successfully login",
+                token: token,
+                redirect_url: "http://localhost:3000/",
+                complete_profile: false,
+                user_detaile: {
+                  id,
+                  first_name,
+                  last_name,
+                  email,
+                  phone_no,
+                  pincode,
+                  city,
+                  address,
+                  alternate_address,
+                  status,
+                  user_type,
+                  image,
+                },
+              });
+            }
+          }
+        );
+      } else {
+        res.status(200).json({
+          message: "your account is blocked",
+          status: false,
+        });
+      }
+
+    } else {
+      let rows = await queryListen(`INSERT INTO user(first_name, last_name, email, image, user_type) VALUES ('${first_name}', '${last_name}', '${email}', '${picture}', 'user')`);
+
+      let uid = rows.insertId;
+      jwt.sign({ id: rows.insertId }, process.env.USER_JWT_SECRET_KEY, function (err, token) {
+        //console.log(token);
+        if (err) {
+          //console.log(err)
+        }
+
+        connection.query(
+          'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' +
+          rows.insertId +
+          '","user","welcome to nursery live please compleate your profile","unread"),("001","admin","create new user (user_id ' +
+          rows.insertId +
+          ')","unread")',
+          (err, rows) => {
+            if (err) {
+              //console.log({ "notification": err })
+            } else {
+              console.log(
+                "_______notification-send__94________"
+              );
+            }
+          }
+        );
+        let notfDataForDB = {
+          actor_id: rows.insertId,
+          actor_type: "user",
+          message: "welcome to india ki nursery",
+          status: "unread",
+          notification_title: "welcome",
+          notification_type: "user",
+          notification_type_id: rows.insertId,
+        };
+        setNotification(notfDataForDB);
+        res.send({
+          status: true,
+          response: "successfully created your account",
+          user_id: rows.insertId,
+          token: token,
+          redirect_url: "http://localhost:3000/",
+        });
+      }
+      );
+    }
+  } else {
+    res.send({
+      status: false,
+      res_code: "401",
+      response: "bad request"
+
+    })
+  }
+
 }

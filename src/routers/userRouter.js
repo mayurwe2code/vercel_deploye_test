@@ -14,7 +14,8 @@ import {
   user_forgate_password_update,
   set_notification_token,
   update_user_address,
-  social_login
+  social_login,
+  sign_with_social
 } from "../controllers/userController.js";
 import { auth_user, fetch_user, admin_auth } from '../../middleware/auth.js'
 import multer from "multer"
@@ -64,6 +65,7 @@ userRouter.post("/user_forgate_password_update", auth_user, user_forgate_passwor
 userRouter.put("/set_notification_token", auth_user, set_notification_token);
 userRouter.put("/update_user_address", auth_user, update_user_address);
 userRouter.post("/social_login", social_login);
+userRouter.post("/sign_with_social", sign_with_social);
 
 // userRouter.put("/select_address", auth_user, select_address);
 // userRouter.post("/admin_login", admin_login);
