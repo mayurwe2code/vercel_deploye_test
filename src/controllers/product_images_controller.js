@@ -20,7 +20,7 @@ export function add_product_image(req, res) {
     if (item["image_position"] == "cover") {
       connection.query(
         `UPDATE \`product_images\` SET \`image_position\`='' WHERE product_verient_id =${item["product_verient_id"]} AND product_id = ${item["product_id"]} AND vendor_id = ${req.vendor_id}`,
-        (err, rows, fields) => {}
+        (err, rows, fields) => { }
       );
     }
     try {
@@ -30,32 +30,32 @@ export function add_product_image(req, res) {
       console.log(name_str);
       fs.writeFileSync(
         path.join(__dirname, "../../") +
-          "public/product_images/" +
-          name_str +
-          ".png",
+        "public/product_images/" +
+        name_str +
+        ".png",
         imgBase64,
         "base64"
       );
       connection.query(
         'INSERT INTO `product_images`(`product_id`,`vendor_id`,`product_verient_id`, `product_description`,`product_image_name`, `product_image_path`, `image_position`) VALUES ("' +
-          item.product_id +
-          '", "' +
-          req.vendor_id +
-          '","' +
-          item.product_verient_id +
-          '","' +
-          item.product_description +
-          '", "' +
-          name_str +
-          '.png", "' +
-          req.protocol +
-          "://" +
-          req.headers.host +
-          "/product_images/" +
-          name_str +
-          '.png", "' +
-          item.image_position +
-          '")',
+        item.product_id +
+        '", "' +
+        req.vendor_id +
+        '","' +
+        item.product_verient_id +
+        '","' +
+        item.product_description +
+        '", "' +
+        name_str +
+        '.png", "' +
+        req.protocol +
+        "://" +
+        req.headers.host +
+        "/product_images/" +
+        name_str +
+        '.png", "' +
+        item.image_position +
+        '")',
         (err, rows, fields) => {
           if (err) {
             console.log("add-image--error--data--------");
@@ -111,7 +111,7 @@ export function product_image_update(req, res) {
     if (item["image_position"] == "cover") {
       connection.query(
         `UPDATE \`product_images\` SET \`image_position\`='' WHERE product_verient_id =${item["product_verient_id"]} AND product_id = ${item["product_id"]} `,
-        (err, rows, fields) => {}
+        (err, rows, fields) => { }
       );
     }
     try {
@@ -123,9 +123,9 @@ export function product_image_update(req, res) {
 
       fs.writeFileSync(
         path.join(__dirname, "../../") +
-          "public/product_images/" +
-          name_str +
-          ".png",
+        "public/product_images/" +
+        name_str +
+        ".png",
         base64Data,
         "base64"
       );
@@ -218,19 +218,19 @@ export function add_remove_cover_image(req, res) {
   if (image_position == "cover") {
     connection.query(
       `UPDATE \`product_images\` SET \`image_position\`='' WHERE product_verient_id =${product_verient_id} AND product_id = ${product_id} `,
-      (err, rows, fields) => {}
+      (err, rows, fields) => { }
     );
   }
   connection.query(
     ' UPDATE `product_images` SET `image_position`="' +
-      image_position +
-      '" WHERE product_image_id = "' +
-      product_image_id +
-      '" AND product_id = "' +
-      product_id +
-      '" AND product_verient_id="' +
-      product_verient_id +
-      '"',
+    image_position +
+    '" WHERE product_image_id = "' +
+    product_image_id +
+    '" AND product_id = "' +
+    product_id +
+    '" AND product_verient_id="' +
+    product_verient_id +
+    '"',
     (err, rows, fields) => {
       if (err) {
         console.log(err);
@@ -239,11 +239,11 @@ export function add_remove_cover_image(req, res) {
         console.log(rows);
         rows.affectedRows
           ? res
-              .status(200)
-              .send({ success: true, message: "updated successfull" })
+            .status(200)
+            .send({ success: true, message: "updated successfull" })
           : res
-              .status(200)
-              .send({ success: false, message: "opration failed" });
+            .status(200)
+            .send({ success: false, message: "opration failed" });
       }
     }
   );
@@ -255,12 +255,12 @@ export function product_image_delete(req, res) {
 
   connection.query(
     "DELETE FROM `product_images` WHERE `product_image_id` = " +
-      product_image_id +
-      " AND product_id = " +
-      product_id +
-      " AND product_verient_id=" +
-      product_verient_id +
-      "",
+    product_image_id +
+    " AND product_id = " +
+    product_id +
+    " AND product_verient_id=" +
+    product_verient_id +
+    "",
     (err, rows, fields) => {
       if (err) {
         console.log(err);
@@ -271,8 +271,8 @@ export function product_image_delete(req, res) {
           try {
             fs.unlinkSync(
               "/home/we2code/Desktop/nursery_proj/nursery_live/public/product_images/" +
-                product_image_name +
-                ""
+              product_image_name +
+              ""
             );
             console.log("Delete File successfully.");
           } catch (error) {
