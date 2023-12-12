@@ -32,9 +32,14 @@ import session from "express-session";
 import connectMongo from "connect-mongo";
 const MongoStore = connectMongo(session);
 import { ensureAuth, ensureGuest } from "./middleware/auth.js";
+import fs from "fs";
+import https from "https";
+
 // import { pin_data } from './test_.js'
 
 const app = express();
+
+
 // connection
 app.use(cors());
 
@@ -255,10 +260,14 @@ app.get("/auth/logout", (req, res) => {
     res.redirect("/auth_with_google");
   });
 });
-
+const serverOptions = {
+  key: fs.readFileSync('/home/we2code/Desktop/nursery_verient_2.0/nursery_server/nursery_live/server.pem'), // Path to your private key
+  cert: fs.readFileSync('/home/we2code/Desktop/nursery_verient_2.0/nursery_server/nursery_live/server.cert'), // Path to your certificate
+};
+const server = https.createServer(serverOptions, app);
 function startServer() {
   connection;
-  app.listen(9999, () => {
+  server.listen(9999, () => {
     console.log(`server is running at ${process.env.SERVERPORT}`);
   });
 }
