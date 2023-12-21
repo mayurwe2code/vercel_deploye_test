@@ -266,16 +266,16 @@ app.get("/auth/logout", (req, res) => {
 });
 
 
-console.log("__dirname========")
-console.log(path.join(__dirname, "/server.pem"))
-const serverOptions = {
-  key: fs.readFileSync(path.join(__dirname, "/server.pem")), // Path to your private key
-  cert: fs.readFileSync(path.join(__dirname, "/server.cert")), // Path to your certificate
-};
-const server = https.createServer(serverOptions, app);
+// console.log("__dirname========")
+// console.log(path.join(__dirname, "/server.pem"))
+// const serverOptions = {
+//   key: fs.readFileSync(path.join(__dirname, "/server.pem")), // Path to your private key
+//   cert: fs.readFileSync(path.join(__dirname, "/server.cert")), // Path to your certificate
+// };
+// const server = https.createServer(serverOptions, app);
 function startServer() {
   connection;
-  server.listen(9999, () => {
+  app.listen(9999, () => {
     console.log(`server is running at ${process.env.SERVERPORT}`);
   });
 }
