@@ -32,12 +32,12 @@ export function vendor_signup(req, res) {
 
               connection.query(
                 'INSERT INTO `user_auth_by_otp` (`email`, `otp`, `user_password`) VALUES ("' +
-                  u_email +
-                  '","' +
-                  OTP +
-                  '","' +
-                  u_password +
-                  '")',
+                u_email +
+                '","' +
+                OTP +
+                '","' +
+                u_password +
+                '")',
                 (err, rows, fields) => {
                   if (err) {
                     if (err.code == "ER_DUP_ENTRY") {
@@ -104,8 +104,8 @@ export function vendor_signup(req, res) {
                       setTimeout(function () {
                         connection.query(
                           'DELETE FROM `user_auth_by_otp` WHERE `id` = "' +
-                            rows.insertId +
-                            '"',
+                          rows.insertId +
+                          '"',
                           (err, rows, fields) => {
                             if (err) {
                               console.log("err____________________232");
@@ -154,10 +154,10 @@ export function vendor_otp_verify(req, res) {
     // console.log('SELECT * FROM `user_auth_by_otp` WHERE email = "' + user_email + '" AND otp = "' + user_otp + '"')
     connection.query(
       'SELECT * FROM `user_auth_by_otp` WHERE  email = "' +
-        user_email +
-        '" AND otp = "' +
-        user_otp +
-        '"',
+      user_email +
+      '" AND otp = "' +
+      user_otp +
+      '"',
       (err, rows, fields) => {
         if (err) {
           console.log("err____________________267");
@@ -170,10 +170,10 @@ export function vendor_otp_verify(req, res) {
             if (user_email == rows[0].email && user_otp == rows[0].otp) {
               connection.query(
                 "insert into vendor ( `email`,`password`) VALUES('" +
-                  user_email +
-                  "','" +
-                  rows[0].user_password +
-                  "') ",
+                user_email +
+                "','" +
+                rows[0].user_password +
+                "') ",
                 (err, rows) => {
                   if (err) {
                     console.log(err);
@@ -181,8 +181,8 @@ export function vendor_otp_verify(req, res) {
                     if (err.code == "ER_DUP_ENTRY") {
                       connection.query(
                         "SELECT * FROM vendor WHERE email = '" +
-                          user_email +
-                          "' ",
+                        user_email +
+                        "' ",
                         (err, rows) => {
                           if (err) {
                             res
@@ -242,10 +242,10 @@ export function vendor_otp_verify(req, res) {
                         }
                         connection.query(
                           'INSERT INTO `notification`(`actor_id`, `actor_type`, `message`, `status`) VALUES ("' +
-                            rows.insertId +
-                            '","vendor","welcome to nursery live please compleate your profile","unread"),("001","admin","create new vendor (vendor_id ' +
-                            rows.insertId +
-                            ')","unread")',
+                          rows.insertId +
+                          '","vendor","welcome to nursery live please compleate your profile","unread"),("001","admin","create new vendor (vendor_id ' +
+                          rows.insertId +
+                          ')","unread")',
                           (err, rows) => {
                             if (err) {
                               //console.log({ "notification": err })
@@ -260,9 +260,9 @@ export function vendor_otp_verify(req, res) {
                         // DELETE FROM `user_auth_by_otp` WHERE `user_auth_by_otp`.`id` = 3
                         connection.query(
                           'DELETE FROM `user_auth_by_otp` WHERE `user_auth_by_otp`.`email` = "' +
-                            user_email +
-                            '"',
-                          (err, rows) => {}
+                          user_email +
+                          '"',
+                          (err, rows) => { }
                         );
                         res.send({
                           success: true,
@@ -313,10 +313,10 @@ export function vendor_login(req, res) {
       console.log("true");
       connection.query(
         'SELECT * FROM vendor WHERE email ="' +
-          user_email +
-          '" AND BINARY password ="' +
-          password +
-          '"',
+        user_email +
+        '" AND BINARY password ="' +
+        password +
+        '"',
         (err, rows) => {
           if (err) {
             console.log(err);
@@ -465,10 +465,10 @@ export function vendor_forgate_password(req, res) {
           if (rows != "") {
             connection.query(
               'INSERT INTO `user_auth_by_otp` (`email`, `otp`) VALUES ("' +
-                req.body.email +
-                '","' +
-                OTP +
-                '")',
+              req.body.email +
+              '","' +
+              OTP +
+              '")',
               (err, rows, fields) => {
                 if (err) {
                   if (err.code == "ER_DUP_ENTRY") {
@@ -529,8 +529,8 @@ export function vendor_forgate_password(req, res) {
                     setTimeout(function () {
                       connection.query(
                         'DELETE FROM `user_auth_by_otp` WHERE `id` = "' +
-                          rows.insertId +
-                          '"',
+                        rows.insertId +
+                        '"',
                         (err, rows, fields) => {
                           if (err) {
                             console.log("err____________________232");
@@ -567,17 +567,17 @@ export function vendor_forgate_password_update(req, res) {
   console.log(psw);
   console.log(
     "update vendor set `password`= '" +
-      psw +
-      "' where vendor_id ='" +
-      req.vendor_id +
-      "'"
+    psw +
+    "' where vendor_id ='" +
+    req.vendor_id +
+    "'"
   );
   connection.query(
     "update vendor set `password`= '" +
-      psw +
-      "' where vendor_id ='" +
-      req.vendor_id +
-      "'",
+    psw +
+    "' where vendor_id ='" +
+    req.vendor_id +
+    "'",
     (err, rows) => {
       if (err) {
         console.log(err);
@@ -826,7 +826,7 @@ export function vendor_list(req, res) {
   let m = 0;
   for (let k in req_obj) {
     if (req_obj[k] != "") {
-      if ("search" == k || "owner_name" == k || "shop_name" == k ) {
+      if ("search" == k || "owner_name" == k || "shop_name" == k) {
         search_query += `(owner_name LIKE "%${req_obj[k]}%" OR  shop_name LIKE "%${req_obj[k]}%") AND  `;
       } else {
         search_query += `${k} = "${req_obj[k]}" AND  `;
@@ -839,7 +839,7 @@ export function vendor_list(req, res) {
   }
   console.log("---------search_query--------");
   console.log(search_query);
-  connection.query(search_query +" ORDER BY created_on DESC", (err, rows) => {
+  connection.query(search_query + " ORDER BY created_on DESC", (err, rows) => {
     if (err) {
       console.log(err);
       res
@@ -928,7 +928,7 @@ export async function search_vendor_product(req, res) {
   let search_obj = Object.keys(req.body);
   if (req.headers.vendor_token != "" && req.headers.vendor_token != undefined) {
     var search_string =
-      'SELECT (SELECT owner_name FROM vendor WHERE product.vendor_id =vendor.vendor_id) AS vendor_name ,id,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) )AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" GROUP BY product_images.product_verient_id) AS cover_image,(SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id) AS avgRatings,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where ((`fetured_product_table`.`product_id` = `product_verient`.`product_id`) and (curdate() >= `fetured_product_table`.`start_date`) and (curdate() <= `fetured_product_table`.`end_date`))) AS `is_fetured_on`,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where (`fetured_product_table`.`product_id` = `product_verient`.`product_id`)) AS `is_fetured`,(select COUNT(*) from `review` where (`review`.`product_id` = `product`.`id`)) AS `count_avgRatings` FROM product ' +
+      'SELECT (SELECT owner_name FROM vendor WHERE product.vendor_id =vendor.vendor_id LIMIT 1) AS vendor_name ,id,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) LIMIT 1 )AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id LIMIT 1) AS all_images_url,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" GROUP BY product_images.product_verient_id LIMIT 1) AS cover_image,(SELECT ROUND(AVG(review.review_rating),1) FROM review WHERE review.product_id = product.id LIMIT 1) AS avgRatings,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where ((`fetured_product_table`.`product_id` = `product_verient`.`product_id`) and (curdate() >= `fetured_product_table`.`start_date`) and (curdate() <= `fetured_product_table`.`end_date`)) LIMIT 1) AS `is_fetured_on`,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where (`fetured_product_table`.`product_id` = `product_verient`.`product_id`) LIMIT 1) AS `is_fetured`,(select COUNT(*) from `review` where (`review`.`product_id` = `product`.`id`) LIMIT 1) AS `count_avgRatings` FROM product ' +
       string +
       ' product_verient ON product.id = product_verient.product_id WHERE product.vendor_id = "' +
       req.vendor_id +
@@ -939,7 +939,7 @@ export async function search_vendor_product(req, res) {
     // GROUP BY product.id ORDER BY product.created_on DESC LIMIT 0, 100;
   } else {
     var search_string =
-      'SELECT (SELECT owner_name FROM vendor WHERE product.vendor_id =vendor.vendor_id) AS vendor_name , id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id) AS cover_image, (select round(avg(`review`.`review_rating`),1) from `review` where (`review`.`product_id` = `product`.`id`)) AS `avgRatings`,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where ((`fetured_product_table`.`product_id` = `product_verient`.`product_id`) and (curdate() >= `fetured_product_table`.`start_date`) and (curdate() <= `fetured_product_table`.`end_date`))) AS `is_fetured_on`,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where (`fetured_product_table`.`product_id` = `product_verient`.`product_id`)) AS `is_fetured`, (select COUNT(*) from `review` where (`review`.`product_id` = `product`.`id`)) AS `count_avgRatings` FROM product ' +
+      'SELECT (SELECT owner_name FROM vendor WHERE product.vendor_id =vendor.vendor_id LIMIT 1) AS vendor_name , id ,product.vendor_id AS vendor_id,name,seo_tag,brand,category,(SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) LIMIT 1) AS category_name,is_deleted,status,review,rating,description,care_and_Instructions,benefits,is_active,created_by,created_by_id,created_on,updated_on,product_verient_id,product_id,verient_name,quantity,unit,product_stock_quantity,price,mrp,gst,sgst,cgst,verient_is_deleted,verient_status,discount,verient_description,verient_is_active,verient_created_on,verient_updated_on,product_height,product_width,product_Weight ,(SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id LIMIT 1) AS all_images_url, (SELECT GROUP_CONCAT(product_image_path) FROM product_images WHERE product_images.product_verient_id = product_verient.product_verient_id AND image_position = "cover" group by product_images.product_verient_id LIMIT 1) AS cover_image, (select round(avg(`review`.`review_rating`),1) from `review` where (`review`.`product_id` = `product`.`id`) LIMIT 1) AS `avgRatings`,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where ((`fetured_product_table`.`product_id` = `product_verient`.`product_id`) and (curdate() >= `fetured_product_table`.`start_date`) and (curdate() <= `fetured_product_table`.`end_date`)) LIMIT 1 LIMIT 1) AS `is_fetured_on`,(select concat("{","id:",`fetured_product_table`.`id`," , start_date:",`fetured_product_table`.`start_date`," , end_date:",`fetured_product_table`.`end_date`,"}") from `fetured_product_table` where (`fetured_product_table`.`product_id` = `product_verient`.`product_id`) LIMIT 1) AS `is_fetured`, (select COUNT(*) from `review` where (`review`.`product_id` = `product`.`id`) LIMIT 1) AS `count_avgRatings` FROM product ' +
       string +
       " product_verient ON product.id = product_verient.product_id where is_active = 1  AND  ";
   }
@@ -964,13 +964,10 @@ export async function search_vendor_product(req, res) {
     if (i >= 6) {
       if (i == 6) {
         if (req.body[search_obj[i]] != "") {
-          search_string += `(name LIKE "${
-            req.body[search_obj[i]]
-          }%" OR verient_name LIKE "${
-            req.body[search_obj[i]]
-          }%" OR (SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) LIKE "${
-            req.body[search_obj[i]]
-          }%" OR seo_tag LIKE "${req.body[search_obj[i]]}%") AND   `;
+          search_string += `(name LIKE "${req.body[search_obj[i]]
+            }%" OR verient_name LIKE "${req.body[search_obj[i]]
+            }%" OR (SELECT GROUP_CONCAT(category_name) from category WHERE FIND_IN_SET(id,product.category) ) LIKE "${req.body[search_obj[i]]
+            }%" OR seo_tag LIKE "${req.body[search_obj[i]]}%") AND   `;
           // OR category_name LIKE "%${req.body[search_obj[i]]}%"
         }
       } else {
@@ -1360,10 +1357,10 @@ export function order_verify_by_vendor(req, res) {
         if (order_verify == "accepted") {
           connection.query(
             "SELECT * FROM `order` WHERE `order_id` = '" +
-              order_id +
-              "' AND `vendor_id` = '" +
-              req.vendor_id +
-              "'",
+            order_id +
+            "' AND `vendor_id` = '" +
+            req.vendor_id +
+            "'",
             (err, rows, fields) => {
               if (err) {
                 console.log(err);
@@ -1420,18 +1417,18 @@ export function order_verify_by_vendor(req, res) {
 
                 connection.query(
                   "INSERT INTO `order_delivery_details`(`order_id`,`order_asign_by`, `payment`,  `payment_method`, `order_delivery_confirm_code`,`order_ready_to_asign_for_delivery_by`,`delivery_date`) VALUES ('" +
-                    order_id +
-                    "','vendor','" +
-                    only_this_order_product_total +
-                    "', '" +
-                    payment_mode +
-                    "', '" +
-                    delivery_verify_code +
-                    "' ,'" +
-                    req.vendor_id +
-                    "','" +
-                    formattedDate +
-                    "')",
+                  order_id +
+                  "','vendor','" +
+                  only_this_order_product_total +
+                  "', '" +
+                  payment_mode +
+                  "', '" +
+                  delivery_verify_code +
+                  "' ,'" +
+                  req.vendor_id +
+                  "','" +
+                  formattedDate +
+                  "')",
                   (err, rows) => {
                     if (err) {
                       console.log(err);
@@ -1496,20 +1493,20 @@ export async function vendor_orders_status(req, res) {
   };
   const queries = [
     "SELECT COUNT(DISTINCT(order_id)) AS new_order FROM `order_view` WHERE vendor_id = " +
-      req.vendor_id +
-      ' AND  status_order IN ("pending") ',
+    req.vendor_id +
+    ' AND  status_order IN ("pending") ',
 
     "SELECT COUNT(DISTINCT(order_id)) AS rejected_order FROM order_view WHERE vendor_id = " +
-      req.vendor_id +
-      ' AND status_order IN ("rejected_by_vendor", "Rejected_by_customer", "Failed_Delivery_Attempts", "cancel")',
+    req.vendor_id +
+    ' AND status_order IN ("rejected_by_vendor", "Rejected_by_customer", "Failed_Delivery_Attempts", "cancel")',
 
     "SELECT COUNT(DISTINCT(order_id)) AS in_progerss FROM order_view WHERE vendor_id = " +
-      req.vendor_id +
-      ' AND status_order IN ("accepted_by_vendor", "pending", "shipped", "approved", "packed", "Pickuped", "ready_to_pickup") AND verify_by_vendor = "accepted"',
+    req.vendor_id +
+    ' AND status_order IN ("accepted_by_vendor", "pending", "shipped", "approved", "packed", "Pickuped", "ready_to_pickup") AND verify_by_vendor = "accepted"',
 
     "SELECT COUNT(DISTINCT(order_id)) AS delivered FROM order_view WHERE vendor_id =" +
-      req.vendor_id +
-      ' AND status_order IN ("Delivered")',
+    req.vendor_id +
+    ' AND status_order IN ("Delivered")',
   ];
   try {
     const results = await Promise.all(
@@ -1608,21 +1605,21 @@ export async function vendor_product_list(req, res) {
         console.log("check_------------------------qyueryyyyy---545");
         console.log(
           "" +
-            search_string +
-            "GROUP BY id " +
-            search_string_asc_desc +
-            " LIMIT " +
-            limit +
-            ""
+          search_string +
+          "GROUP BY id " +
+          search_string_asc_desc +
+          " LIMIT " +
+          limit +
+          ""
         );
         connection.query(
           "" +
-            search_string +
-            "GROUP BY id " +
-            search_string_asc_desc +
-            " LIMIT " +
-            limit +
-            "",
+          search_string +
+          "GROUP BY id " +
+          search_string_asc_desc +
+          " LIMIT " +
+          limit +
+          "",
           (err, results) => {
             if (err) {
               console.log("err___________________194");
@@ -1663,9 +1660,9 @@ export async function vendor_update_delivery_boy_pickuped_order(req, res) {
   let { order_id, pickuped, ready_to_pickup } = req.body;
 
   async function db_update(query_1, query_2) {
-    console.log({"k":query_1, "m":query_2})
+    console.log({ "k": query_1, "m": query_2 })
     connection.query(query_1, (err, results) => {
-    console.log("connection.query-------1")
+      console.log("connection.query-------1")
       if (err) {
         console.log("err_____1______________");
         console.log(err);
@@ -1673,7 +1670,7 @@ export async function vendor_update_delivery_boy_pickuped_order(req, res) {
       } else {
         if (results["affectedRows"] >= 1) {
           connection.query(query_2, (err, rows) => {
-    console.log("connection.query-------2")
+            console.log("connection.query-------2")
             console.log(err)
             console.log(rows);
           });
