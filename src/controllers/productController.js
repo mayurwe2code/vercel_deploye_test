@@ -539,7 +539,6 @@ export async function search_product(req, res) {
         'verient_is_deleted ="0" AND   ';
     }
   }
-
   console.log(search_obj);
   if (price_from != "" && price_to != "") {
     search_string +=

@@ -41,5 +41,4 @@ productRouter.put("/delete_restore_product_verient", admin_auth, delete_restore_
 productRouter.post("/search", fetch_user, search_product);
 productRouter.post("/upload_bulk_product", upload_bulk.single('file'), upload_bulk_product);
 
-
 export default productRouter;

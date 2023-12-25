@@ -162,6 +162,7 @@ app.get("/check", (req, res) => {
   res.send("___________check_result_ok_______________");
 });
 
+
 app.get("/auth_with_google", ensureGuest, (req, res) => {
   console.log("/abc");
   res.render("login");
