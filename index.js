@@ -117,8 +117,8 @@ app.get("/version", (req, res) => {
   // connection
   res.send({
     latest_update: dat,
-    latest_commit: "check port- 9999  -  server-good 26/09/2023",
-    data: "https://script.google.com/macros/s/AKfycbzgdO-CBEkm-Rhg4KL5tZu5-R8KDwxHj8by03d754efDS5AneTfshknCFTLxV6fQDw9/exec"
+    latest_commit: "check port- 9999  -  server-good 25/11/2023",
+    data: "author- we2code Pvt. Ltd."
   });
 });
 
